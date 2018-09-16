@@ -2,9 +2,10 @@
 
 namespace Phpactor\LanguageServer\Core;
 
+/**
+ * @method ResponseMessage __invoke
+ */
 interface Handler
 {
     public function name(): string;
-
-    public function __invoke(...$parameters);
 }
