@@ -1,6 +1,9 @@
 <?php
 
-namespace Phpactor\LanguageServer\Transport;
+namespace Phpactor\LanguageServer\Core\Transport;
+
+use Phpactor\LanguageServer\Core\Transport\Message;
+use Phpactor\LanguageServer\Core\Transport\ResponseError;
 
 class ResponseMessage extends Message
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit;
+namespace Phpactor\LanguageServer\Tests\Unit\Core;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Handler;
-use Phpactor\LanguageServer\HandlerNotFound;
-use Phpactor\LanguageServer\Handlers;
+use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\HandlerNotFound;
+use Phpactor\LanguageServer\Core\Handlers;
 
 class HandlersTest extends TestCase
 {

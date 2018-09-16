@@ -1,6 +1,8 @@
 <?php
 
-namespace Phpactor\LanguageServer\Transport;
+namespace Phpactor\LanguageServer\Core\Transport;
+
+use Phpactor\LanguageServer\Core\Transport\Message;
 
 class RequestMessage extends Message
 {

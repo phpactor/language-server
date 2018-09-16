@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Transport;
+namespace Phpactor\LanguageServer\Core\Transport;
 
 class ErrorCodes
 {

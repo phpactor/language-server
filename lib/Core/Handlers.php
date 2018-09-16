@@ -1,6 +1,9 @@
 <?php
 
-namespace Phpactor\LanguageServer;
+namespace Phpactor\LanguageServer\Core;
+
+use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\HandlerNotFound;
 
 class Handlers
 {

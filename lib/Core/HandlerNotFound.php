@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer;
+namespace Phpactor\LanguageServer\Core;
 
 use Exception;
 

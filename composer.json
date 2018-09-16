@@ -9,11 +9,13 @@
         }
     ],
     "require": {
+        "felixfbecker/language-server-protocol": "^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.10.3",
         "phpunit/phpunit": "^7.3",
-        "friendsofphp/php-cs-fixer": "^2.13"
+        "friendsofphp/php-cs-fixer": "^2.13",
+        "dantleech/argument-resolver": "^1.0@dev"
     },
     "autoload": {
         "psr-4": {

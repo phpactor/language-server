@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Transport;
+namespace Phpactor\LanguageServer\Core\Transport;
 
 abstract class Message
 {
