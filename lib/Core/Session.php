@@ -10,11 +10,11 @@ class Session
     private $rootUri;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $processId;
 
-    public function initialize(string $rootUri, string $processId)
+    public function initialize(string $rootUri, ?int $processId = null)
     {
         $this->rootUri = $rootUri;
         $this->processId = $processId;
@@ -25,7 +25,7 @@ class Session
         return $this->rootUri;
     }
 
-    public function processId(): int
+    public function processId(): ?int
     {
         return $this->processId;
     }

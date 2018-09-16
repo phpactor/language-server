@@ -1,2 +1,2 @@
 parameters:
-    paths: [ lib, tests ]
+    paths: [ lib ]

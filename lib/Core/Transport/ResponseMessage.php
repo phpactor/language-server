@@ -2,9 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Transport;
 
-use Phpactor\LanguageServer\Core\Transport\Message;
-use Phpactor\LanguageServer\Core\Transport\ResponseError;
-
 class ResponseMessage extends Message
 {
     /**
@@ -18,7 +15,7 @@ class ResponseMessage extends Message
     public $result;
 
     /**
-     * @var ResponseError
+     * @var ResponseError|null
      */
     public $responseError;
 

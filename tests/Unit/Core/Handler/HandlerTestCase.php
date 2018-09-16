@@ -4,8 +4,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Core\ArgumentResolver\IdentityArgumentResolver;
-use Phpactor\LanguageServer\Core\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handlers;

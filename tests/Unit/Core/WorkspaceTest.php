@@ -54,6 +54,5 @@ class WorkspaceTest extends TestCase
 
         $this->assertSame($expectedDocument, $document);
         $this->assertEquals('my new text', $document->text);
-
     }
 }

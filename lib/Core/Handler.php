@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Core;
 
 /**
- * @method ResponseMessage __invoke
+ * @method ResponseMessage __invoke()
  */
 interface Handler
 {

@@ -2,13 +2,10 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
-use LanguageServerProtocol\CompletionOptions;
 use LanguageServerProtocol\InitializeResult;
-use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\ServerFactory;
 use Phpactor\LanguageServer\Core\Session;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
 use RuntimeException;
 
 class Initialize implements Handler
@@ -37,10 +34,10 @@ class Initialize implements Handler
     public function __invoke(
         array $capabilities = [],
         array $initializationOptions = [],
-        string $processId = null,
-        string $rootPath = null,
-        string $rootUri = null,
-        string $trace = null
+        ?int $processId = null,
+        ?string $rootPath = null,
+        ?string $rootUri = null,
+        ?string $trace = null
     ) {
         if (!$rootUri && $rootPath) {
             $rootUri = $rootPath;

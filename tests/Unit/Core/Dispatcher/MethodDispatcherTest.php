@@ -9,7 +9,6 @@ use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
-use SebastianBergmann\CodeCoverage\Report\Xml\Method;
 use stdClass;
 
 class MethodDispatcherTest extends TestCase

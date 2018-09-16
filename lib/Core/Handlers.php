@@ -2,9 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core;
 
-use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\HandlerNotFound;
-
 class Handlers
 {
     private $handlers = [];
@@ -21,7 +18,8 @@ class Handlers
         if (!isset($this->handlers[$handler])) {
             throw new HandlerNotFound(sprintf(
                 'Handler "%s" not found, available handlers: "%s"',
-                $handler, implode('", "', array_keys($this->handlers))
+                $handler,
+                implode('", "', array_keys($this->handlers))
             ));
         }
 
