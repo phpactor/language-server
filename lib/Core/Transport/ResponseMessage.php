@@ -18,7 +18,7 @@ class ResponseMessage extends Message
     public $result;
 
     /**
-     * @var ResponseError|null
+     * @var ResponseError
      */
     public $responseError;
 
