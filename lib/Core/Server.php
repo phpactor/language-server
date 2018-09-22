@@ -18,7 +18,6 @@ class Server
     const CHUNK_SIZE = 100;
     const SLEEP_INTERVAL_MICROSECONDS = 50000;
 
-
     /**
      * @var Dispatcher
      */
@@ -58,6 +57,7 @@ class Server
 
     public function start()
     {
+        $this->logger->info(sprintf('Starting Language Server PID: %s', getmypid()));
         while (true) {
             try {
                 $this->dispatch();
@@ -84,7 +84,8 @@ class Server
         $rawHeaders = [];
         $buffer = [];
         
-        while ($chunk = $this->chunkIO->read(self::CHUNK_SIZE)) {
+        while (true) {
+            $chunk = $this->chunkIO->read(1);
 
             if (false === $chunk->hasContents()) {
 
@@ -95,30 +96,21 @@ class Server
                 }
 
                 $buffer = [];
-
                 usleep(self::SLEEP_INTERVAL_MICROSECONDS);
                 continue;
             }
 
-            $escape = false;
-            foreach (str_split($chunk->contents()) as $char) {
-                $buffer[] = $char;
+            $buffer[] = $chunk->contents();
 
-                if (count($buffer) > 2 && array_slice($buffer, -2, 2) == [ "\r", "\n" ]) {
-                    $header = trim(implode('', array_slice($buffer, 0, -2)));
-        
-                    if (!$header) {
-                        $escape = true;
-                        continue;
-                    }
-        
-                    $buffer = [];
-                    $rawHeaders[] = $header;
+            if (count($buffer) >= 2 && array_slice($buffer, -2, 2) == [ "\r", "\n" ]) {
+                $header = trim(implode('', array_slice($buffer, 0, -2)));
+    
+                if (!$header) {
+                    break;
                 }
-            }
-
-            if ($escape) {
-                break;
+    
+                $buffer = [];
+                $rawHeaders[] = $header;
             }
         }
 
@@ -133,7 +125,11 @@ class Server
 
         $body = $this->chunkIO->read($headers['Content-Length']);
 
-        return [ $headers, trim(implode('', $buffer) . $body->contents()) ];
+        if (false === $body->hasContents()) {
+            throw new ServerError('No contents read from stream');
+        }
+
+        return [ $headers, $body->contents() ];
     }
 
     private function parseHeaders(array $rawHeaders): array
@@ -156,7 +152,7 @@ class Server
     {
         $json = json_decode($body, true);
 
-        if (false === $json) {
+        if (null === $json) {
             throw new ServerError(sprintf(
                 'Could not decode JSON "%s" - "%s"',
                 $body, json_last_error_msg()

@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core;
 
+use Phpactor\LanguageServer\Core\Exception\HandlerNotFound;
+
 class Handlers
 {
     private $handlers = [];
