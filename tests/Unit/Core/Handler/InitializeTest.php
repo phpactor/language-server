@@ -6,8 +6,8 @@ use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
-use Phpactor\LanguageServer\Core\Server;
-use Phpactor\LanguageServer\Core\ServerFactory;
+use Phpactor\LanguageServer\Core\LanguageServer;
+use Phpactor\LanguageServer\Core\LanguageServerFactory;
 use Phpactor\LanguageServer\Core\Session;
 use RuntimeException;
 
@@ -31,8 +31,8 @@ class InitializeTest extends HandlerTestCase
     public function setUp()
     {
         $this->session = $this->prophesize(Session::class);
-        $this->server = $this->prophesize(Server::class);
-        $this->serverFactory = $this->prophesize(ServerFactory::class);
+        $this->server = $this->prophesize(LanguageServer::class);
+        $this->serverFactory = $this->prophesize(LanguageServerFactory::class);
         $this->serverFactory->server()->willReturn($this->server->reveal());
         $this->server->capabilities()->willReturn(new ServerCapabilities());
     }

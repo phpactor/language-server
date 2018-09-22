@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "felixfbecker/language-server-protocol": "^1.0"
+        "felixfbecker/language-server-protocol": "^1.0",
+        "psr/log": "^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.10.3",

@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use LanguageServerProtocol\InitializeResult;
 use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\ServerFactory;
+use Phpactor\LanguageServer\Core\LanguageServerFactory;
 use Phpactor\LanguageServer\Core\Session;
 use RuntimeException;
 
@@ -20,7 +20,7 @@ class Initialize implements Handler
      */
     private $serverFactory;
 
-    public function __construct(Session $session, ServerFactory $serverFactory)
+    public function __construct(Session $session, LanguageServerFactory $serverFactory)
     {
         $this->session = $session;
         $this->serverFactory = $serverFactory;
