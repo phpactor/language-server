@@ -2,8 +2,11 @@
 
 namespace Phpactor\LanguageServer\Core;
 
+use Exception;
 use InvalidArgumentException;
 use Phpactor\LanguageServer\Core\Dispatcher;
+use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
+use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Psr\Log\LoggerInterface;
@@ -13,6 +16,8 @@ use Phpactor\LanguageServer\Core\ChunkIO;
 class Server
 {
     const CHUNK_SIZE = 100;
+    const SLEEP_INTERVAL_MICROSECONDS = 50000;
+
 
     /**
      * @var Dispatcher
@@ -27,27 +32,51 @@ class Server
     private $stream;
 
     /**
-     * @var ChunkReader
+     * @var ChunkIO
      */
-    private $reader;
+    private $chunkIO;
+
+    /**
+     * @var int
+     */
+    private $iterations;
+
+    private $cycleCount = 0;
 
     public function __construct(
         LoggerInterface $logger,
         Dispatcher $dispatcher,
-        ChunkIO $reader
+        ChunkIO $chunkIO,
+        ?int $iterations = null
     )
     {
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
-        $this->reader = $reader;
+        $this->chunkIO = $chunkIO;
+        $this->iterations = $iterations;
     }
 
     public function start()
     {
+        while (true) {
+            try {
+                $this->dispatch();
+            } catch (ServerError $e) {
+                $this->logger->error($e->getMessage());
+            } catch (IterationLimitReached $e) {
+                $this->logger->info($e->getMessage());
+                break;
+            }
+        }
+    }
+
+    private function dispatch()
+    {
         [ $headers, $body ] = $this->readRequest();
         $request = $this->unserializeRequest($body);
         $response = $this->dispatcher->dispatch($request);
-        $this->reader->write(json_encode($response));
+
+        $this->chunkIO->write(json_encode($response));
     }
 
     private function readRequest()
@@ -55,19 +84,31 @@ class Server
         $rawHeaders = [];
         $buffer = [];
         
-        while ($chunk = $this->reader->read(self::CHUNK_SIZE)) {
-            if (false === $chunk) {
+        while ($chunk = $this->chunkIO->read(self::CHUNK_SIZE)) {
+
+            if (false === $chunk->hasContents()) {
+
+                if (null !== $this->iterations && $this->cycleCount++ == $this->iterations) {
+                    throw new IterationLimitReached(sprintf(
+                        'Iteration limit of "%s" reached for server', $this->iterations
+                    ));
+                }
+
                 $buffer = [];
-                usleep(50000);
+
+                usleep(self::SLEEP_INTERVAL_MICROSECONDS);
+                continue;
             }
-        
-            foreach (str_split($chunk) as $char) {
+
+            $escape = false;
+            foreach (str_split($chunk->contents()) as $char) {
                 $buffer[] = $char;
 
                 if (count($buffer) > 2 && array_slice($buffer, -2, 2) == [ "\r", "\n" ]) {
                     $header = trim(implode('', array_slice($buffer, 0, -2)));
         
                     if (!$header) {
+                        $escape = true;
                         continue;
                     }
         
@@ -75,20 +116,24 @@ class Server
                     $rawHeaders[] = $header;
                 }
             }
+
+            if ($escape) {
+                break;
+            }
         }
 
         $headers = $this->parseHeaders($rawHeaders);
 
         if (!array_key_exists('Content-Length', $headers)) {
-            throw new RuntimeException(sprintf(
+            throw new ServerError(sprintf(
                 'No valid Content-Length header provided in raw headers: "%s"',
                 implode(', ', $rawHeaders)
             ));
         }
 
-        $body = $this->reader->read($headers['Content-Length']);
+        $body = $this->chunkIO->read($headers['Content-Length']);
 
-        return [ $headers, trim(implode('', $buffer) . $body) ];
+        return [ $headers, trim(implode('', $buffer) . $body->contents()) ];
     }
 
     private function parseHeaders(array $rawHeaders): array
@@ -112,7 +157,7 @@ class Server
         $json = json_decode($body, true);
 
         if (false === $json) {
-            throw new RuntimeException(sprintf(
+            throw new ServerError(sprintf(
                 'Could not decode JSON "%s" - "%s"',
                 $body, json_last_error_msg()
             ));
@@ -121,14 +166,14 @@ class Server
         $keys = [ 'jsonrpc', 'id', 'method', 'params' ];
 
         if ($diff = array_diff(array_keys($json), $keys)) {
-            throw new RuntimeException(sprintf(
+            throw new ServerError(sprintf(
                 'Request has invalid keys: "%s", valid keys: "%s"',
                 implode(', ', $diff), implode(', ', $keys)
             ));
         }
 
         if ($diff = array_diff($keys, array_keys($json))) {
-            throw new RuntimeException(sprintf(
+            throw new ServerError(sprintf(
                 'Request is missing required keys: "%s"',
                 implode(', ', $diff)
             ));

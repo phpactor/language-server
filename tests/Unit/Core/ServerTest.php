@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\ChunkIO\BufferIO;
 use Phpactor\LanguageServer\Core\Dispatcher;
+use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
@@ -20,7 +21,7 @@ class ServerTest extends TestCase
     private $logger;
 
     /**
-     * @var BufferReader
+     * @var BufferIO
      */
     private $reader;
 
@@ -34,14 +35,16 @@ class ServerTest extends TestCase
         $this->dispatcher = $this->prophesize(Dispatcher::class);
         $this->logger = new TestLogger();
         $this->reader = new BufferIO();
-        $this->server = new Server($this->logger, $this->dispatcher->reveal(), $this->reader);
+        $this->server = new Server(
+            $this->logger,
+            $this->dispatcher->reveal(),
+            $this->reader,
+            1
+        );
     }
 
-    public function testThrowsExceptionIfNoContentLengthProvided()
+    public function testLogsErrorIfNoContentLengthProvided()
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('No valid Content-Length header provided in raw headers: ""');
-
         $payload = <<<EOT
  \r\n
  {
@@ -51,8 +54,9 @@ class ServerTest extends TestCase
     "params": {}
  }
 EOT;
-        $this->reader->write($payload);
+        $this->reader->add($payload);
         $this->server->start();
+        $this->assertLogMessage('[error] No valid Content-Length header provided in raw headers');
     }
 
     public function testStart()
@@ -70,9 +74,16 @@ EOT;
 EOT;
         $response = new ResponseMessage(2, new \stdClass());
         $this->dispatcher->dispatch(new RequestMessage(1, 'test', []))->willReturn($response);
-        $this->reader->write($payload);
+        $this->reader->add($payload);
+
         $this->server->start();
-        $response = $this->reader->read(10000);
+        $response = $this->reader->out();
         $this->assertEquals('{"id":2,"result":{},"responseError":null,"jsonRpc":"2.0"}', $response);
+    }
+
+    private function assertLogMessage(string $string)
+    {
+        $messages = implode(PHP_EOL, $this->logger->messages());
+        $this->assertContains($string, $messages);
     }
 }
