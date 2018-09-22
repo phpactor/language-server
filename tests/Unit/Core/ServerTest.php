@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\ChunkReader\BufferReader;
+use Phpactor\LanguageServer\Core\ChunkIO\BufferIO;
 use Phpactor\LanguageServer\Core\Dispatcher;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
@@ -33,7 +33,7 @@ class ServerTest extends TestCase
     {
         $this->dispatcher = $this->prophesize(Dispatcher::class);
         $this->logger = new TestLogger();
-        $this->reader = new BufferReader();
+        $this->reader = new BufferIO();
         $this->server = new Server($this->logger, $this->dispatcher->reveal(), $this->reader);
     }
 

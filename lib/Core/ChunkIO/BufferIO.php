@@ -1,10 +1,10 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\ChunkReader;
+namespace Phpactor\LanguageServer\Core\ChunkIO;
 
-use Phpactor\LanguageServer\Core\ChunkReader;
+use Phpactor\LanguageServer\Core\ChunkIO;
 
-class BufferReader implements ChunkReader
+class BufferIO implements ChunkIO
 {
     private $buffer = [];
     private $index = 0;

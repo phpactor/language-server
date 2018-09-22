@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Phpactor\LanguageServer\Core\ChunkIO;
 
 class Server
 {
@@ -33,7 +34,7 @@ class Server
     public function __construct(
         LoggerInterface $logger,
         Dispatcher $dispatcher,
-        ChunkReader $reader
+        ChunkIO $reader
     )
     {
         $this->dispatcher = $dispatcher;

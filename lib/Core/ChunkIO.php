@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core;
 
-interface ChunkReader
+interface ChunkIO
 {
     public function read(int $size): string;
 
