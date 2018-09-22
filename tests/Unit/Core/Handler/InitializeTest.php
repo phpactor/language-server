@@ -30,11 +30,11 @@ class InitializeTest extends HandlerTestCase
 
     public function setUp()
     {
-        $this->session = $this->prophesize(Session::class);
         $this->server = $this->prophesize(LanguageServer::class);
         $this->serverFactory = $this->prophesize(LanguageServerFactory::class);
         $this->serverFactory->server()->willReturn($this->server->reveal());
         $this->server->capabilities()->willReturn(new ServerCapabilities());
+        $this->session = $this->prophesize(Session::class);
     }
 
     public function testInitialize()
