@@ -5,11 +5,9 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\ChunkIO\BufferIO;
 use Phpactor\LanguageServer\Core\Dispatcher;
-use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
-use RuntimeException;
 
 class ServerTest extends TestCase
 {

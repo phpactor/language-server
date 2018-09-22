@@ -35,7 +35,8 @@ class StreamIO implements ChunkIO
     {
         if (!is_resource($inStream)) {
             throw new RuntimeException(sprintf(
-                'Given stream is not a resource, is a "%s"', gettype($stream)
+                'Given stream is not a resource, is a "%s"',
+                gettype($stream)
             ));
         }
     }

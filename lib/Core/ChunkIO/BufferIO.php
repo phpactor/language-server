@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\ChunkIO;
 
-use OutOfBoundsException;
 use Phpactor\LanguageServer\Core\Chunk;
 use Phpactor\LanguageServer\Core\ChunkIO;
 

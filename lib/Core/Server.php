@@ -2,20 +2,13 @@
 
 namespace Phpactor\LanguageServer\Core;
 
-use Exception;
-use InvalidArgumentException;
-use Phpactor\LanguageServer\Core\Dispatcher;
 use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
 use Phpactor\LanguageServer\Core\Exception\ServerError;
-use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
-use Phpactor\LanguageServer\Core\ChunkIO;
 
 class Server
 {
-    const CHUNK_SIZE = 100;
     const SLEEP_INTERVAL_MICROSECONDS = 50000;
 
     /**
@@ -28,8 +21,6 @@ class Server
      */
     private $logger;
 
-    private $stream;
-
     /**
      * @var ChunkIO
      */
@@ -38,21 +29,23 @@ class Server
     /**
      * @var int
      */
-    private $iterations;
+    private $cycleLimit;
 
+    /**
+     * @var int
+     */
     private $cycleCount = 0;
 
     public function __construct(
         LoggerInterface $logger,
         Dispatcher $dispatcher,
         ChunkIO $chunkIO,
-        ?int $iterations = null
-    )
-    {
+        ?int $cycleLimit = null
+    ) {
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
         $this->chunkIO = $chunkIO;
-        $this->iterations = $iterations;
+        $this->cycleLimit = $cycleLimit;
     }
 
     public function start()
@@ -88,10 +81,10 @@ class Server
             $chunk = $this->chunkIO->read(1);
 
             if (false === $chunk->hasContents()) {
-
-                if (null !== $this->iterations && $this->cycleCount++ == $this->iterations) {
+                if (null !== $this->cycleLimit && $this->cycleCount++ == $this->cycleLimit) {
                     throw new IterationLimitReached(sprintf(
-                        'Iteration limit of "%s" reached for server', $this->iterations
+                        'Iteration limit of "%s" reached for server',
+                        $this->cycleLimit
                     ));
                 }
 
@@ -135,7 +128,7 @@ class Server
     private function parseHeaders(array $rawHeaders): array
     {
         $parsed = [];
-        foreach($rawHeaders as $keyValue) {
+        foreach ($rawHeaders as $keyValue) {
             $keyValue = explode(':', $keyValue);
             if (count($keyValue) != 2) {
                 $this->logger->warning(sprintf('Invalid header "%s"', $keyValue));
@@ -155,7 +148,8 @@ class Server
         if (null === $json) {
             throw new ServerError(sprintf(
                 'Could not decode JSON "%s" - "%s"',
-                $body, json_last_error_msg()
+                $body,
+                json_last_error_msg()
             ));
         }
 
@@ -164,7 +158,8 @@ class Server
         if ($diff = array_diff(array_keys($json), $keys)) {
             throw new ServerError(sprintf(
                 'Request has invalid keys: "%s", valid keys: "%s"',
-                implode(', ', $diff), implode(', ', $keys)
+                implode(', ', $diff),
+                implode(', ', $keys)
             ));
         }
 
