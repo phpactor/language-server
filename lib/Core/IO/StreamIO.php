@@ -31,9 +31,10 @@ class StreamIO implements IO
         fwrite($this->outStream, $string);
     }
 
-    private function validateStream($inStream)
+    private function validateStream($stream)
     {
-        if (!is_resource($inStream)) {
+        stream_set_blocking($stream, true);
+        if (!is_resource($stream)) {
             throw new RuntimeException(sprintf(
                 'Given stream is not a resource, is a "%s"',
                 gettype($stream)
