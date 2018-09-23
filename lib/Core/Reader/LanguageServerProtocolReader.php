@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Reader;
 
+use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\IO;
 use Psr\Log\LoggerInterface;
@@ -18,13 +19,18 @@ class LanguageServerProtocolReader
         $this->logger = $logger;
     }
 
-    public function readRequest(IO $io)
+    public function readRequest(IO $io): string
     {
         $rawHeaders = [];
         $buffer = [];
         
         while (true) {
             $chunk = $io->read(1);
+
+            if (!$chunk->hasContents()) {
+                throw new ResetConnection('Input did not return anything');
+            }
+
             $buffer[] = $chunk->contents();
 
             if (count($buffer) >= 2 && array_slice($buffer, -2, 2) == [ "\r", "\n" ]) {
@@ -40,6 +46,7 @@ class LanguageServerProtocolReader
         }
 
         $headers = $this->parseHeaders($rawHeaders);
+        $this->logger->debug('headers', $headers);
 
         if (!array_key_exists('Content-Length', $headers)) {
             throw new ServerError(sprintf(
@@ -58,10 +65,10 @@ class LanguageServerProtocolReader
         $body = $io->read($length);
 
         if (false === $body->hasContents()) {
-            throw new ServerError('No contents read from stream');
+            throw new ResetConnection('No contents read from stream');
         }
 
-        return [ $headers, $body->contents() ];
+        return $body->contents();
     }
 
     private function parseHeaders(array $rawHeaders): array

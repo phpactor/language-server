@@ -50,4 +50,8 @@ class StreamConnection implements Connection
         fclose($this->inStream);
         fclose($this->outStream);
     }
+
+    public function reset(): void
+    {
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core;
 
+use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
 use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
@@ -25,31 +26,25 @@ class Server
     private $logger;
 
     /**
-     * @var int
-     */
-    private $cycleLimit;
-
-    /**
-     * @var int
-     */
-    private $cycleCount = 0;
-
-    /**
      * @var Connection
      */
     private $connection;
+
+    /**
+     * @var LanguageServerProtocolReader
+     */
+    private $reader;
 
     public function __construct(
         LoggerInterface $logger,
         Dispatcher $dispatcher,
         Connection $connection,
-        ?int $cycleLimit = null
+        Reader $reader = null
     ) {
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
-        $this->cycleLimit = $cycleLimit;
         $this->connection = $connection;
-        $this->reader = new LanguageServerProtocolReader($logger);
+        $this->reader = $reader ?: new LanguageServerProtocolReader($logger);
     }
 
     public function shutdown()
@@ -66,6 +61,7 @@ class Server
 
         while ($io = $this->connection->io()) {
             $this->logger->info('Accepted connection');
+
             while (true) {
                 try {
                     $this->dispatch($io);
@@ -74,6 +70,11 @@ class Server
                 } catch (IterationLimitReached $e) {
                     $this->logger->info($e->getMessage());
                     break 2;
+                } catch (ResetConnection $e) {
+                    $this->logger->debug($e->getMessage());
+                    $this->logger->info('Resetting connection...');
+                    $this->connection->reset();
+                    break 1;
                 }
             }
         }
@@ -81,8 +82,7 @@ class Server
 
     private function dispatch(IO $io)
     {
-        [ $headers, $body ] = $this->reader->readRequest($io);
-        $this->logger->debug('headers', $headers);
+        $body = $this->reader->readRequest($io);
         $request = $this->unserializeRequest($body);
         $response = $this->dispatcher->dispatch($request);
         $this->logger->debug('response', (array) $response);

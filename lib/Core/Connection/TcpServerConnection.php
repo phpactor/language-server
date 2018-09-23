@@ -25,6 +25,8 @@ class TcpServerConnection implements Connection
      */
     private $server;
 
+    private $socket;
+
     public function __construct(LoggerInterface $logger, string $address)
     {
         $this->address = $address;
@@ -43,12 +45,12 @@ class TcpServerConnection implements Connection
 
     public function io(): IO
     {
-        $socket = @stream_socket_accept($this->server, -1);
+        $this->socket = @stream_socket_accept($this->server, -1);
 
         $this->logger->info('Connection accepted');
-        stream_set_blocking($socket, 1);
+        stream_set_blocking($this->socket, 1);
 
-        return new StreamIO($socket, $socket);
+        return new StreamIO($this->socket, $this->socket);
     }
 
     public function shutdown()
@@ -58,5 +60,10 @@ class TcpServerConnection implements Connection
         ]);
         fclose($this->server);
 
+    }
+
+    public function reset(): void
+    {
+        stream_socket_shutdown($this->socket, STREAM_SHUT_RDWR);
     }
 }

@@ -25,4 +25,8 @@ class SimpleConnection implements Connection
     public function shutdown()
     {
     }
+
+    public function reset(): void
+    {
+    }
 }
