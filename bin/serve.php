@@ -16,8 +16,13 @@ use Phpactor\LanguageServer\Core\SessionManager;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\AbstractLogger;
 
-
 require __DIR__ . '/../vendor/autoload.php';
+
+$options = [
+    'type' => 'tcp',
+];
+
+$options = array_merge($options, getopt('t::', ['type::']));
 
 $in = fopen('php://stdin', 'r');
 $out = fopen('php://stdout', 'w');
@@ -52,10 +57,22 @@ EOT
 );
 
 $sessionManager = new SessionManager();
-$server = LanguageServerBuilder::create($logger, $sessionManager)
-    ->tcpServer()
-    ->coreHandlers()
-    ->addHandler(new ExampleCompletionHandler($sessionManager))
-    ->build();
+$builder = LanguageServerBuilder::create($logger, $sessionManager);
+
+switch ($options['type']) {
+    case 'tcp':
+        $builder->tcpServer();
+        break;
+    case 'stdio':
+        $builder->stdIoServer();
+        break;
+    default:
+        echo sprintf('Invalid builder type, must be either "tcp" or "stdio", got "%s"', $options['type']);
+        exit(255);
+}
+
+$builder->coreHandlers();
+$builder->addHandler(new ExampleCompletionHandler($sessionManager));
+$server = $builder->build();
 
 $server->start();
