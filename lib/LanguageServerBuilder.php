@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Server;
