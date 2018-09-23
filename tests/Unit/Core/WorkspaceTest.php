@@ -16,7 +16,7 @@ class WorkspaceTest extends TestCase
 
     public function setUp()
     {
-        $this->workspace = new Workspace();
+        $this->workspace = new Workspace('/path/to');
     }
 
     public function testThrowsExceptionGetUnknown()
