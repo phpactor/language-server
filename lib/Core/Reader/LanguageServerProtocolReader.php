@@ -70,7 +70,7 @@ class LanguageServerProtocolReader implements Reader
             throw new ResetConnection('No contents read from stream');
         }
 
-        return $body->contents();
+        return (string) $body->contents();
     }
 
     private function parseHeaders(array $rawHeaders): array

@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Core;
 class Chunk
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $contents;
 
@@ -19,7 +19,7 @@ class Chunk
         return null !== $this->contents;
     }
 
-    public function contents(): string
+    public function contents(): ?string
     {
         return $this->contents;
     }

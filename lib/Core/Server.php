@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class Server
 {
@@ -29,7 +30,7 @@ class Server
     private $connection;
 
     /**
-     * @var LanguageServerProtocolReader
+     * @var Reader
      */
     private $reader;
 
@@ -86,6 +87,13 @@ class Server
         $this->logger->debug('response', (array) $response);
 
         $body = json_encode($response);
+
+        if (false === $body) {
+            throw new RuntimeException(
+                'Could not encode response'
+            );
+        }
+
         $length = mb_strlen($body);
         $io->write("Content-Length:{$length}\r\n\r\n{$body}");
     }

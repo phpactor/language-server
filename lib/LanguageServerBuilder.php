@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer;
 
+use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
@@ -24,7 +25,7 @@ class LanguageServerBuilder
     private $logger;
 
     /**
-     * @var StreamConnection
+     * @var Closure
      */
     private $connection;
 
@@ -50,7 +51,7 @@ class LanguageServerBuilder
         $this->argumentResolver = $argumentResolver;
     }
 
-    public static function create(LoggerInterface $logger, SessionManager $sessionManager = null): self
+    public static function create(LoggerInterface $logger = null, SessionManager $sessionManager = null): self
     {
         return new self(
             $sessionManager ?: new SessionManager(),

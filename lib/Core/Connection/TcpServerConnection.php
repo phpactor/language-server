@@ -32,9 +32,9 @@ class TcpServerConnection implements Connection
         $this->address = $address;
         $this->logger = $logger;
 
-        $this->server = @stream_socket_server('tcp://' . $this->address, $errorNumber, $errorMessage);
+        $server = @stream_socket_server('tcp://' . $this->address, $errorNumber, $errorMessage);
 
-        if ($errorMessage) {
+        if (false === $server || $errorMessage) {
             throw new RuntimeException(sprintf(
                 'Could not create socket at %s: %s',
                 $address,
@@ -42,15 +42,24 @@ class TcpServerConnection implements Connection
             ));
         }
 
+        $this->server = $server;
+
         $this->logger->info(sprintf('Listening on address %s', $this->address));
     }
 
     public function io(): IO
     {
-        $this->socket = @stream_socket_accept($this->server, -1);
+        $socket = @stream_socket_accept($this->server, -1);
+
+        if (false === $socket) {
+            throw new RuntimeException(sprintf(
+                'Could not accept socket'
+            ));
+        }
 
         $this->logger->info('Connection accepted');
-        stream_set_blocking($this->socket, 1);
+        stream_set_blocking($socket, true);
+        $this->socket = $socket;
 
         return new StreamIO($this->socket, $this->socket);
     }
@@ -60,6 +69,7 @@ class TcpServerConnection implements Connection
         $this->logger->debug('Closing socket stream', [
             'address' => $this->address
         ]);
+        fclose($this->socket);
         fclose($this->server);
     }
 

@@ -6,6 +6,7 @@ use Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\IO;
 use Phpactor\LanguageServer\Core\IO\StreamIO;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class StreamConnection implements Connection
 {
@@ -26,8 +27,12 @@ class StreamConnection implements Connection
 
     public function __construct(LoggerInterface $logger, string $inStream = 'php://stdin', string $outStream = 'php://stdout')
     {
-        $this->inStream = fopen($inStream, 'r');
-        $this->outStream = fopen($outStream, 'w');
+        $inStream = fopen($inStream, 'r');
+        $outStream = fopen($outStream, 'w');
+
+        $this->validateStream($inStream);
+        $this->validateStream($outStream);
+
         $this->logger = $logger;
 
         $this->logger->info('listening on stdio', [
@@ -53,5 +58,14 @@ class StreamConnection implements Connection
 
     public function reset(): void
     {
+    }
+
+    private function validateStream($stream): void
+    {
+        if (false === $stream) {
+            throw new RuntimeException(sprintf(
+                'Could not open stream'
+            ));
+        }
     }
 }
