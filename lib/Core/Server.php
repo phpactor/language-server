@@ -8,8 +8,6 @@ use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Psr\Log\LoggerInterface;
-use Phpactor\LanguageServer\Core\IO;
-use Phpactor\LanguageServer\Core\Connection;
 
 class Server
 {

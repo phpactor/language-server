@@ -2,16 +2,12 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
-use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\IO\BufferIO;
-use Symfony\Component\Process\InputStream;
-use Symfony\Component\Process\Process;
-
 class InitializeTest extends AcceptanceTestCase
 {
     public function testInitialize()
     {
-        $this->sendRequest(<<<'EOT'
+        $this->sendRequest(
+            <<<'EOT'
 {                                          
      "jsonrpc": "2.0",                      
      "method": "initialize",                

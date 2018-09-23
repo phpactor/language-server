@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\LanguageServerBuilder;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 

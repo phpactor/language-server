@@ -3,14 +3,9 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Reader;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Connection\SimpleConnection;
 use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\IO\BufferIO;
-use Phpactor\LanguageServer\Core\Dispatcher;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
-use Phpactor\LanguageServer\Core\Server;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
 use Phpactor\LanguageServer\Tests\Unit\Core\TestLogger;
 
 class LanguageServerReaderTest extends TestCase

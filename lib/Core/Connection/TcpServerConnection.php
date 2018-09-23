@@ -36,7 +36,9 @@ class TcpServerConnection implements Connection
 
         if ($errorMessage) {
             throw new RuntimeException(sprintf(
-                'Could not create socket at %s: %s', $address, $errorMessage
+                'Could not create socket at %s: %s',
+                $address,
+                $errorMessage
             ));
         }
 
@@ -55,11 +57,10 @@ class TcpServerConnection implements Connection
 
     public function shutdown()
     {
-        $this->logger->debug('Closing socket stream',[
+        $this->logger->debug('Closing socket stream', [
             'address' => $this->address
         ]);
         fclose($this->server);
-
     }
 
     public function reset(): void

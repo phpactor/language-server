@@ -59,7 +59,8 @@ class LanguageServerProtocolReader implements Reader
         $length = (int) $headers['Content-Length'];
         if ($length < 1) {
             throw new ServerError(sprintf(
-                'Content length must be greater than 0, got: %s', $length
+                'Content length must be greater than 0, got: %s',
+                $length
             ));
         }
 
@@ -87,5 +88,4 @@ class LanguageServerProtocolReader implements Reader
 
         return $parsed;
     }
-
 }

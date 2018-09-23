@@ -6,8 +6,6 @@ use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
-use Phpactor\LanguageServer\Core\LanguageServer;
-use Phpactor\LanguageServer\Core\LanguageServerFactory;
 use Phpactor\LanguageServer\Core\Session;
 use Phpactor\LanguageServer\Core\SessionManager;
 use RuntimeException;
