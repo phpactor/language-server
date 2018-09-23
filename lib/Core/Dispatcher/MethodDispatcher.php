@@ -35,7 +35,6 @@ class MethodDispatcher implements Dispatcher
             '__invoke',
             $request->params
         );
-        var_dump($arguments);
 
         $result = $handler->__invoke(...$arguments);
 

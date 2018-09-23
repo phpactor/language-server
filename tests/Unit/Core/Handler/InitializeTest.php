@@ -9,6 +9,7 @@ use Phpactor\LanguageServer\Core\Handler\Initialize;
 use Phpactor\LanguageServer\Core\LanguageServer;
 use Phpactor\LanguageServer\Core\LanguageServerFactory;
 use Phpactor\LanguageServer\Core\Session;
+use Phpactor\LanguageServer\Core\SessionManager;
 use RuntimeException;
 
 class InitializeTest extends HandlerTestCase
@@ -18,22 +19,9 @@ class InitializeTest extends HandlerTestCase
      */
     private $session;
 
-    /**
-     * @var ObjectProphecy
-     */
-    private $server;
-
-    /**
-     * @var ObjectProphecy
-     */
-    private $serverFactory;
-
     public function setUp()
     {
-        $this->server = $this->prophesize(LanguageServer::class);
-        $this->serverFactory = $this->prophesize(LanguageServerFactory::class);
-        $this->serverFactory->server()->willReturn($this->server->reveal());
-        $this->server->capabilities()->willReturn(new ServerCapabilities());
+        $this->sessionManager = $this->prophesize(SessionManager::class);
         $this->session = $this->prophesize(Session::class);
     }
 
@@ -55,10 +43,11 @@ class InitializeTest extends HandlerTestCase
         $response = $this->dispatch('initialize', [
             'capabilities' => [],
             'initializationOptions' => [],
-            'processId' => '1234',
+            'processId' => 1234,
             'rootPath' => '/home/daniel/foobar',
         ]);
 
+        $this->sessionManager->initialize('/home/daniel/foobar', 1234)->shouldBeCalled();
         $this->assertInstanceOf(InitializeResult::class, $response->result);
     }
 
@@ -75,6 +64,6 @@ class InitializeTest extends HandlerTestCase
 
     public function handler(): Handler
     {
-        return new Initialize($this->session->reveal(), $this->serverFactory->reveal());
+        return new Initialize($this->sessionManager->reveal());
     }
 }
