@@ -3,27 +3,23 @@
 namespace Phpactor\LanguageServer\Core\Handler;
 
 use LanguageServerProtocol\InitializeResult;
+use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\LanguageServerFactory;
 use Phpactor\LanguageServer\Core\Session;
+use Phpactor\LanguageServer\Core\SessionManager;
 use RuntimeException;
 
 class Initialize implements Handler
 {
     /**
-     * @var Session
+     * @var SessionManager
      */
-    private $session;
+    private $sessionManager;
 
-    /**
-     * @var ServerFactory
-     */
-    private $serverFactory;
-
-    public function __construct(Session $session, LanguageServerFactory $serverFactory)
+    public function __construct(SessionManager $sessionManager)
     {
-        $this->session = $session;
-        $this->serverFactory = $serverFactory;
+        $this->sessionManager = $sessionManager;
     }
 
     public function name(): string
@@ -49,9 +45,8 @@ class Initialize implements Handler
             );
         }
 
-        $this->session->initialize($rootUri, $processId);
-        $capabilities = $this->serverFactory->server()->capabilities();
+        $this->sessionManager->initialize($rootUri, $processId);
 
-        return new InitializeResult($capabilities);
+        return new InitializeResult(new ServerCapabilities());
     }
 }

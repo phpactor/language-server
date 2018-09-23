@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\IO;
 use Phpactor\LanguageServer\Core\IO\StreamIO;
+use Psr\Log\LoggerInterface;
 
 class StreamConnection implements Connection
 {
@@ -18,10 +19,21 @@ class StreamConnection implements Connection
      */
     private $outStream;
 
-    public function __construct(string $inStream = 'php://stdin', string $outStream = 'php://stdout')
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger, string $inStream = 'php://stdin', string $outStream = 'php://stdout')
     {
         $this->inStream = fopen($inStream, 'r');
         $this->outStream = fopen($outStream, 'w');
+        $this->logger = $logger;
+
+        $this->logger = $logger->info('listening on stdio', [
+            'in' => $inStream,
+            'out' => $outStream
+        ]);
     }
 
     public function io(): IO
@@ -33,5 +45,9 @@ class StreamConnection implements Connection
     {
         fclose($this->inStream);
         fclose($this->outStream);
+        $this->logger = $logger->info('shutting down streams', [
+            'in' => $inStream,
+            'out' => $outStream
+        ]);
     }
 }

@@ -11,6 +11,15 @@ class Workspace
      */
     private $documents = [];
 
+    private $rootUri;
+
+    private $processId;
+
+    public function __construct(string $rootUri)
+    {
+        $this->rootUri = $rootUri ?: getcwd();
+    }
+
     public function get(string $uri): TextDocumentItem
     {
         if (!isset($this->documents[$uri])) {
@@ -32,5 +41,10 @@ class Workspace
         }
 
         $this->documents[$textDocument->uri]->text = $updatedText;
+    }
+
+    public function initialize(string $rootUri)
+    {
+        $this->rootUri = $rootUri;
     }
 }

@@ -55,6 +55,7 @@ class Server
         $this->logger->info(sprintf('Starting Language Server PID: %s', getmypid()));
 
         while ($io = $this->connection->io()) {
+            $this->logger->info('Accepted connection');
             while (true) {
                 try {
                     $this->dispatch($io);
@@ -73,11 +74,12 @@ class Server
         [ $headers, $body ] = $this->readRequest($io);
         $this->logger->debug('headers', $headers);
         $request = $this->unserializeRequest($body);
-        $this->logger->debug('body', (array) $body);
         $response = $this->dispatcher->dispatch($request);
         $this->logger->debug('response', (array) $response);
 
-        $io->write(json_encode($response));
+        $body = json_encode($response);
+        $length = mb_strlen($body);
+        $io->write("Content-Length:{$length}\r\n\r\n{$body}");
     }
 
     private function readRequest(IO $io)
@@ -159,6 +161,7 @@ class Server
     private function unserializeRequest(string $body)
     {
         $json = json_decode($body, true);
+        $this->logger->debug('body', $json);
 
         if (null === $json) {
             throw new ServerError(sprintf(
@@ -178,6 +181,10 @@ class Server
             ));
         }
 
+        $json = array_merge([
+            'id' => null
+        ], $json);
+
         if ($diff = array_diff($keys, array_keys($json))) {
             throw new ServerError(sprintf(
                 'Request is missing required keys: "%s"',
@@ -185,6 +192,7 @@ class Server
             ));
         }
 
-        return new RequestMessage($json['id'], $json['method'], $json['params']);
+
+        return new RequestMessage((int) $json['id'], $json['method'], $json['params']);
     }
 }
