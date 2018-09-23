@@ -41,7 +41,7 @@ class StreamConnection implements Connection
         return new StreamIO($this->inStream, $this->outStream);
     }
 
-    public function __destruct()
+    public function shutdown()
     {
         fclose($this->inStream);
         fclose($this->outStream);

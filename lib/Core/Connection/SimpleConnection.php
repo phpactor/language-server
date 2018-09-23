@@ -21,4 +21,8 @@ class SimpleConnection implements Connection
     {
         return $this->io;
     }
+
+    public function shutdown()
+    {
+    }
 }

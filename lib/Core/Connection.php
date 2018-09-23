@@ -7,4 +7,6 @@ use Phpactor\LanguageServer\Core\IO;
 interface Connection
 {
     public function io(): IO;
+
+    public function shutdown();
 }

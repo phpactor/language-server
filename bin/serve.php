@@ -25,8 +25,8 @@ $logger = new class extends AbstractLogger {
     private $err;
     public function __construct()
     {
-        //$this->err = fopen('php://stderr', 'w');
-        $this->err = fopen('phpactor-lsp.log', 'w');
+        $this->err = fopen('php://stderr', 'w');
+        //$this->err = fopen('phpactor-lsp.log', 'w');
     }
 
     public function log($level, $message, array $context = [])
@@ -41,8 +41,17 @@ $logger = new class extends AbstractLogger {
     }
 };
 
+$logger->info(<<<'EOT'
+Welcome to the Phpactor Test Language Server!
+
+This language server demonstrates the language server infrastructure, it does
+not provide any functionality.
+
+EOT
+);
+
 $server = LanguageServerBuilder::create($logger)
-    ->stdIoServer()
+    ->tcpServer()
     ->coreHandlers()
     ->build();
 

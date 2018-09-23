@@ -43,10 +43,20 @@ class TcpServerConnection implements Connection
 
     public function io(): IO
     {
-        $socket = stream_socket_accept($this->server, -1);
+        $socket = @stream_socket_accept($this->server, -1);
+
         $this->logger->info('Connection accepted');
         stream_set_blocking($socket, 1);
 
         return new StreamIO($socket, $socket);
+    }
+
+    public function shutdown()
+    {
+        $this->logger->debug('Closing socket stream',[
+            'address' => $this->address
+        ]);
+        fclose($this->server);
+
     }
 }

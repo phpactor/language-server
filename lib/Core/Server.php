@@ -49,9 +49,16 @@ class Server
         $this->cycleLimit = $cycleLimit;
         $this->connection = $connection;
     }
+    public function shutdown()
+    {
+        $this->logger->info('Shutting down...');
+        $this->connection->shutdown();
+        exit(0);
+    }
 
     public function start()
     {
+        $this->registerSignalHandlers();
         $this->logger->info(sprintf('Starting Language Server PID: %s', getmypid()));
 
         while ($io = $this->connection->io()) {
@@ -194,5 +201,12 @@ class Server
 
 
         return new RequestMessage((int) $json['id'], $json['method'], $json['params']);
+    }
+
+    private function registerSignalHandlers()
+    {
+        pcntl_async_signals(true);
+        pcntl_signal(SIGTERM, [$this, 'shutdown']);
+        pcntl_signal(SIGINT, [$this, 'shutdown']);
     }
 }
