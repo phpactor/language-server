@@ -29,6 +29,8 @@ In order to support language server features we create Handlers, for example:
 ```php
 <?php
 
+namespace Phpactor\LanguageServer\Example;
+
 use LanguageServerProtocol\CompletionItem;
 use LanguageServerProtocol\CompletionList;
 use LanguageServerProtocol\Position;
@@ -36,7 +38,7 @@ use LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\SessionManager;
 
-class MyCompletorHandler implements Handler
+class ExampleCompletionHandler implements Handler
 {
     private $sessionManager;
 
@@ -47,12 +49,12 @@ class MyCompletorHandler implements Handler
 
     public function name(): string
     {
-        return 'textDocuemnt/completion';
+        return 'textDocument/completion';
     }
 
-    public function handle(TextDocumentItem $textDocument, Position $position): CompletionList
+    public function __invoke(TextDocumentItem $textDocument, Position $position): CompletionList
     {
-        $textDocument = $this->sessionManager->current()->workspace()->get($textDocuemnt->uri);
+        $textDocument = $this->sessionManager->current()->workspace()->get($textDocument->uri);
         $completionList = new CompletionList();
 
         // ... do whatever we need to do to get the completion information

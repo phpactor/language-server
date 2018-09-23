@@ -14,10 +14,16 @@ class Session
      */
     private $processId;
 
+    /**
+     * @var Workspace
+     */
+    private $workspace;
+
     public function __construct(string $rootUri, int $processId = null)
     {
         $this->rootUri = $rootUri ?: getcwd();
         $this->processId = $processId ?: getmypid();
+        $this->workspace = new Workspace($rootUri);
     }
 
     public function processId(): int
@@ -28,5 +34,10 @@ class Session
     public function rootUri(): string
     {
         return $this->rootUri;
+    }
+
+    public function workspace(): Workspace
+    {
+        return $this->workspace;
     }
 }

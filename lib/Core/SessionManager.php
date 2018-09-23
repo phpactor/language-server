@@ -14,7 +14,7 @@ class SessionManager
         $this->session = new Session($rootUri, $processId);
     }
 
-    public function session(): Session
+    public function current(): Session
     {
         if (!$this->session) {
             throw new RuntimeException(

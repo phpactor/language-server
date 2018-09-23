@@ -25,7 +25,7 @@ class ExampleCompletionHandler implements Handler
 
     public function __invoke(TextDocumentItem $textDocument, Position $position): CompletionList
     {
-        $textDocument = $this->sessionManager->current()->workspace()->get($textDocuemnt->uri);
+        $textDocument = $this->sessionManager->current()->workspace()->get($textDocument->uri);
         $completionList = new CompletionList();
 
         // ... do whatever we need to do to get the completion information
