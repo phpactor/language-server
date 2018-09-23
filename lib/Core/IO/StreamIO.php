@@ -1,12 +1,12 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\ChunkIO;
+namespace Phpactor\LanguageServer\Core\IO;
 
 use Phpactor\LanguageServer\Core\Chunk;
-use Phpactor\LanguageServer\Core\ChunkIO;
+use Phpactor\LanguageServer\Core\IO;
 use RuntimeException;
 
-class StreamIO implements ChunkIO
+class StreamIO implements IO
 {
     private $inStream;
     private $outStream;
@@ -23,7 +23,7 @@ class StreamIO implements ChunkIO
     {
         $contents = fread($this->inStream, $size);
 
-        return new Chunk($contents === false ? null : $contents);
+        return new Chunk($contents === false || '' === $contents ? null : $contents);
     }
 
     public function write(string $string)

@@ -6,6 +6,8 @@ use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
 use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Psr\Log\LoggerInterface;
+use Phpactor\LanguageServer\Core\IO;
+use Phpactor\LanguageServer\Core\Connection;
 
 class Server
 {
@@ -22,11 +24,6 @@ class Server
     private $logger;
 
     /**
-     * @var ChunkIO
-     */
-    private $chunkIO;
-
-    /**
      * @var int
      */
     private $cycleLimit;
@@ -36,49 +33,60 @@ class Server
      */
     private $cycleCount = 0;
 
+    /**
+     * @var Connection
+     */
+    private $connection;
+
     public function __construct(
         LoggerInterface $logger,
         Dispatcher $dispatcher,
-        ChunkIO $chunkIO,
+        Connection $connection,
         ?int $cycleLimit = null
     ) {
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
-        $this->chunkIO = $chunkIO;
         $this->cycleLimit = $cycleLimit;
+        $this->connection = $connection;
     }
 
     public function start()
     {
         $this->logger->info(sprintf('Starting Language Server PID: %s', getmypid()));
-        while (true) {
-            try {
-                $this->dispatch();
-            } catch (ServerError $e) {
-                $this->logger->error($e->getMessage());
-            } catch (IterationLimitReached $e) {
-                $this->logger->info($e->getMessage());
-                break;
+
+        while ($io = $this->connection->io()) {
+            while (true) {
+                try {
+                    $this->dispatch($io);
+                } catch (ServerError $e) {
+                    $this->logger->error($e->getMessage());
+                } catch (IterationLimitReached $e) {
+                    $this->logger->info($e->getMessage());
+                    break 2;
+                }
             }
         }
     }
 
-    private function dispatch()
+    private function dispatch(IO $io)
     {
-        [ $headers, $body ] = $this->readRequest();
+        [ $headers, $body ] = $this->readRequest($io);
+        $this->logger->debug('headers', $headers);
         $request = $this->unserializeRequest($body);
+        $this->logger->debug('body', (array) $body);
         $response = $this->dispatcher->dispatch($request);
+        $this->logger->debug('response', (array) $response);
 
-        $this->chunkIO->write(json_encode($response));
+        $io->write(json_encode($response));
     }
 
-    private function readRequest()
+    private function readRequest(IO $io)
     {
         $rawHeaders = [];
         $buffer = [];
         
         while (true) {
-            $chunk = $this->chunkIO->read(1);
+            $chunk = $io->read(1);
 
             if (false === $chunk->hasContents()) {
                 if (null !== $this->cycleLimit && $this->cycleCount++ == $this->cycleLimit) {
@@ -116,7 +124,14 @@ class Server
             ));
         }
 
-        $body = $this->chunkIO->read($headers['Content-Length']);
+        $length = (int) $headers['Content-Length'];
+        if ($length < 1) {
+            throw new ServerError(sprintf(
+                'Content length must be greater than 0, got: %s', $length
+            ));
+        }
+
+        $body = $io->read($length);
 
         if (false === $body->hasContents()) {
             throw new ServerError('No contents read from stream');
@@ -128,10 +143,10 @@ class Server
     private function parseHeaders(array $rawHeaders): array
     {
         $parsed = [];
-        foreach ($rawHeaders as $keyValue) {
-            $keyValue = explode(':', $keyValue);
+        foreach ($rawHeaders as $rawHeader) {
+            $keyValue = explode(':', $rawHeader);
             if (count($keyValue) != 2) {
-                $this->logger->warning(sprintf('Invalid header "%s"', $keyValue));
+                $this->logger->warning(sprintf('Invalid header "%s"', $rawHeader));
                 continue;
             }
 

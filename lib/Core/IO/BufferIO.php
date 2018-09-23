@@ -1,11 +1,11 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\ChunkIO;
+namespace Phpactor\LanguageServer\Core\IO;
 
 use Phpactor\LanguageServer\Core\Chunk;
-use Phpactor\LanguageServer\Core\ChunkIO;
+use Phpactor\LanguageServer\Core\IO;
 
-class BufferIO implements ChunkIO
+class BufferIO implements IO
 {
     private $buffer = [];
     private $index = 0;

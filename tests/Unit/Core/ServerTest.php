@@ -3,7 +3,8 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\ChunkIO\BufferIO;
+use Phpactor\LanguageServer\Core\Connection\SimpleConnection;
+use Phpactor\LanguageServer\Core\IO\BufferIO;
 use Phpactor\LanguageServer\Core\Dispatcher;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
@@ -21,7 +22,7 @@ class ServerTest extends TestCase
     /**
      * @var BufferIO
      */
-    private $reader;
+    private $io;
 
     /**
      * @var Server
@@ -32,11 +33,11 @@ class ServerTest extends TestCase
     {
         $this->dispatcher = $this->prophesize(Dispatcher::class);
         $this->logger = new TestLogger();
-        $this->reader = new BufferIO();
+        $this->io = new BufferIO();
         $this->server = new Server(
             $this->logger,
             $this->dispatcher->reveal(),
-            $this->reader,
+            new SimpleConnection($this->io),
             1
         );
     }
@@ -52,7 +53,7 @@ class ServerTest extends TestCase
     "params": {}
  }
 EOT;
-        $this->reader->add($payload);
+        $this->io->add($payload);
         $this->server->start();
         $this->assertLogMessage('[error] No valid Content-Length header provided in raw headers');
     }
@@ -72,10 +73,10 @@ EOT;
 EOT;
         $response = new ResponseMessage(2, new \stdClass());
         $this->dispatcher->dispatch(new RequestMessage(1, 'test', []))->willReturn($response);
-        $this->reader->add($payload);
+        $this->io->add($payload);
 
         $this->server->start();
-        $response = $this->reader->out();
+        $response = $this->io->out();
         $this->assertEquals('{"id":2,"result":{},"responseError":null,"jsonRpc":"2.0"}', $response);
     }
 
