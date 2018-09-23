@@ -30,7 +30,7 @@ class StreamConnection implements Connection
         $this->outStream = fopen($outStream, 'w');
         $this->logger = $logger;
 
-        $this->logger = $logger->info('listening on stdio', [
+        $this->logger->info('listening on stdio', [
             'in' => $inStream,
             'out' => $outStream
         ]);
@@ -43,11 +43,11 @@ class StreamConnection implements Connection
 
     public function shutdown()
     {
+        $this->logger->info('shutting down streams', [
+            'in' => $this->inStream,
+            'out' => $this->outStream
+        ]);
         fclose($this->inStream);
         fclose($this->outStream);
-        $this->logger = $logger->info('shutting down streams', [
-            'in' => $inStream,
-            'out' => $outStream
-        ]);
     }
 }

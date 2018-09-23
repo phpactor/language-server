@@ -20,9 +20,10 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $options = [
     'type' => 'tcp',
+    'address' => '127.0.0.1:8888',
 ];
 
-$options = array_merge($options, getopt('t::', ['type::']));
+$options = array_merge($options, getopt('t::a::', ['type::', 'address::']));
 
 $in = fopen('php://stdin', 'r');
 $out = fopen('php://stdout', 'w');
@@ -61,7 +62,7 @@ $builder = LanguageServerBuilder::create($logger, $sessionManager);
 
 switch ($options['type']) {
     case 'tcp':
-        $builder->tcpServer();
+        $builder->tcpServer($options['address']);
         break;
     case 'stdio':
         $builder->stdIoServer();

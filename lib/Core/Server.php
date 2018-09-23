@@ -96,20 +96,6 @@ class Server
         
         while (true) {
             $chunk = $io->read(1);
-
-            if (false === $chunk->hasContents()) {
-                if (null !== $this->cycleLimit && $this->cycleCount++ == $this->cycleLimit) {
-                    throw new IterationLimitReached(sprintf(
-                        'Iteration limit of "%s" reached for server',
-                        $this->cycleLimit
-                    ));
-                }
-
-                $buffer = [];
-                usleep(self::SLEEP_INTERVAL_MICROSECONDS);
-                continue;
-            }
-
             $buffer[] = $chunk->contents();
 
             if (count($buffer) >= 2 && array_slice($buffer, -2, 2) == [ "\r", "\n" ]) {
@@ -168,7 +154,6 @@ class Server
     private function unserializeRequest(string $body)
     {
         $json = json_decode($body, true);
-        $this->logger->debug('body', $json);
 
         if (null === $json) {
             throw new ServerError(sprintf(
@@ -177,6 +162,8 @@ class Server
                 json_last_error_msg()
             ));
         }
+
+        $this->logger->debug('body', $json);
 
         $keys = [ 'jsonrpc', 'id', 'method', 'params' ];
 
