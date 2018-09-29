@@ -54,12 +54,12 @@ class MethodDispatcher implements Dispatcher
             ));
         }
 
-        foreach ($messages as $response) {
-            if ($response instanceof Message) {
-                yield $response;
+        foreach ($messages as $message) {
+            if ($message instanceof Message) {
+                yield $message;
                 continue;
             }
-            yield new ResponseMessage($request->id, $response);
+            yield new ResponseMessage($request->id, $message);
         }
     }
 }

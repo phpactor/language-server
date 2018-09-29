@@ -2,6 +2,9 @@
 
 namespace Phpactor\LanguageServer\Core\Session;
 
+use DateInterval;
+use DateTimeImmutable;
+
 class Session
 {
     /**
@@ -19,11 +22,17 @@ class Session
      */
     private $workspace;
 
+    /**
+     * @var DateTimeImmutable
+     */
+    private $created;
+
     public function __construct(string $rootUri, int $processId = null)
     {
         $this->rootUri = $rootUri;
         $this->processId = $processId;
         $this->workspace = new Workspace($rootUri);
+        $this->created = new DateTimeImmutable();
     }
 
     public function processId(): ?int
@@ -39,5 +48,10 @@ class Session
     public function workspace(): Workspace
     {
         return $this->workspace;
+    }
+
+    public function uptime(): DateInterval
+    {
+        return $this->created->diff(new DateTimeImmutable());
     }
 }

@@ -26,8 +26,12 @@ class DidChange implements Handler
     }
 
 
-    public function __invoke(VersionedTextDocumentIdentifier $textDocument, TextDocumentContentChangeEvent $contentChanges)
+    public function __invoke(VersionedTextDocumentIdentifier $textDocument, array $contentChanges)
     {
-        $this->sessionManager->current()->workspace()->update($textDocument->uri, $contentChanges->text);
+        foreach ($contentChanges as $contentChange) {
+            $contentChange = (array) $contentChange;
+
+            $this->sessionManager->current()->workspace()->update($textDocument, $contentChange['text']);
+        }
     }
 }

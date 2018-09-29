@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Session;
 
 use LanguageServerProtocol\TextDocumentItem;
+use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 
 class Workspace
@@ -35,13 +36,19 @@ class Workspace
         $this->documents[$textDocument->uri] = $textDocument;
     }
 
-    public function update(TextDocumentItem $textDocument, $updatedText)
+    public function update(VersionedTextDocumentIdentifier $textDocument, $updatedText)
+
     {
         if (!isset($this->documents[$textDocument->uri])) {
             throw new UnknownDocument($textDocument->uri);
         }
 
         $this->documents[$textDocument->uri]->text = $updatedText;
+    }
+
+    public function openFiles(): int
+    {
+        return count($this->documents);
     }
 
     public function initialize(string $rootUri)
