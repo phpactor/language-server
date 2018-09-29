@@ -7,7 +7,9 @@ use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
 use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolWriter;
+use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
+use Phpactor\LanguageServer\Core\Transport\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
@@ -40,6 +42,16 @@ class Server
      */
     private $writer;
 
+    /**
+     * @var JsonSerializer
+     */
+    private $serializer;
+
+    /**
+     * @var RequestMessageFactory
+     */
+    private $messageFactory;
+
     public function __construct(
         LoggerInterface $logger,
         Dispatcher $dispatcher,
@@ -52,6 +64,8 @@ class Server
         $this->connection = $connection;
         $this->reader = $reader ?: new LanguageServerProtocolReader($logger);
         $this->writer = $writer ?: new LanguageServerProtocolWriter($logger);
+        $this->serializer = new JsonSerializer();
+        $this->messageFactory = new RequestMessageFactory();
     }
 
     public function shutdown()
@@ -90,59 +104,14 @@ class Server
     private function dispatch(IO $io)
     {
         $request = $this->reader->readRequest($io);
-        $request = $this->unserializeRequest($request->body());
+        $request = $this->serializer->deserialize($request->body());
+        $request = $this->messageFactory->requestMessageFromArray($request);
+
         $response = $this->dispatcher->dispatch($request);
 
         $this->logger->debug('response', (array) $response);
 
-        $body = json_encode($response);
-
-        if (false === $body) {
-            throw new RuntimeException(
-                'Could not encode response'
-            );
-        }
-
-        $this->writer->writeResponse($io, $body);
-    }
-
-    private function unserializeRequest(string $body)
-    {
-        $json = json_decode($body, true);
-
-        if (null === $json) {
-            throw new ServerError(sprintf(
-                'Could not decode JSON "%s" - "%s"',
-                $body,
-                json_last_error_msg()
-            ));
-        }
-
-        $this->logger->debug('body', $json);
-
-        $keys = [ 'jsonrpc', 'id', 'method', 'params' ];
-
-        if ($diff = array_diff(array_keys($json), $keys)) {
-            throw new ServerError(sprintf(
-                'Request has invalid keys: "%s", valid keys: "%s"',
-                implode(', ', $diff),
-                implode(', ', $keys)
-            ));
-        }
-
-        $json = array_merge([
-            'id' => null
-        ], $json);
-
-        if ($diff = array_diff($keys, array_keys($json))) {
-            throw new ServerError(sprintf(
-                'Request is missing required keys: "%s"',
-                implode(', ', $diff)
-            ));
-        }
-
-
-        return new RequestMessage((int) $json['id'], $json['method'], $json['params']);
+        $this->writer->writeResponse($io, $this->serializer->serialize((array) $response));
     }
 
     private function registerSignalHandlers()
