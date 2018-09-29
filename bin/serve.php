@@ -69,6 +69,7 @@ switch ($options['type']) {
         exit(255);
 }
 
+$builder->recordTo('recording.log');
 $builder->coreHandlers();
 $builder->addHandler(new ExampleCompletionHandler($sessionManager));
 $server = $builder->build();

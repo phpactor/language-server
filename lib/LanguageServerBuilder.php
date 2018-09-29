@@ -16,6 +16,8 @@ use Phpactor\LanguageServer\Core\Handler\Shutdown;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\DidChange;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\DidOpen;
 use Phpactor\LanguageServer\Core\Handlers;
+use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
+use Phpactor\LanguageServer\Core\Reader\RecordingReader;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Psr\Log\LoggerInterface;
@@ -47,6 +49,11 @@ class LanguageServerBuilder
      * @var ArgumentResolver
      */
     private $argumentResolver;
+
+    /**
+     * @var string
+     */
+    private $recordPath;
 
     private function __construct(Manager $sessionManager, ArgumentResolver $argumentResolver, LoggerInterface $logger)
     {
@@ -102,6 +109,11 @@ class LanguageServerBuilder
         return $this;
     }
 
+    public function recordTo(string $path)
+    {
+        $this->recordPath = $path;
+    }
+
     public function build(): Server
     {
         $dispatcher = new MethodDispatcher($this->argumentResolver, new Handlers($this->handlers));
@@ -112,6 +124,13 @@ class LanguageServerBuilder
 
         $connectionFactory = $this->connection;
 
-        return new Server($this->logger, $dispatcher, $connectionFactory());
+        $reader = new LanguageServerProtocolReader($this->logger);
+        if ($this->recordPath) {
+            $reader = new RecordingReader(
+                $reader, $this->recordPath
+            );
+        }
+
+        return new Server($this->logger, $dispatcher, $connectionFactory(), $reader);
     }
 }
