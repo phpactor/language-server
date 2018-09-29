@@ -36,7 +36,9 @@ class MethodDispatcherTest extends TestCase
         ])->willReturn([ 'one', 'two' ]);
 
         $expectedResult = new stdClass();
-        $this->handler->__invoke('one', 'two')->will(function() use ($expectedResult) { yield $expectedResult; });
+        $this->handler->__invoke('one', 'two')->will(function () use ($expectedResult) {
+            yield $expectedResult;
+        });
 
         $messages = $dispatcher->dispatch(new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
 

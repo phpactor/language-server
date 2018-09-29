@@ -9,7 +9,6 @@ use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use RuntimeException;
 
 class Initialize implements Handler

@@ -3,11 +3,9 @@
 namespace Phpactor\LanguageServer\Core\Handler;
 
 use Generator;
-use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 
 class ExitServer implements Handler
 {

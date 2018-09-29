@@ -8,7 +8,6 @@ use Phpactor\LanguageServer\Core\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\ExitServer;
 use Phpactor\LanguageServer\Core\Handler\Initialize;

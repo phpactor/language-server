@@ -2,14 +2,12 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
-use Generator;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
 
 abstract class HandlerTestCase extends TestCase
 {
