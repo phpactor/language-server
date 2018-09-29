@@ -55,33 +55,29 @@ class LanguageServerProtocolReader implements Reader
 
     private function readHeaders(IO $io)
     {
-            $rawHeaders = [];
-            $buffer = [];
-            
-            while (true) {
-                $chunk = $io->read(1);
-        
-                if (!$chunk->hasContents()) {
-                    throw new ResetConnection('Input did not return anything');
+        $rawHeaders = [];
+        $buffer = [];
+
+        while (true) {
+            $chunk = $io->read(1);
+
+            $buffer[] = $chunk->contents();
+
+            if (count($buffer) >= 2 && array_slice($buffer, -2, 2) == [ "\r", "\n" ]) {
+                $header = trim(implode('', array_slice($buffer, 0, -2)));
+
+                if (!$header) {
+                    break;
                 }
-        
-                $buffer[] = $chunk->contents();
-        
-                if (count($buffer) >= 2 && array_slice($buffer, -2, 2) == [ "\r", "\n" ]) {
-                    $header = trim(implode('', array_slice($buffer, 0, -2)));
-        
-                    if (!$header) {
-                        break;
-                    }
-        
-                    $buffer = [];
-                    $rawHeaders[] = $header;
-                }
+
+                $buffer = [];
+                $rawHeaders[] = $header;
             }
-        
-            $headers = $this->parseHeaders($rawHeaders);
-        
-            $this->logger->debug('headers', $headers);
+        }
+
+        $headers = $this->parseHeaders($rawHeaders);
+
+        $this->logger->debug('headers', $headers);
         return $headers;
     }
 
@@ -93,9 +89,9 @@ class LanguageServerProtocolReader implements Reader
                 implode(', ', array_keys($headers))
             ));
         }
-        
+
         $length = (int) $headers[self::HEADER_CONTENT_LENGTH];
-        
+
         if ($length < 1) {
             throw new RequestError(sprintf(
                 'Content length must be greater than 0, got: %s',

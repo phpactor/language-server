@@ -8,6 +8,8 @@ use RuntimeException;
 
 class StreamIO implements IO
 {
+    const SLEEP_TIME = 100000;
+
     private $inStream;
     private $outStream;
 
@@ -21,7 +23,9 @@ class StreamIO implements IO
 
     public function read(int $size): Chunk
     {
-        $contents = fread($this->inStream, $size);
+        while ('' === $contents = fread($this->inStream, $size)) {
+            usleep(self::SLEEP_TIME);
+        }
 
         return new Chunk($contents === false || '' === $contents ? null : $contents);
     }
