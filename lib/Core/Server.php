@@ -70,7 +70,7 @@ class Server
 
     public function shutdown()
     {
-        $this->logger->info('Shutting down...');
+        $this->logger->info('shutting down...');
         $this->connection->shutdown();
         exit(0);
     }
@@ -78,10 +78,10 @@ class Server
     public function start()
     {
         $this->registerSignalHandlers();
-        $this->logger->info(sprintf('Starting Language Server PID: %s', getmypid()));
+        $this->logger->info(sprintf('starting language server with pid: %s', getmypid()));
 
         while ($io = $this->connection->io()) {
-            $this->logger->info('Accepted connection');
+            $this->logger->info('accepted connection');
 
             while (true) {
                 try {
@@ -93,7 +93,7 @@ class Server
                     break 2;
                 } catch (ResetConnection $e) {
                     $this->logger->debug($e->getMessage());
-                    $this->logger->info('Resetting connection...');
+                    $this->logger->info('resetting connection...');
                     $this->connection->reset();
                     break 1;
                 }

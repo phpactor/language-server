@@ -4,8 +4,8 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core;
 
 use LanguageServerProtocol\TextDocumentItem;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\UnknownDocument;
-use Phpactor\LanguageServer\Core\Workspace;
+use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
+use Phpactor\LanguageServer\Core\Session\Workspace;
 
 class WorkspaceTest extends TestCase
 {

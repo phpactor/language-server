@@ -1,8 +1,9 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core;
+namespace Phpactor\LanguageServer\Core\Session;
 
 use LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 
 class Workspace
 {

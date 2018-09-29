@@ -39,7 +39,7 @@ class LanguageServerProtocolReader implements Reader
         foreach ($rawHeaders as $rawHeader) {
             $keyValue = explode(':', $rawHeader);
             if (count($keyValue) != 2) {
-                $this->logger->warning(sprintf('Invalid header "%s"', $rawHeader));
+                $this->logger->warning(sprintf('invalid header "%s"', $rawHeader));
                 continue;
             }
 

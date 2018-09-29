@@ -6,8 +6,8 @@ use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
-use Phpactor\LanguageServer\Core\Session;
-use Phpactor\LanguageServer\Core\SessionManager;
+use Phpactor\LanguageServer\Core\Session\Session;
+use Phpactor\LanguageServer\Core\Session\Manager;
 use RuntimeException;
 
 class InitializeTest extends HandlerTestCase
@@ -19,7 +19,7 @@ class InitializeTest extends HandlerTestCase
 
     public function setUp()
     {
-        $this->sessionManager = $this->prophesize(SessionManager::class);
+        $this->sessionManager = $this->prophesize(Manager::class);
         $this->session = $this->prophesize(Session::class);
     }
 

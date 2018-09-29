@@ -44,7 +44,7 @@ class TcpServerConnection implements Connection
 
         $this->server = $server;
 
-        $this->logger->info(sprintf('Listening on address %s', $this->address));
+        $this->logger->info(sprintf('listening on address %s', $this->address));
     }
 
     public function io(): IO
@@ -53,11 +53,11 @@ class TcpServerConnection implements Connection
 
         if (false === $socket) {
             throw new RuntimeException(sprintf(
-                'Could not accept socket'
+                'could not accept socket'
             ));
         }
 
-        $this->logger->info('Connection accepted');
+        $this->logger->info('connection accepted');
         stream_set_blocking($socket, true);
         $this->socket = $socket;
 
@@ -66,7 +66,7 @@ class TcpServerConnection implements Connection
 
     public function shutdown()
     {
-        $this->logger->debug('Closing socket stream', [
+        $this->logger->debug('closing socket stream', [
             'address' => $this->address
         ]);
         fclose($this->socket);

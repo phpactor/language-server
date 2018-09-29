@@ -14,7 +14,7 @@ use Phpactor\LanguageServer\Core\Handler\ExitServer;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Server;
-use Phpactor\LanguageServer\Core\SessionManager;
+use Phpactor\LanguageServer\Core\Session\Manager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -45,17 +45,17 @@ class LanguageServerBuilder
      */
     private $argumentResolver;
 
-    private function __construct(SessionManager $sessionManager, ArgumentResolver $argumentResolver, LoggerInterface $logger)
+    private function __construct(Manager $sessionManager, ArgumentResolver $argumentResolver, LoggerInterface $logger)
     {
         $this->sessionManager = $sessionManager;
         $this->logger = $logger;
         $this->argumentResolver = $argumentResolver;
     }
 
-    public static function create(LoggerInterface $logger = null, SessionManager $sessionManager = null): self
+    public static function create(LoggerInterface $logger = null, Manager $sessionManager = null): self
     {
         return new self(
-            $sessionManager ?: new SessionManager(),
+            $sessionManager ?: new Manager(),
             new DTLArgumentResolver(),
             $logger ?: new NullLogger()
         );

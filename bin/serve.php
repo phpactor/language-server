@@ -12,7 +12,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Server;
-use Phpactor\LanguageServer\Core\SessionManager;
+use Phpactor\LanguageServer\Core\Session\Manager;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\AbstractLogger;
 
@@ -57,7 +57,7 @@ not provide any functionality.
 EOT
 );
 
-$sessionManager = new SessionManager();
+$sessionManager = new Manager();
 $builder = LanguageServerBuilder::create($logger, $sessionManager);
 
 switch ($options['type']) {

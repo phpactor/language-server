@@ -7,13 +7,13 @@ use LanguageServerProtocol\CompletionList;
 use LanguageServerProtocol\Position;
 use LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\SessionManager;
+use Phpactor\LanguageServer\Core\Session\Manager;
 
 class ExampleCompletionHandler implements Handler
 {
     private $sessionManager;
 
-    public function __construct(SessionManager $sessionManager)
+    public function __construct(Manager $sessionManager)
     {
         $this->sessionManager = $sessionManager;
     }

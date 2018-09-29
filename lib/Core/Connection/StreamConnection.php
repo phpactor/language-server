@@ -39,17 +39,17 @@ class StreamConnection implements Connection
     {
         $this->logger = $logger;
 
-        $this->logger->info('listening on stdio', [
-            'in' => $inStream,
-            'out' => $outStream
-        ]);
-
         $this->inStreamName = $inStream;
         $this->outStreamName = $outStream;
     }
 
     public function io(): IO
     {
+        $this->logger->info('listening on stdio', [
+            'in' => $inStream,
+            'out' => $outStream
+        ]);
+
         $this->inStream = fopen($this->inStreamName, 'r');
         $this->outStream = fopen($this->outStreamName, 'w');
 
@@ -61,7 +61,7 @@ class StreamConnection implements Connection
 
     public function shutdown()
     {
-        $this->logger->info('shutting down streams', [
+        $this->logger->info('closing streams', [
             'in' => $this->inStreamName,
             'out' => $this->outStreamName
         ]);

@@ -1,10 +1,10 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core;
+namespace Phpactor\LanguageServer\Core\Session;
 
 use RuntimeException;
 
-class SessionManager
+class Manager
 {
     /**
      * @var Session|null
