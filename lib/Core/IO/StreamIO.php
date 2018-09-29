@@ -21,13 +21,13 @@ class StreamIO implements IO
         $this->outStream = $outStream;
     }
 
-    public function read(int $size): Chunk
+    public function read(int $size): string
     {
         while ('' === $contents = fread($this->inStream, $size)) {
             usleep(self::SLEEP_TIME);
         }
 
-        return new Chunk($contents === false || '' === $contents ? null : $contents);
+        return $contents;
     }
 
     public function write(string $string)

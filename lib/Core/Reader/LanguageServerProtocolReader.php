@@ -30,11 +30,7 @@ class LanguageServerProtocolReader implements Reader
 
         $body = $io->read($length);
 
-        if (false === $body->hasContents()) {
-            throw new ResetConnection('No contents read from stream');
-        }
-
-        return new Request($headers, $body->contents());
+        return new Request($headers, $body);
     }
 
     private function parseHeaders(array $rawHeaders): array
@@ -59,9 +55,9 @@ class LanguageServerProtocolReader implements Reader
         $buffer = [];
 
         while (true) {
-            $chunk = $io->read(1);
+            $contents = $io->read(1);
 
-            $buffer[] = $chunk->contents();
+            $buffer[] = $contents;
 
             if (count($buffer) >= 2 && array_slice($buffer, -2, 2) == [ "\r", "\n" ]) {
                 $header = trim(implode('', array_slice($buffer, 0, -2)));

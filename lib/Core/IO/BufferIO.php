@@ -16,7 +16,7 @@ class BufferIO implements IO
         $this->buffer += str_split($text);
     }
 
-    public function read(int $size): Chunk
+    public function read(int $size): string
     {
         if (empty($this->buffer)) {
             return new Chunk();
@@ -27,7 +27,7 @@ class BufferIO implements IO
             $buffer[] = array_shift($this->buffer);
         }
 
-        return new Chunk(implode('', $buffer));
+        return implode('', $buffer);
     }
 
     public function write(string $string)
