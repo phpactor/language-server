@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Session;
 
+use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
@@ -53,5 +54,14 @@ class Workspace
     public function initialize(string $rootUri)
     {
         $this->rootUri = $rootUri;
+    }
+
+    public function remove(TextDocumentIdentifier $textDocument)
+    {
+        if (!isset($this->documents[$textDocument->uri])) {
+            return;
+        }
+
+        unset($this->documents[$textDocument->uri]);
     }
 }

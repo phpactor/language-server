@@ -27,7 +27,7 @@ class StreamIO implements IO
             usleep(self::SLEEP_TIME);
         }
 
-        $$contents = $this->readAnyRemainingBytes($contents, $size);
+        $contents = $this->readAnyRemainingBytes($contents, $size);
 
         if (false === $contents) {
             throw new RequestError(

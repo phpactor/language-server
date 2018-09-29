@@ -11,10 +11,15 @@ use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\ExitServer;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
+use Phpactor\LanguageServer\Core\Handler\Initialized;
 use Phpactor\LanguageServer\Core\Handler\Session\Status;
 use Phpactor\LanguageServer\Core\Handler\Shutdown;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\DidChange;
+use Phpactor\LanguageServer\Core\Handler\TextDocument\DidClose;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\DidOpen;
+use Phpactor\LanguageServer\Core\Handler\TextDocument\DidSave;
+use Phpactor\LanguageServer\Core\Handler\TextDocument\WillSave;
+use Phpactor\LanguageServer\Core\Handler\TextDocument\WillSaveWaitUntil;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
 use Phpactor\LanguageServer\Core\Reader\RecordingReader;
@@ -99,11 +104,17 @@ class LanguageServerBuilder
     public function coreHandlers(): self
     {
         $this->handlers[] = new Initialize($this->sessionManager);
+        $this->handlers[] = new Initialized();
         $this->handlers[] = new ExitServer();
         $this->handlers[] = new Shutdown();
 
         $this->handlers[] = new DidOpen($this->sessionManager);
         $this->handlers[] = new DidChange($this->sessionManager);
+        $this->handlers[] = new DidClose($this->sessionManager);
+        $this->handlers[] = new DidSave();
+        $this->handlers[] = new WillSave();
+        $this->handlers[] = new WillSaveWaitUntil();
+
         $this->handlers[] = new Status($this->sessionManager);
 
         return $this;
