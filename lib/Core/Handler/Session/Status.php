@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Handler\Server;
+namespace Phpactor\LanguageServer\Core\Handler\Session;
 
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler;
@@ -23,7 +23,7 @@ class Status implements Handler
 
     public function name(): string
     {
-        return 'server/status';
+        return 'session/status';
     }
 
     public function __invoke(string $buftype, string $languageId)

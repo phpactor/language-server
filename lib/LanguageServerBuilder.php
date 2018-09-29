@@ -11,7 +11,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\ExitServer;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
-use Phpactor\LanguageServer\Core\Handler\Server\Status;
+use Phpactor\LanguageServer\Core\Handler\Session\Status;
 use Phpactor\LanguageServer\Core\Handler\Shutdown;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\DidChange;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\DidOpen;
