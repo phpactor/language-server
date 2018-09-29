@@ -8,10 +8,8 @@ use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 
 class Server
 {

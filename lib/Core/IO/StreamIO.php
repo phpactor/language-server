@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\IO;
 
-use Phpactor\LanguageServer\Core\Chunk;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\IO;
 use RuntimeException;

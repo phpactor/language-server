@@ -2,11 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Reader;
 
-use Phpactor\LanguageServer\Core\Exception\ResetConnection;
-use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\IO;
-use Phpactor\LanguageServer\Core\Reader;
-use Phpactor\LanguageServer\Core\Transport\Request;
 use Phpactor\LanguageServer\Core\Writer;
 use Psr\Log\LoggerInterface;
 
@@ -27,5 +23,4 @@ class LanguageServerProtocolWriter implements Writer
         $length = mb_strlen($response);
         $io->write("Content-Length:{$length}\r\n\r\n{$response}");
     }
-
 }

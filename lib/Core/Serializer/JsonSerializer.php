@@ -28,7 +28,9 @@ class JsonSerializer implements Serializer, Deserializer
 
         if (json_last_error()) {
             throw new RequestError(sprintf(
-                'Could not decode JSON string "%s", got error "%s"', $payload, json_last_error_msg()
+                'Could not decode JSON string "%s", got error "%s"',
+                $payload,
+                json_last_error_msg()
             ));
         }
 
