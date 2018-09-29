@@ -27,6 +27,13 @@ class StreamIO implements IO
             usleep(self::SLEEP_TIME);
         }
 
+        $remaining = $size - strlen($contents);
+
+        while ($remaining) {
+            $contents .= fread($this->inStream, $remaining);
+            $remaining = $size - strlen($contents);
+        }
+
         if (false === $contents) {
             throw new RequestError(
                 'Could not read from stream'

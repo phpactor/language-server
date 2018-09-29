@@ -27,13 +27,8 @@ class LanguageServerProtocolReader implements Reader
     {
         $headers = $this->readHeaders($io);
         $length = $this->getLengthFromHeaders($headers);
-        $readLength = 0;
-        $body = '';
 
-        while ($readLength < $length) {
-            $body .= $io->read($length - $readLength);
-            $readLength = strlen($body);
-        }
+        $body = $io->read($length);
 
         if (strlen($body) !== $length) {
             throw new RuntimeException(sprintf(
