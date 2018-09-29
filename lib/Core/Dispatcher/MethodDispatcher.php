@@ -41,6 +41,10 @@ class MethodDispatcher implements Dispatcher
 
         $messages = $handler->__invoke(...$arguments);
 
+        if (null === $messages) {
+            return;
+        }
+
         if (!$messages instanceof Generator) {
             throw new RuntimeException(sprintf(
                 '%s handler "%s" did not return a generator, it returned a: %s',

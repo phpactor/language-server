@@ -12,6 +12,7 @@ use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\ExitServer;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
 use Phpactor\LanguageServer\Core\Handler\Shutdown;
+use Phpactor\LanguageServer\Core\Handler\TextDocument\DidOpen;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Session\Manager;
@@ -91,6 +92,8 @@ class LanguageServerBuilder
         $this->handlers[] = new Initialize($this->sessionManager);
         $this->handlers[] = new ExitServer();
         $this->handlers[] = new Shutdown();
+
+        $this->handlers[] = new DidOpen();
 
         return $this;
     }
