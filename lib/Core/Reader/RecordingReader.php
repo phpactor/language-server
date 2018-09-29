@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Core\Reader;
 use Phpactor\LanguageServer\Core\IO;
 use Phpactor\LanguageServer\Core\Reader;
 use Phpactor\LanguageServer\Core\Transport\Request;
+use RuntimeException;
 
 class RecordingReader implements Reader
 {
@@ -14,14 +15,23 @@ class RecordingReader implements Reader
     private $innerReader;
 
     /**
-     * @var bool
+     * @var resource
      */
     private $recordStream;
 
     public function __construct(Reader $innerReader, string $recordPath)
     {
         $this->innerReader = $innerReader;
-        $this->recordStream = fopen($recordPath, 'w');
+        $stream = fopen($recordPath, 'w');
+
+        if (false === $stream) {
+            throw new RuntimeException(sprintf(
+                'Could not open stream "%s"',
+                $recordPath
+            ));
+        }
+
+        $this->recordStream = $stream;
     }
 
     public function readRequest(IO $io): Request

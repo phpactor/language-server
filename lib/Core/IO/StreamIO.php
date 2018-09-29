@@ -27,13 +27,13 @@ class StreamIO implements IO
             usleep(self::SLEEP_TIME);
         }
 
-        $contents = $this->readAnyRemainingBytes($contents, $size);
-
         if (false === $contents) {
             throw new RequestError(
                 'Could not read from stream'
             );
         }
+
+        $contents = $this->readAnyRemainingBytes($contents, $size);
 
         return $contents;
     }

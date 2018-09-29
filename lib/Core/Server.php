@@ -36,7 +36,7 @@ class Server
     private $reader;
 
     /**
-     * @var LanguageServerProtocolWriter
+     * @var Writer
      */
     private $writer;
 

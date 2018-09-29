@@ -138,7 +138,8 @@ class LanguageServerBuilder
         $reader = new LanguageServerProtocolReader($this->logger);
         if ($this->recordPath) {
             $reader = new RecordingReader(
-                $reader, $this->recordPath
+                $reader,
+                $this->recordPath
             );
         }
 

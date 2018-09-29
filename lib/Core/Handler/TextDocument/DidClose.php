@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Core\Handler\TextDocument;
 
 use LanguageServerProtocol\TextDocumentIdentifier;
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
 

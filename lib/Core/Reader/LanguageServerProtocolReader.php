@@ -32,7 +32,9 @@ class LanguageServerProtocolReader implements Reader
 
         if (strlen($body) !== $length) {
             throw new RuntimeException(sprintf(
-                'Expected to read length "%s" but got "%s"', $length, strlen($body)
+                'Expected to read length "%s" but got "%s"',
+                $length,
+                strlen($body)
             ));
         }
 
