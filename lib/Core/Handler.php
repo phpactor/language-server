@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Core;
 use Generator;
 
 /**
- * @method ?Generator __invoke()
+ * @method Generator|null __invoke()
  */
 interface Handler
 {
