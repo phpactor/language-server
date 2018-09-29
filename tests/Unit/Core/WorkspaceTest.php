@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core;
 
 use LanguageServerProtocol\TextDocumentItem;
+use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 use Phpactor\LanguageServer\Core\Session\Workspace;
@@ -39,20 +40,22 @@ class WorkspaceTest extends TestCase
     {
         $this->expectException(UnknownDocument::class);
 
-        $expectedDocument = new TextDocumentItem();
+        $expectedDocument = new VersionedTextDocumentIdentifier();
         $expectedDocument->uri = 'foobar';
         $this->workspace->update($expectedDocument, 'foobar');
     }
 
     public function testUpdatesDocument()
     {
-        $expectedDocument = new TextDocumentItem();
-        $expectedDocument->uri = 'foobar';
-        $this->workspace->open($expectedDocument);
+        $originalDocument = new TextDocumentItem();
+        $originalDocument->uri = 'foobar';
+        $expectedDocument = new VersionedTextDocumentIdentifier();
+        $expectedDocument->uri = $originalDocument->uri;
+        $this->workspace->open($originalDocument);
         $this->workspace->update($expectedDocument, 'my new text');
         $document = $this->workspace->get('foobar');
 
-        $this->assertSame($expectedDocument, $document);
+        $this->assertEquals($expectedDocument->uri, $document->uri);
         $this->assertEquals('my new text', $document->text);
     }
 }

@@ -30,21 +30,24 @@ $out = fopen('php://stdout', 'w');
 
 $logger = new class extends AbstractLogger {
     private $err;
+    private $log;
     public function __construct()
     {
         $this->err = fopen('php://stderr', 'w');
-        //$this->err = fopen('phpactor-lsp.log', 'w');
+        $this->log = fopen('phpactor-lsp.log', 'w');
     }
 
     public function log($level, $message, array $context = [])
     {
-        fwrite($this->err, json_encode(
+        $message = json_encode(
             [
                 'level' => $level, 
                 'message' => $message, 
                 'context' => $context
             ]
-        ).PHP_EOL);
+        ).PHP_EOL;
+        fwrite($this->err, $message);
+        fwrite($this->log, $message);
     }
 };
 
