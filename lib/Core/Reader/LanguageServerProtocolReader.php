@@ -7,6 +7,7 @@ use Phpactor\LanguageServer\Core\IO;
 use Phpactor\LanguageServer\Core\Reader;
 use Phpactor\LanguageServer\Core\Transport\Request;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class LanguageServerProtocolReader implements Reader
 {
@@ -26,8 +27,20 @@ class LanguageServerProtocolReader implements Reader
     {
         $headers = $this->readHeaders($io);
         $length = $this->getLengthFromHeaders($headers);
+        $readLength = 0;
+        $body = '';
 
-        $body = $io->read($length);
+        while ($readLength < $length) {
+            $body .= $io->read($length - $readLength);
+            $readLength = strlen($body);
+        }
+
+        if (strlen($body) !== $length) {
+            throw new RuntimeException(sprintf(
+                'Expected to read length "%s" but got "%s"', $length, strlen($body)
+            ));
+        }
+
         $this->logger->debug('IN:' . $body);
 
         return new Request($headers, $body);
