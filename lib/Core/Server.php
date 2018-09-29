@@ -104,6 +104,7 @@ class Server
     private function dispatch(IO $io)
     {
         $request = $this->reader->readRequest($io);
+        $this->logger->debug($request->body());
         $request = $this->serializer->deserialize($request->body());
         $request = $this->messageFactory->requestMessageFromArray($request);
 

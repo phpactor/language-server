@@ -10,6 +10,7 @@ use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Handler\ExitServer;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Server;
@@ -88,15 +89,14 @@ class LanguageServerBuilder
     public function coreHandlers(): self
     {
         $this->handlers[] = new Initialize($this->sessionManager);
+        $this->handlers[] = new ExitServer($this->sessionManager);
 
         return $this;
     }
 
     public function build(): Server
     {
-        $dispatcher = new ErrorCatchingDispatcher(
-            new MethodDispatcher($this->argumentResolver, new Handlers($this->handlers))
-        );
+        $dispatcher = new MethodDispatcher($this->argumentResolver, new Handlers($this->handlers));
 
         if (null === $this->connection) {
             $this->stdIoServer();

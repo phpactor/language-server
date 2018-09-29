@@ -43,7 +43,5 @@ class StreamIO implements IO
                 gettype($stream)
             ));
         }
-
-        stream_set_blocking($stream, true);
     }
 }

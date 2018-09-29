@@ -29,6 +29,6 @@ class RequestMessageFactory
             ));
         }
 
-        return new RequestMessage((int) $array['id'], $array['method'], $array['params']);
+        return new RequestMessage((int) $array['id'], $array['method'], $array['params'] ?? []);
     }
 }
