@@ -37,7 +37,6 @@ class Workspace
     }
 
     public function update(VersionedTextDocumentIdentifier $textDocument, $updatedText)
-
     {
         if (!isset($this->documents[$textDocument->uri])) {
             throw new UnknownDocument($textDocument->uri);

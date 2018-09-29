@@ -6,8 +6,6 @@ use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
 
 class Status implements Handler
 {

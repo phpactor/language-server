@@ -2,8 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Handler\TextDocument;
 
-use LanguageServerProtocol\TextDocumentContentChangeEvent;
-use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;

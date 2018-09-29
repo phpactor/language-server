@@ -2,15 +2,11 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler\TextDocument;
 
-use LanguageServerProtocol\ContentChangeEvent;
-use LanguageServerProtocol\TextDocumentContentChangeEvent;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\DidChange;
-use Phpactor\LanguageServer\Core\Handler\TextDocument\DidOpen;
 use Phpactor\LanguageServer\Tests\Unit\Core\Handler\HandlerTestCase;
-use phpDocumentor\Reflection\DocBlock\Tags\Version;
 
 class DidChangeTest extends HandlerTestCase
 {
