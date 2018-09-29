@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\IO;
 
-use Phpactor\LanguageServer\Core\Chunk;
 use Phpactor\LanguageServer\Core\IO;
 
 class BufferIO implements IO
@@ -18,10 +17,6 @@ class BufferIO implements IO
 
     public function read(int $size): string
     {
-        if (empty($this->buffer)) {
-            return new Chunk();
-        }
-
         $buffer = [];
         for ($i = 0; $i < $size; $i++) {
             $buffer[] = array_shift($this->buffer);

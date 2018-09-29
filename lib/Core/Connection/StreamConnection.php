@@ -11,12 +11,12 @@ use RuntimeException;
 class StreamConnection implements Connection
 {
     /**
-     * @var resource
+     * @var string
      */
     private $inStreamName;
 
     /**
-     * @var resource
+     * @var string
      */
     private $outStreamName;
 
@@ -26,12 +26,12 @@ class StreamConnection implements Connection
     private $logger;
 
     /**
-     * @var bool
+     * @var resource
      */
     private $inStream;
 
     /**
-     * @var bool
+     * @var resource
      */
     private $outStream;
 
@@ -45,16 +45,29 @@ class StreamConnection implements Connection
 
     public function io(): IO
     {
-        $this->logger->info('listening on stdio', [
-            'in' => $inStream,
-            'out' => $outStream
+        $this->logger->info('opening streams', [
+            'in' => $this->inStreamName,
+            'out' => $this->outStreamName
         ]);
 
-        $this->inStream = fopen($this->inStreamName, 'r');
-        $this->outStream = fopen($this->outStreamName, 'w');
 
-        $this->validateStream($this->inStream);
-        $this->validateStream($this->outStream);
+        $inStream = fopen($this->inStreamName, 'r');
+        $outStream = fopen($this->outStreamName, 'w');
+
+        if (false === $inStream) {
+            throw new RuntimeException(sprintf(
+                'Could not open stream: ' . $this->inStreamName
+            ));
+        }
+
+        if (false === $outStream) {
+            throw new RuntimeException(sprintf(
+                'Could not open stream: ' . $this->outStreamName
+            ));
+        }
+
+        $this->inStream = $inStream;
+        $this->outStream = $outStream;
 
         return new StreamIO($this->inStream, $this->outStream);
     }
@@ -76,10 +89,5 @@ class StreamConnection implements Connection
 
     private function validateStream($stream): void
     {
-        if (null === $stream || false === $stream) {
-            throw new RuntimeException(sprintf(
-                'Could not open stream'
-            ));
-        }
     }
 }

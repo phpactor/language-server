@@ -11,7 +11,7 @@ use RuntimeException;
 class Initialize implements Handler
 {
     /**
-     * @var SessionManager
+     * @var Manager
      */
     private $sessionManager;
 

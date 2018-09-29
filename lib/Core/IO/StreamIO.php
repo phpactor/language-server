@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\IO;
 
 use Phpactor\LanguageServer\Core\Chunk;
+use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\IO;
 use RuntimeException;
 
@@ -25,6 +26,12 @@ class StreamIO implements IO
     {
         while ('' === $contents = fread($this->inStream, $size)) {
             usleep(self::SLEEP_TIME);
+        }
+
+        if (false === $contents) {
+            throw new RequestError(
+                'Could not read from stream'
+            );
         }
 
         return $contents;

@@ -36,7 +36,7 @@ class LanguageServerBuilder
     private $handlers;
 
     /**
-     * @var SessionManager
+     * @var Manager
      */
     private $sessionManager;
 
@@ -89,7 +89,7 @@ class LanguageServerBuilder
     public function coreHandlers(): self
     {
         $this->handlers[] = new Initialize($this->sessionManager);
-        $this->handlers[] = new ExitServer($this->sessionManager);
+        $this->handlers[] = new ExitServer();
 
         return $this;
     }

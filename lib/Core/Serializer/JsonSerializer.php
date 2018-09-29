@@ -12,6 +12,13 @@ class JsonSerializer implements Serializer, Deserializer
     {
         $string = json_encode($payload);
 
+        if (false === $string) {
+            throw new RequestError(sprintf(
+                'Could not encode array to JSON, error "%s"',
+                json_last_error_msg()
+            ));
+        }
+
         return $string;
     }
 
