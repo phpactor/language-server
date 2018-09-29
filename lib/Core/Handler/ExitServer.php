@@ -2,9 +2,11 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
+use Generator;
 use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 
 class ExitServer implements Handler
@@ -14,10 +16,9 @@ class ExitServer implements Handler
         return 'exit';
     }
 
-    public function __invoke()
+    public function __invoke(): Generator
     {
-        yield new RequestMessage(
-            null,
+        yield new NotificationMessage(
             'window/showMessage',
             [
                 'type' => 4,

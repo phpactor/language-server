@@ -2,8 +2,10 @@
 
 namespace Phpactor\LanguageServer\Core;
 
+use Generator;
+
 /**
- * @method ResponseMessage __invoke()
+ * @method Generator __invoke()
  */
 interface Handler
 {

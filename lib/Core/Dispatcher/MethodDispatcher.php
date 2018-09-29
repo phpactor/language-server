@@ -9,6 +9,7 @@ use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Transport\Message;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use RuntimeException;
 
 class MethodDispatcher implements Dispatcher
 {
@@ -38,9 +39,18 @@ class MethodDispatcher implements Dispatcher
             $request->params
         );
 
-        $generator = $handler->__invoke(...$arguments);
+        $messages = $handler->__invoke(...$arguments);
 
-        foreach ($generator as $response) {
+        if (!$messages instanceof Generator) {
+            throw new RuntimeException(sprintf(
+                '%s handler "%s" did not return a generator, it returned a: %s',
+                $request->method,
+                get_class($handler),
+                is_object($messages) ? get_class($messages) : gettype($messages)
+            ));
+        }
+
+        foreach ($messages as $response) {
             if ($response instanceof Message) {
                 yield $response;
                 continue;
