@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
 
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
@@ -35,10 +36,12 @@ class MethodDispatcherTest extends TestCase
         ])->willReturn([ 'one', 'two' ]);
 
         $expectedResult = new stdClass();
-        $this->handler->__invoke('one', 'two')->willReturn($expectedResult);
+        $this->handler->__invoke('one', 'two')->will(function() use ($expectedResult) { yield $expectedResult; });
 
-        $response = $dispatcher->dispatch(new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
+        $messages = $dispatcher->dispatch(new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
 
+        $this->assertInstanceOf(Generator::class, $messages);
+        $response = $messages->current();
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertEquals($expectedResult, $response->result);
         $this->assertEquals(5, $response->id);

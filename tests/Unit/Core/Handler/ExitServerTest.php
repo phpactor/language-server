@@ -14,9 +14,10 @@ class ExitServerTest extends HandlerTestCase
         return new ExitServer();
     }
 
-    public function testResetsConnectionOnExit()
+    public function testIssuesShutdown()
     {
         $this->expectException(ShutdownServer::class);
-        $this->dispatch('exit', []);
+        foreach ($this->dispatch('exit', []) as $message) {
+        }
     }
 }

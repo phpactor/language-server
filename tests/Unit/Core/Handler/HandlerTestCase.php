@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
@@ -16,7 +17,7 @@ abstract class HandlerTestCase extends TestCase
 
     abstract public function handler(): Handler;
 
-    public function dispatch(string $method, array $params): ResponseMessage
+    public function dispatch(string $method, array $params): array
     {
         $dispatcher = new MethodDispatcher(
             new DTLArgumentResolver(),
@@ -25,6 +26,13 @@ abstract class HandlerTestCase extends TestCase
             ])
         );
         $request = new RequestMessage(self::EXAMPLE_PROCESS_ID, $method, $params);
-        return $dispatcher->dispatch($request);
+
+        $messages = [];
+
+        foreach ($dispatcher->dispatch($request) as $message) {
+            $messages[] = $message;
+        }
+
+        return $messages;
     }
 }

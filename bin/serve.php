@@ -48,14 +48,8 @@ $logger = new class extends AbstractLogger {
     }
 };
 
-$logger->info(<<<'EOT'
-Welcome to the Phpactor Test Language Server!
-
-This language server demonstrates the language server infrastructure, it does
-not provide any functionality.
-
-EOT
-);
+$logger->info('test language server starting');
+$logger->info('i am a demonstration server and provide no functionality');
 
 $sessionManager = new Manager();
 $builder = LanguageServerBuilder::create($logger, $sessionManager);

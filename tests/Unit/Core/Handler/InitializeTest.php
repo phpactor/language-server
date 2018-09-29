@@ -25,20 +25,20 @@ class InitializeTest extends HandlerTestCase
 
     public function testInitialize()
     {
-        $response = $this->dispatch('initialize', [
+        $messages = $this->dispatch('initialize', [
             'capabilities' => [],
             'initializationOptions' => [],
             'processId' => '1234',
             'rootUri' => '/home/daniel/foobar',
         ]);
 
-        $this->assertInstanceOf(InitializeResult::class, $response->result);
-        $this->assertInstanceOf(ServerCapabilities::class, $response->result->capabilities);
+        $this->assertInstanceOf(InitializeResult::class, $messages[0]->result);
+        $this->assertInstanceOf(ServerCapabilities::class, $messages[0]->result->capabilities);
     }
 
     public function testAcceptsDeprecatedRootPath()
     {
-        $response = $this->dispatch('initialize', [
+        $messages = $this->dispatch('initialize', [
             'capabilities' => [],
             'initializationOptions' => [],
             'processId' => 1234,
@@ -46,7 +46,7 @@ class InitializeTest extends HandlerTestCase
         ]);
 
         $this->sessionManager->initialize('/home/daniel/foobar', 1234)->shouldBeCalled();
-        $this->assertInstanceOf(InitializeResult::class, $response->result);
+        $this->assertInstanceOf(InitializeResult::class, $messages[0]->result);
     }
 
     public function testThrowsExceptionIfNoRootUriOrPathGiven()
