@@ -28,6 +28,7 @@ class LanguageServerProtocolReader implements Reader
         $length = $this->getLengthFromHeaders($headers);
 
         $body = $io->read($length);
+        $this->logger->debug('IN:' . $body);
 
         return new Request($headers, $body);
     }

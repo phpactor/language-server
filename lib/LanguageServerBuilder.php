@@ -8,9 +8,11 @@ use Phpactor\LanguageServer\Core\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\ExitServer;
 use Phpactor\LanguageServer\Core\Handler\Initialize;
+use Phpactor\LanguageServer\Core\Handler\Shutdown;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Session\Manager;
@@ -89,6 +91,7 @@ class LanguageServerBuilder
     {
         $this->handlers[] = new Initialize($this->sessionManager);
         $this->handlers[] = new ExitServer();
+        $this->handlers[] = new Shutdown();
 
         return $this;
     }

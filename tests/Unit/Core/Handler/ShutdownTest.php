@@ -6,17 +6,18 @@ use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Handler\ExitServer;
+use Phpactor\LanguageServer\Core\Handler\Shutdown;
 
-class ExitServerTest extends HandlerTestCase
+class ShutdownTest extends HandlerTestCase
 {
     public function handler(): Handler
     {
-        return new ExitServer();
+        return new Shutdown();
     }
 
     public function testResetsConnectionOnExit()
     {
         $this->expectException(ShutdownServer::class);
-        $this->dispatch('exit', []);
+        $this->dispatch('shutdown', []);
     }
 }

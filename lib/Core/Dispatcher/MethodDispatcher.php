@@ -2,9 +2,11 @@
 
 namespace Phpactor\LanguageServer\Core\Dispatcher;
 
+use Generator;
 use Phpactor\LanguageServer\Core\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher;
 use Phpactor\LanguageServer\Core\Handlers;
+use Phpactor\LanguageServer\Core\Transport\Message;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
 
@@ -26,7 +28,7 @@ class MethodDispatcher implements Dispatcher
         $this->argumentResolver = $argumentResolver;
     }
 
-    public function dispatch(RequestMessage $request): ResponseMessage
+    public function dispatch(RequestMessage $request): Generator
     {
         $handler = $this->handlers->get($request->method);
 
@@ -36,8 +38,14 @@ class MethodDispatcher implements Dispatcher
             $request->params
         );
 
-        $result = $handler->__invoke(...$arguments);
+        $generator = $handler->__invoke(...$arguments);
 
-        return new ResponseMessage($request->id, $result);
+        foreach ($generator as $response) {
+            if ($response instanceof Message) {
+                yield $response;
+                continue;
+            }
+            yield new ResponseMessage($request->id, $response);
+        }
     }
 }

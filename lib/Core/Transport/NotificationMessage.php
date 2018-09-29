@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Transport;
 
-class NotificationMessage
+class NotificationMessage extends Message
 {
     /**
      * @var string

@@ -2,10 +2,14 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
+use Generator;
 use LanguageServerProtocol\InitializeResult;
+use LanguageServerProtocol\MessageType;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
+use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
+use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use RuntimeException;
 
 class Initialize implements Handler
@@ -32,7 +36,7 @@ class Initialize implements Handler
         ?string $rootPath = null,
         ?string $rootUri = null,
         ?string $trace = null
-    ) {
+    ): Generator {
         if (!$rootUri && $rootPath) {
             $rootUri = $rootPath;
         }
@@ -45,6 +49,13 @@ class Initialize implements Handler
 
         $this->sessionManager->initialize($rootUri, $processId);
 
-        return new InitializeResult(new ServerCapabilities());
+        yield new InitializeResult(new ServerCapabilities());
+        yield new NotificationMessage(
+            'window/showMessage',
+            [
+                'type' => MessageType::INFO,
+                'message' => 'Connected to the Phpactor Language Server'
+            ]
+        );
     }
 }

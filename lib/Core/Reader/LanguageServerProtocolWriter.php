@@ -21,6 +21,8 @@ class LanguageServerProtocolWriter implements Writer
     public function writeResponse(IO $io, $response): void
     {
         $length = mb_strlen($response);
-        $io->write("Content-Length:{$length}\r\n\r\n{$response}");
+        $out = "Content-Length:{$length}\r\n\r\n{$response}";
+        $this->logger->debug('OUT: ' . $out);
+        $io->write($out);
     }
 }

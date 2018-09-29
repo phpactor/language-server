@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Core;
 use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
+use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
@@ -94,6 +95,8 @@ class Server
                     $this->logger->info('resetting connection...');
                     $this->connection->reset();
                     break 1;
+                } catch (ShutdownServer $e) {
+                    $this->shutdown();
                 }
             }
         }
@@ -106,11 +109,12 @@ class Server
         $request = $this->serializer->deserialize($request->body());
         $request = $this->messageFactory->requestMessageFromArray($request);
 
-        $response = $this->dispatcher->dispatch($request);
+        $responses = $this->dispatcher->dispatch($request);
 
-        $this->logger->debug('response', (array) $response);
-
-        $this->writer->writeResponse($io, $this->serializer->serialize((array) $response));
+        foreach ($responses as $response) {
+            $this->logger->debug('response', (array) $response);
+            $this->writer->writeResponse($io, $this->serializer->serialize((array) $response));
+        }
     }
 
     private function registerSignalHandlers()

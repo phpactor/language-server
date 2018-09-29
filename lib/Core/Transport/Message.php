@@ -7,5 +7,5 @@ abstract class Message
     /**
      * @var string
      */
-    public $jsonRpc = '2.0';
+    public $jsonrpc = '2.0';
 }
