@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core;
 
 use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
-use Phpactor\LanguageServer\Core\Exception\ServerError;
+use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
@@ -86,7 +86,7 @@ class Server
             while (true) {
                 try {
                     $this->dispatch($io);
-                } catch (ServerError $e) {
+                } catch (RequestError $e) {
                     $this->logger->error($e->getMessage());
                 } catch (IterationLimitReached $e) {
                     $this->logger->info($e->getMessage());

@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Exception;
 
-class HandlerNotFound extends ServerError
+use Phpactor\LanguageServer\Core\Exception\RequestError;
+
+class HandlerNotFound extends RequestError
 {
 }

@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Reader;
 
 use Phpactor\LanguageServer\Core\Exception\ResetConnection;
-use Phpactor\LanguageServer\Core\Exception\ServerError;
+use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\IO;
 use Phpactor\LanguageServer\Core\Reader;
 use Phpactor\LanguageServer\Core\Transport\Request;
@@ -88,7 +88,7 @@ class LanguageServerProtocolReader implements Reader
     private function getLengthFromHeaders($headers)
     {
         if (!array_key_exists(self::HEADER_CONTENT_LENGTH, $headers)) {
-            throw new ServerError(sprintf(
+            throw new RequestError(sprintf(
                 'No valid Content-Length header provided in raw headers: "%s"',
                 implode(', ', array_keys($headers))
             ));
@@ -97,7 +97,7 @@ class LanguageServerProtocolReader implements Reader
         $length = (int) $headers[self::HEADER_CONTENT_LENGTH];
         
         if ($length < 1) {
-            throw new ServerError(sprintf(
+            throw new RequestError(sprintf(
                 'Content length must be greater than 0, got: %s',
                 $length
             ));

@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Transport;
 
-use Phpactor\LanguageServer\Core\Exception\ServerError;
+use Phpactor\LanguageServer\Core\Exception\RequestError;
 
 class RequestMessageFactory
 {
@@ -11,7 +11,7 @@ class RequestMessageFactory
         $keys = [ 'jsonrpc', 'id', 'method', 'params' ];
 
         if ($diff = array_diff(array_keys($array), $keys)) {
-            throw new ServerError(sprintf(
+            throw new RequestError(sprintf(
                 'Request has invalid keys: "%s", valid keys: "%s"',
                 implode(', ', $diff),
                 implode(', ', $keys)
@@ -23,7 +23,7 @@ class RequestMessageFactory
         ], $array);
 
         if ($diff = array_diff($keys, array_keys($array))) {
-            throw new ServerError(sprintf(
+            throw new RequestError(sprintf(
                 'Request is missing required keys: "%s"',
                 implode(', ', $diff)
             ));

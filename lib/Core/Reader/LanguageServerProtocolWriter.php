@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Reader;
 
 use Phpactor\LanguageServer\Core\Exception\ResetConnection;
-use Phpactor\LanguageServer\Core\Exception\ServerError;
+use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\IO;
 use Phpactor\LanguageServer\Core\Reader;
 use Phpactor\LanguageServer\Core\Transport\Request;
