@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Core;
 
 use Phpactor\LanguageServer\Core\Exception\ResetConnection;
-use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
@@ -56,7 +55,7 @@ class Server
         Dispatcher $dispatcher,
         Connection $connection,
         Reader $reader = null,
-        LanguageServerProtocolWriter $writer = null
+        Writer $writer = null
     ) {
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
@@ -87,9 +86,6 @@ class Server
                     $this->dispatch($io);
                 } catch (RequestError $e) {
                     $this->logger->error($e->getMessage());
-                } catch (IterationLimitReached $e) {
-                    $this->logger->info($e->getMessage());
-                    break 2;
                 } catch (ResetConnection $e) {
                     $this->logger->debug($e->getMessage());
                     $this->logger->info('resetting connection...');
@@ -105,7 +101,6 @@ class Server
     private function dispatch(IO $io)
     {
         $request = $this->reader->readRequest($io);
-        $this->logger->debug($request->body());
         $request = $this->serializer->deserialize($request->body());
         $request = $this->messageFactory->requestMessageFromArray($request);
 
