@@ -6,6 +6,7 @@ use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\IterationLimitReached;
 use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
+use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -34,16 +35,23 @@ class Server
      */
     private $reader;
 
+    /**
+     * @var LanguageServerProtocolWriter
+     */
+    private $writer;
+
     public function __construct(
         LoggerInterface $logger,
         Dispatcher $dispatcher,
         Connection $connection,
-        Reader $reader = null
+        Reader $reader = null,
+        LanguageServerProtocolWriter $writer = null
     ) {
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
         $this->connection = $connection;
         $this->reader = $reader ?: new LanguageServerProtocolReader($logger);
+        $this->writer = $writer ?: new LanguageServerProtocolWriter($logger);
     }
 
     public function shutdown()
@@ -84,6 +92,7 @@ class Server
         $request = $this->reader->readRequest($io);
         $request = $this->unserializeRequest($request->body());
         $response = $this->dispatcher->dispatch($request);
+
         $this->logger->debug('response', (array) $response);
 
         $body = json_encode($response);
@@ -94,8 +103,7 @@ class Server
             );
         }
 
-        $length = mb_strlen($body);
-        $io->write("Content-Length:{$length}\r\n\r\n{$body}");
+        $this->writer->writeResponse($io, $body);
     }
 
     private function unserializeRequest(string $body)
