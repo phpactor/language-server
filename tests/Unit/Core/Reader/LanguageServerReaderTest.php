@@ -59,8 +59,8 @@ EOT;
  }
 EOT;
         $this->io->add($payload);
-        $out = $this->reader->readRequest($this->io);
-        $this->assertEquals(json_decode('{"jsonrpc":"2.0","method":"test","params":{},"id":1}'), json_decode($out));
+        $request = $this->reader->readRequest($this->io);
+        $this->assertEquals(json_decode('{"jsonrpc":"2.0","method":"test","params":{},"id":1}'), json_decode($request->body()));
     }
 
     private function assertLogMessage(string $string)

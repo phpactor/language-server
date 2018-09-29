@@ -81,8 +81,8 @@ class Server
 
     private function dispatch(IO $io)
     {
-        $body = $this->reader->readRequest($io);
-        $request = $this->unserializeRequest($body);
+        $request = $this->reader->readRequest($io);
+        $request = $this->unserializeRequest($request->body());
         $response = $this->dispatcher->dispatch($request);
         $this->logger->debug('response', (array) $response);
 

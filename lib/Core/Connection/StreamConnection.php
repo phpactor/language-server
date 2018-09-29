@@ -39,6 +39,9 @@ class StreamConnection implements Connection
             'in' => $inStream,
             'out' => $outStream
         ]);
+
+        $this->inStream = $inStream;
+        $this->outStream = $outStream;
     }
 
     public function io(): IO
@@ -62,7 +65,7 @@ class StreamConnection implements Connection
 
     private function validateStream($stream): void
     {
-        if (false === $stream) {
+        if (null === $stream || false === $stream) {
             throw new RuntimeException(sprintf(
                 'Could not open stream'
             ));

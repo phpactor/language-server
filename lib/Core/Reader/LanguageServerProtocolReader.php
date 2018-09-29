@@ -6,6 +6,7 @@ use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\ServerError;
 use Phpactor\LanguageServer\Core\IO;
 use Phpactor\LanguageServer\Core\Reader;
+use Phpactor\LanguageServer\Core\Transport\Request;
 use Psr\Log\LoggerInterface;
 
 class LanguageServerProtocolReader implements Reader
@@ -20,7 +21,7 @@ class LanguageServerProtocolReader implements Reader
         $this->logger = $logger;
     }
 
-    public function readRequest(IO $io): string
+    public function readRequest(IO $io): Request
     {
         $rawHeaders = [];
         $buffer = [];
@@ -70,7 +71,7 @@ class LanguageServerProtocolReader implements Reader
             throw new ResetConnection('No contents read from stream');
         }
 
-        return (string) $body->contents();
+        return new Request($headers, $body->contents());
     }
 
     private function parseHeaders(array $rawHeaders): array

@@ -33,13 +33,13 @@ class StreamIO implements IO
 
     private function validateStream($stream)
     {
-        stream_set_blocking($stream, true);
-
         if (!is_resource($stream)) {
             throw new RuntimeException(sprintf(
                 'Given stream is not a resource, is a "%s"',
                 gettype($stream)
             ));
         }
+
+        stream_set_blocking($stream, true);
     }
 }
