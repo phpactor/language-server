@@ -48,7 +48,7 @@ EOT;
     public function testRead()
     {
         $payload = <<<EOT
- Content-Length: 1234\r\n
+ Content-Length: 80\r\n
  Content-Type: foo\r\n
  \r\n
  {

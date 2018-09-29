@@ -27,12 +27,7 @@ class StreamIO implements IO
             usleep(self::SLEEP_TIME);
         }
 
-        $remaining = $size - strlen($contents);
-
-        while ($remaining) {
-            $contents .= fread($this->inStream, $remaining);
-            $remaining = $size - strlen($contents);
-        }
+        $$contents = $this->readAnyRemainingBytes($contents, $size);
 
         if (false === $contents) {
             throw new RequestError(
@@ -56,5 +51,17 @@ class StreamIO implements IO
                 gettype($stream)
             ));
         }
+    }
+
+    private function readAnyRemainingBytes(string $contents, int $size)
+    {
+        $remaining = $size - strlen($contents);
+        
+        while ($remaining) {
+            $contents .= fread($this->inStream, $remaining);
+            $remaining = $size - strlen($contents);
+        }
+
+        return $contents;
     }
 }
