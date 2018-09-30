@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
