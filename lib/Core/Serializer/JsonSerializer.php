@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Serializer;
 
-use Phpactor\LanguageServer\Core\Deserializer;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\Serializer;
 

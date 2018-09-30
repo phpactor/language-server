@@ -6,7 +6,7 @@ use Phpactor\LanguageServer\Core\ArgumentResolver;
 
 class IdentityArgumentResolver implements ArgumentResolver
 {
-    public function resolveArguments(string $class, string $method, array $arguments): array
+    public function resolveArguments($object, string $method, array $arguments): array
     {
         return array_values($arguments);
     }

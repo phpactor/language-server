@@ -2,10 +2,6 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
-use Closure;
-use Generator;
-use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
-
 class InitializeTest extends AcceptanceTestCase
 {
     public function testInitialize()
