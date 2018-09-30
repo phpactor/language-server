@@ -1,15 +1,15 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
+namespace Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
 
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\IO;
-use Phpactor\LanguageServer\Core\Reader;
+use Phpactor\LanguageServer\Core\Reader as ReaderInterface;
 use Phpactor\LanguageServer\Core\Transport\Request;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
-class LanguageServerProtocolReader implements Reader
+class Reader implements ReaderInterface
 {
     const HEADER_CONTENT_LENGTH = 'Content-Length';
 

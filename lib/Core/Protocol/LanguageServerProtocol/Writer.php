@@ -1,12 +1,12 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
+namespace Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
 
 use Phpactor\LanguageServer\Core\IO;
-use Phpactor\LanguageServer\Core\Writer;
+use Phpactor\LanguageServer\Core\Writer as WriterInterface;
 use Psr\Log\LoggerInterface;
 
-class LanguageServerProtocolWriter implements Writer
+class Writer implements WriterInterface
 {
     /**
      * @var LoggerInterface

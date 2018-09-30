@@ -8,6 +8,8 @@ use Phpactor\LanguageServer\Core\Reader;
 use Phpactor\LanguageServer\Core\Transport\Request;
 use Phpactor\LanguageServer\Core\Writer;
 use Psr\Log\LoggerInterface;
+use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol\Reader as LspReader;
+use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol\Writer as LspWriter;
 
 class LanguageServerProtocol implements Protocol
 {
@@ -40,8 +42,8 @@ class LanguageServerProtocol implements Protocol
     public static function create(LoggerInterface $logger)
     {
         return new self(
-            new LanguageServerProtocolReader($logger),
-            new LanguageServerProtocolWriter($logger)
+            new LspReader($logger),
+            new LspWriter($logger)
         );
     }
 }
