@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core;
 
+use Phpactor\LanguageServer\Core\Exception\ExitServer;
 use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
@@ -64,9 +65,20 @@ class Server
     {
         $this->logger->info('shutting down...');
         $this->connection->shutdown();
+        throw new ExitServer();
     }
 
     public function start()
+    {
+        try {
+            $this->doStart();
+        } catch (ExitServer $e) {
+            return;
+        }
+    }
+
+
+    private function doStart()
     {
         $this->registerSignalHandlers();
         $this->logger->info(sprintf('starting language server with pid: %s', getmypid()));
@@ -86,7 +98,6 @@ class Server
                     break 1;
                 } catch (ShutdownServer $e) {
                     $this->shutdown();
-                    return;
                 }
             }
         }
