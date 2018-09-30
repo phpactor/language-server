@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Reader;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Protocol\Reader;
 
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\IO\BufferIO;
 use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol\Reader;
 use Phpactor\LanguageServer\Tests\Unit\Core\TestLogger;
 
-class LanguageServerReaderTest extends TestCase
+class ReaderTest extends TestCase
 {
     /**
      * @var BufferIO

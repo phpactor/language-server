@@ -5,6 +5,10 @@ namespace Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\IO;
 
+/**
+ * Connection which blindly yields the given IO
+ * Used in the acceptance tests.
+ */
 class SimpleConnection implements Connection
 {
     /**
