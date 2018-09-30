@@ -3,6 +3,13 @@
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
 use PHPUnit\Framework\TestCase;
+use Phpactor\LanguageServer\Core\Connection\SimpleConnection;
+use Phpactor\LanguageServer\Core\IO\BufferIO;
+use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol\Reader;
+use Phpactor\LanguageServer\LanguageServerBuilder;
+use Psr\Log\AbstractLogger;
+use Psr\Log\NullLogger;
+use RuntimeException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
@@ -23,55 +30,59 @@ class AcceptanceTestCase extends TestCase
      */
     private $stream;
 
+    /**
+     * @var BufferIO
+     */
+    private $io;
+
     protected function setUp()
     {
-        $this->startServer();
+        $this->io = new BufferIO();
+
+        $logger = new class extends AbstractLogger {
+            public function log($level, $message, array $context = []) {
+                //fwrite(STDERR, 'TESTSERV:'.$message.PHP_EOL);
+            }
+        };
+
+        $this->server = LanguageServerBuilder::create($logger)
+            ->coreHandlers()
+            ->withConnection(new SimpleConnection($this->io))
+            ->build();
     }
 
-    protected function sendRequest(string $request)
+    protected function playback(string $scriptName)
     {
-        fwrite($this->stream, sprintf("Content-Length:%s\r\n\r\n%s", mb_strlen($request), $request));
-        usleep(50000);
-    }
+        $path = $this->scriptPath($scriptName);
 
-    protected function readOutput()
-    {
-        return fread($this->stream, 1000);
-    }
-
-    private function startServer()
-    {
-        $address = '127.0.0.1:8889';
-        $process = new Process([
-            __DIR__ . '/../../bin/serve.php',
-            '--type=tcp',
-            '--address=' . $address
-        ]);
-        $process->start();
-
-        while (!$process->getErrorOutput()) {
-            usleep(50000);
+        if (!file_exists($path)) {
+            throw new RuntimeException(sprintf(
+                'Playback script "%s" does not exit',
+                $path
+            ));
         }
+        $this->io->add(file_get_contents($path));
+        $this->io->add(file_get_contents($this->scriptPath('exit.script')));
 
-        $this->process = $process;
-        $this->stream = stream_socket_client('tcp://' . $address, $errNo, $errString);
-        if (!$this->stream) {
-            throw new \Exception($errString);
+        $this->server->start();
+
+        $reader = new Reader(new NullLogger());
+
+        $io = new BufferIO();
+        $io->add($this->io->out());
+        while (true) {
+            yield $reader->readRequest($io);
         }
-    }
-
-    protected function process(): Process
-    {
-        return $this->process;
-    }
-
-    public function tearDown()
-    {
-        $this->process->stop(0);
     }
 
     public function input(): InputStream
     {
         return $this->input;
+    }
+
+    private function scriptPath(string $scriptName)
+    {
+        $path = __DIR__ . '/autozimzu/' . $scriptName;
+        return $path;
     }
 }

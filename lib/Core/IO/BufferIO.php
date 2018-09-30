@@ -12,7 +12,7 @@ class BufferIO implements IO
 
     public function add(string $text)
     {
-        $this->buffer += str_split($text);
+        $this->buffer = array_merge($this->buffer, str_split($text));
     }
 
     public function read(int $size): string

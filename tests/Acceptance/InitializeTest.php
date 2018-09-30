@@ -2,45 +2,26 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
+use Closure;
+use Generator;
+use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
+
 class InitializeTest extends AcceptanceTestCase
 {
     public function testInitialize()
     {
-        $this->sendRequest(
-            <<<'EOT'
-{                                          
-     "jsonrpc": "2.0",                      
-     "method": "initialize",                
-     "params": {                            
-         "capabilities": {                  
-             "textDocument": {              
-                 "completion": {            
-                     "completionItem": {    
-                         "snippetSupport": false                                        
-                     }                      
-                 }                          
-             },                             
-             "workspace": {                 
-                 "applyEdit": true,         
-                 "didChangeWatchedFiles": { 
-                     "dynamicRegistration": true                                        
-                 }                          
-             }                              
-         },                                 
-         "processId": 22152,                
-         "rootPath": "\/home\/daniel\/www\/phpactor\/phpactor",                         
-         "rootUri": "file:\/\/\/home\/daniel\/www\/phpactor\/phpactor",                 
-         "trace": "off"                     
-     },                                     
-     "id": 10                               
- }
-EOT
-        );
+        $responses = $this->playback('initialize.script');
 
-        if (false === $this->process()->isRunning()) {
-            echo $this->process()->getErrorOutput();
-        }
-        $this->assertTrue($this->process()->isRunning());
-        $this->assertContains('capabilities', $this->readOutput());
+        $this->assertResponse(function ($data) {
+            $this->assertArrayHasKey('capabilities', $data['result']);
+        }, $responses);
+    }
+
+    protected function assertResponse(Closure $assertion, Generator $generator) 
+    {
+        $deserializer = new JsonSerializer();
+        $response = $generator->current();
+        $assertion($deserializer->deserialize($response->body()));
+        $generator->next();
     }
 }

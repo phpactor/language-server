@@ -38,7 +38,10 @@ class RecordingProtocol implements Protocol
     public function readRequest(IO $io): Request
     {
         $request = $this->innerProtocol->readRequest($io);
-        fwrite($this->recordStream, $request->body() . PHP_EOL);
+        fwrite($this->recordStream, implode("\r\n", array_map(function ($key, $value) {
+            return $key .':'.$value;
+        }, array_keys($request->headers()), array_values($request->headers()))) . "\r\n\r\n");
+        fwrite($this->recordStream, $request->body());
         return $request;
     }
 

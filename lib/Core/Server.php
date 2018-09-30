@@ -64,7 +64,6 @@ class Server
     {
         $this->logger->info('shutting down...');
         $this->connection->shutdown();
-        exit(0);
     }
 
     public function start()
@@ -87,6 +86,7 @@ class Server
                     break 1;
                 } catch (ShutdownServer $e) {
                     $this->shutdown();
+                    return;
                 }
             }
         }
@@ -95,6 +95,7 @@ class Server
     private function dispatch(IO $io)
     {
         $request = $this->protocol->readRequest($io);
+
         $request = $this->serializer->deserialize($request->body());
         $request = $this->messageFactory->requestMessageFromArray($request);
 

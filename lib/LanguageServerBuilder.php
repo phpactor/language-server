@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer;
 use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
@@ -90,6 +91,15 @@ class LanguageServerBuilder
     {
         $this->connection = function () {
             return new StreamConnection($this->logger);
+        };
+
+        return $this;
+    }
+
+    public function withConnection(Connection $connection)
+    {
+        $this->connection = function () use ($connection) {
+            return $connection;
         };
 
         return $this;
