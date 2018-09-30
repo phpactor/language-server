@@ -31,6 +31,5 @@ class ManagerTest extends TestCase
 
         $this->assertEquals(__FILE__, $session->rootUri());
         $this->assertEquals(1234, $session->processId());
-
     }
 }

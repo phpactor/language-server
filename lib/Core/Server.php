@@ -30,12 +30,12 @@ class Server
     private $connection;
 
     /**
-     * @var Reader
+     * @var Protocol
      */
     private $protocol;
 
     /**
-     * @var JsonSerializer
+     * @var Serializer
      */
     private $serializer;
 

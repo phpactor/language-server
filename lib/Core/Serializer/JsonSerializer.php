@@ -6,7 +6,7 @@ use Phpactor\LanguageServer\Core\Deserializer;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\Serializer;
 
-class JsonSerializer implements Serializer, Deserializer
+class JsonSerializer implements Serializer
 {
     public function serialize(array $payload): string
     {
