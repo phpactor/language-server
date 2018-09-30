@@ -17,7 +17,7 @@ class DTLArgumentResolver implements ArgumentResolver
     {
         $this->dtlArgumnetResolver = $dtlArgumnetResolver ?: new UpstreamArgumentResolver([
             new RecursiveInstantiator()
-        ]);
+        ], UpstreamArgumentResolver::ALLOW_UNKNOWN_ARGUMENTS);
     }
 
     public function resolveArguments($object, string $method, array $arguments): array

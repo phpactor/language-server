@@ -24,7 +24,7 @@ class Status implements Handler
         return 'session/status';
     }
 
-    public function __invoke(string $buftype = null, string $languageId = null)
+    public function __invoke()
     {
         $session = $this->sessionManager->current();
 
