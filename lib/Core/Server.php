@@ -78,7 +78,7 @@ class Server
         $this->registerSignalHandlers();
         $this->logger->info(sprintf('starting language server with pid: %s', getmypid()));
 
-        while ($io = $this->connection->io()) {
+        while ($io = $this->connection->accept()) {
             $this->logger->info('accepted connection');
 
             while (true) {

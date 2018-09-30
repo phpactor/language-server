@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core;
 
 interface Connection
 {
-    public function io(): IO;
+    public function accept(): IO;
 
     public function shutdown();
 

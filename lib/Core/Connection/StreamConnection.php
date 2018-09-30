@@ -43,7 +43,7 @@ class StreamConnection implements Connection
         $this->outStreamName = $outStream;
     }
 
-    public function io(): IO
+    public function accept(): IO
     {
         $this->logger->info('opening streams', [
             'in' => $this->inStreamName,

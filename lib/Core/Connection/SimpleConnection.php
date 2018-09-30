@@ -17,7 +17,7 @@ class SimpleConnection implements Connection
         $this->io = $io;
     }
 
-    public function io(): IO
+    public function accept(): IO
     {
         return $this->io;
     }

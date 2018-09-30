@@ -47,7 +47,7 @@ class TcpServerConnection implements Connection
         $this->logger->info(sprintf('listening on address %s', $this->address));
     }
 
-    public function io(): IO
+    public function accept(): IO
     {
         $socket = @stream_socket_accept($this->server, -1);
 
