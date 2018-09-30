@@ -8,7 +8,7 @@ class StatusTest extends AcceptanceTestCase
 {
     public function testStatus()
     {
-        $responses = $this->playback('server_status.script');
+        $responses = $this->playback('autozimzu/server_status.script');
 
         $responses->next();
         $responses->next();

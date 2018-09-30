@@ -55,9 +55,9 @@ class AcceptanceTestCase extends TestCase
             ->build();
     }
 
-    protected function playback(string $scriptName)
+    protected function playback(string $scriptPath)
     {
-        $path = $this->scriptPath($scriptName);
+        $path = $this->scriptPath($scriptPath);
 
         if (!file_exists($path)) {
             throw new RuntimeException(sprintf(
@@ -83,9 +83,9 @@ class AcceptanceTestCase extends TestCase
         return $this->input;
     }
 
-    private function scriptPath(string $scriptName)
+    private function scriptPath(string $scriptPath)
     {
-        $path = __DIR__ . '/autozimzu/' . $scriptName;
+        $path = __DIR__ . '/scripts/' . $scriptPath;
         return $path;
     }
 

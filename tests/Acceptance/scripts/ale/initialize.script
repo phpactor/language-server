@@ -1,0 +1,7 @@
+Content-Length:237
+
+{"method": "initialize", "jsonrpc": "2.0", "id": 1, "params": {"initializationOptions": {}, "rootUri": "file:///home/daniel/www/phpactor/phpactor", "capabilities": {}, "rootPath": "/home/daniel/www/phpactor/phpactor", "processId": 7176}}Content-Length:509
+
+{"method": "textDocument/didOpen", "jsonrpc": "2.0", "params": {"textDocument": {"uri": "file:///home/daniel/www/phpactor/phpactor/lib/Container/Container.php", "version": 1, "languageId": "php", "text": "<?php\n\nnamespace Phpactor\\Container;\n\nuse Psr\\Container\\ContainerInterface;\n\ninterface Container extends ContainerInterface\n{\n    public function getServiceIdsForTag(string $tag): array;\n\n    public function getParameter(string $name);\n\n    public function getParameters(): array;\n}\n"}}}Content-Length:47
+
+{"jsonrpc":"2.0","method":"exit","params":null}
