@@ -55,15 +55,17 @@ class Server
         Dispatcher $dispatcher,
         Connection $connection,
         Reader $reader = null,
-        Writer $writer = null
+        Writer $writer = null,
+        Serializer $serializer = null,
+        RequestMessageFactory $messageFactory = null
     ) {
-        $this->dispatcher = $dispatcher;
         $this->logger = $logger;
+        $this->dispatcher = $dispatcher;
         $this->connection = $connection;
         $this->reader = $reader ?: new LanguageServerProtocolReader($logger);
         $this->writer = $writer ?: new LanguageServerProtocolWriter($logger);
-        $this->serializer = new JsonSerializer();
-        $this->messageFactory = new RequestMessageFactory();
+        $this->serializer = $serializer ?: new JsonSerializer();
+        $this->messageFactory = $messageFactory ?: new RequestMessageFactory();
     }
 
     public function shutdown()
