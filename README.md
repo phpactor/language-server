@@ -62,7 +62,7 @@ class ExampleCompletionHandler implements Handler
         $completionList->items[] = new CompletionItem('foobar');
         $completionList->items[] = new CompletionItem('foofoo');
 
-        return $completionList;
+        yield $completionList;
     }
 }
 ```
