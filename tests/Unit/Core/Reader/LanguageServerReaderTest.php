@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Reader;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\IO\BufferIO;
-use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
+use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocolReader;
 use Phpactor\LanguageServer\Tests\Unit\Core\TestLogger;
 
 class LanguageServerReaderTest extends TestCase

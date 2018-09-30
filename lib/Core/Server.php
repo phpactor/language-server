@@ -5,8 +5,7 @@ namespace Phpactor\LanguageServer\Core;
 use Phpactor\LanguageServer\Core\Exception\ResetConnection;
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
-use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
-use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolWriter;
+use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
 use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
 use Phpactor\LanguageServer\Core\Transport\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
@@ -33,12 +32,7 @@ class Server
     /**
      * @var Reader
      */
-    private $reader;
-
-    /**
-     * @var Writer
-     */
-    private $writer;
+    private $protocol;
 
     /**
      * @var JsonSerializer
@@ -54,16 +48,14 @@ class Server
         LoggerInterface $logger,
         Dispatcher $dispatcher,
         Connection $connection,
-        Reader $reader = null,
-        Writer $writer = null,
+        Protocol $protocol = null,
         Serializer $serializer = null,
         RequestMessageFactory $messageFactory = null
     ) {
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
         $this->connection = $connection;
-        $this->reader = $reader ?: new LanguageServerProtocolReader($logger);
-        $this->writer = $writer ?: new LanguageServerProtocolWriter($logger);
+        $this->protocol = $protocol ?: LanguageServerProtocol::create($logger);
         $this->serializer = $serializer ?: new JsonSerializer();
         $this->messageFactory = $messageFactory ?: new RequestMessageFactory();
     }
@@ -102,7 +94,7 @@ class Server
 
     private function dispatch(IO $io)
     {
-        $request = $this->reader->readRequest($io);
+        $request = $this->protocol->readRequest($io);
         $request = $this->serializer->deserialize($request->body());
         $request = $this->messageFactory->requestMessageFromArray($request);
 
@@ -110,7 +102,7 @@ class Server
 
         foreach ($responses as $response) {
             $this->logger->debug('response', (array) $response);
-            $this->writer->writeResponse($io, $this->serializer->serialize((array) $response));
+            $this->protocol->writeResponse($io, $this->serializer->serialize((array) $response));
         }
     }
 

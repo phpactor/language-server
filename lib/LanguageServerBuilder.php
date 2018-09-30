@@ -21,8 +21,9 @@ use Phpactor\LanguageServer\Core\Handler\TextDocument\DidSave;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\WillSave;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\WillSaveWaitUntil;
 use Phpactor\LanguageServer\Core\Handlers;
-use Phpactor\LanguageServer\Core\Reader\LanguageServerProtocolReader;
-use Phpactor\LanguageServer\Core\Reader\RecordingReader;
+use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
+use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocolReader;
+use Phpactor\LanguageServer\Core\Protocol\RecordingProtocol;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Psr\Log\LoggerInterface;
@@ -135,14 +136,14 @@ class LanguageServerBuilder
 
         $connectionFactory = $this->connection;
 
-        $reader = new LanguageServerProtocolReader($this->logger);
+        $protocol = LanguageServerProtocol::create($this->logger);
         if ($this->recordPath) {
-            $reader = new RecordingReader(
-                $reader,
+            $protocol = new RecordingProtocol(
+                $protocol,
                 $this->recordPath
             );
         }
 
-        return new Server($this->logger, $dispatcher, $connectionFactory(), $reader);
+        return new Server($this->logger, $dispatcher, $connectionFactory(), $protocol);
     }
 }

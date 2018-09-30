@@ -37,6 +37,9 @@ class InitializeTest extends AcceptanceTestCase
 EOT
         );
 
+        if (false === $this->process()->isRunning()) {
+            echo $this->process()->getErrorOutput();
+        }
         $this->assertTrue($this->process()->isRunning());
         $this->assertContains('capabilities', $this->readOutput());
     }

@@ -41,7 +41,7 @@ class AcceptanceTestCase extends TestCase
 
     private function startServer()
     {
-        $address = '127.0.0.1:8888';
+        $address = '127.0.0.1:8889';
         $process = new Process([
             __DIR__ . '/../../bin/serve.php',
             '--type=tcp',

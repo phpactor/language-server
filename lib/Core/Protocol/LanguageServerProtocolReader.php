@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Reader;
+namespace Phpactor\LanguageServer\Core\Protocol;
 
 use Phpactor\LanguageServer\Core\Exception\RequestError;
 use Phpactor\LanguageServer\Core\IO;

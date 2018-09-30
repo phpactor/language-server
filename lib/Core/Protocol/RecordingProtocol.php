@@ -1,27 +1,28 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Reader;
+namespace Phpactor\LanguageServer\Core\Protocol;
 
 use Phpactor\LanguageServer\Core\IO;
+use Phpactor\LanguageServer\Core\Protocol;
 use Phpactor\LanguageServer\Core\Reader;
 use Phpactor\LanguageServer\Core\Transport\Request;
 use RuntimeException;
 
-class RecordingReader implements Reader
+class RecordingProtocol implements Protocol
 {
     /**
-     * @var Reader
+     * @var Protocol
      */
-    private $innerReader;
+    private $innerProtocol;
 
     /**
      * @var resource
      */
     private $recordStream;
 
-    public function __construct(Reader $innerReader, string $recordPath)
+    public function __construct(Protocol $innerProtocol, string $recordPath)
     {
-        $this->innerReader = $innerReader;
+        $this->innerProtocol = $innerProtocol;
         $stream = fopen($recordPath, 'w');
 
         if (false === $stream) {
@@ -36,7 +37,7 @@ class RecordingReader implements Reader
 
     public function readRequest(IO $io): Request
     {
-        $request = $this->innerReader->readRequest($io);
+        $request = $this->innerProtocol->readRequest($io);
         fwrite($this->recordStream, $request->body() . PHP_EOL);
         return $request;
     }
@@ -44,5 +45,10 @@ class RecordingReader implements Reader
     public function __destruct()
     {
         fclose($this->recordStream);
+    }
+
+    public function writeResponse(IO $io, $response): void
+    {
+        $this->innerProtocol->writeResponse($io, $response);
     }
 }
