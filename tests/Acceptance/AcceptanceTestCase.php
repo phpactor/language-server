@@ -2,10 +2,13 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
+use Closure;
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Connection\SimpleConnection;
 use Phpactor\LanguageServer\Core\IO\BufferIO;
 use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol\Reader;
+use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\AbstractLogger;
 use Psr\Log\NullLogger;
@@ -63,7 +66,6 @@ class AcceptanceTestCase extends TestCase
             ));
         }
         $this->io->add(file_get_contents($path));
-        $this->io->add(file_get_contents($this->scriptPath('exit.script')));
 
         $this->server->start();
 
@@ -85,5 +87,13 @@ class AcceptanceTestCase extends TestCase
     {
         $path = __DIR__ . '/autozimzu/' . $scriptName;
         return $path;
+    }
+
+    protected function assertResponse(Closure $assertion, Generator $generator)
+    {
+        $deserializer = new JsonSerializer();
+        $response = $generator->current();
+        $assertion($deserializer->deserialize($response->body()));
+        $generator->next();
     }
 }

@@ -1,0 +1,11 @@
+Content-Length:383
+
+{"jsonrpc":"2.0","method":"initialize","params":{"capabilities":{"textDocument":{"completion":{"completionItem":{"snippetSupport":false}}},"workspace":{"applyEdit":true,"didChangeWatchedFiles":{"dynamicRegistration":true}}},"processId":13205,"rootPath":"/home/daniel/www/phpactor/language-server","rootUri":"file:///home/daniel/www/phpactor/language-server","trace":"off"},"id":2214}Content-Length:52
+
+{"jsonrpc":"2.0","method":"initialized","params":{}}Content-Length:1084
+
+{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"languageId":"php","text":"<?php\n\nnamespace Phpactor\\LanguageServer\\Adapter\\DTL;\n\nuse DTL\\ArgumentResolver\\ArgumentResolver as UpstreamArgumentResolver;\nuse DTL\\ArgumentResolver\\ParamConverter\\RecursiveInstantiator;\nuse Phpactor\\LanguageServer\\Core\\ArgumentResolver;\n\nclass DTLArgumentResolver implements ArgumentResolver\n{\n    /**\n     * @var UpstreamArgumentResolver\n     */\n    private $dtlArgumnetResolver;\n\n    public function __construct(UpstreamArgumentResolver $dtlArgumnetResolver = null)\n    {\n        $this->dtlArgumnetResolver = $dtlArgumnetResolver ?: new UpstreamArgumentResolver([\n            new RecursiveInstantiator()\n        ]);\n    }\n\n    public function resolveArguments($object, string $method, array $arguments): array\n    {\n        return $this->dtlArgumnetResolver->resolveArguments(get_class($object), $method, $arguments);\n    }\n}\n","uri":"file:///home/daniel/www/phpactor/language-server/lib/Adapter/DTL/DTLArgumentResolver.php","version":0}}}Content-Length:96
+
+{"jsonrpc":"2.0","method":"session/status","params":{"buftype":"","languageId":"php"},"id":2220}Content-Length:47
+
+{"jsonrpc":"2.0","method":"exit","params":null}

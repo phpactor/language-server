@@ -109,6 +109,7 @@ class Server
 
     private function registerSignalHandlers()
     {
+        return;
         pcntl_async_signals(true);
         pcntl_signal(SIGTERM, [$this, 'shutdown']);
         pcntl_signal(SIGINT, [$this, 'shutdown']);

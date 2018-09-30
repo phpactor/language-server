@@ -16,12 +16,4 @@ class InitializeTest extends AcceptanceTestCase
             $this->assertArrayHasKey('capabilities', $data['result']);
         }, $responses);
     }
-
-    protected function assertResponse(Closure $assertion, Generator $generator)
-    {
-        $deserializer = new JsonSerializer();
-        $response = $generator->current();
-        $assertion($deserializer->deserialize($response->body()));
-        $generator->next();
-    }
 }
