@@ -40,7 +40,8 @@ class AcceptanceTestCase extends TestCase
         $this->io = new BufferIO();
 
         $logger = new class extends AbstractLogger {
-            public function log($level, $message, array $context = []) {
+            public function log($level, $message, array $context = [])
+            {
                 //fwrite(STDERR, 'TESTSERV:'.$message.PHP_EOL);
             }
         };

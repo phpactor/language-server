@@ -23,7 +23,6 @@ use Phpactor\LanguageServer\Core\Handler\TextDocument\WillSave;
 use Phpactor\LanguageServer\Core\Handler\TextDocument\WillSaveWaitUntil;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
-use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol\Reader;
 use Phpactor\LanguageServer\Core\Protocol\RecordingProtocol;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Session\Manager;

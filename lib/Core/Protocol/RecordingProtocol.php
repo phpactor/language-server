@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Protocol;
 
 use Phpactor\LanguageServer\Core\IO;
 use Phpactor\LanguageServer\Core\Protocol;
-use Phpactor\LanguageServer\Core\Reader;
 use Phpactor\LanguageServer\Core\Transport\Request;
 use RuntimeException;
 

@@ -17,7 +17,7 @@ class InitializeTest extends AcceptanceTestCase
         }, $responses);
     }
 
-    protected function assertResponse(Closure $assertion, Generator $generator) 
+    protected function assertResponse(Closure $assertion, Generator $generator)
     {
         $deserializer = new JsonSerializer();
         $response = $generator->current();
