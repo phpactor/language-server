@@ -30,7 +30,7 @@ class MethodDispatcherTest extends TestCase
         $dispatcher = $this->create([
             $this->handler->reveal()
         ]);
-        $this->argumentResolver->resolveArguments(get_class($this->handler->reveal()), '__invoke', [
+        $this->argumentResolver->resolveArguments($this->handler->reveal(), '__invoke', [
             'one',
             'two'
         ])->willReturn([ 'one', 'two' ]);

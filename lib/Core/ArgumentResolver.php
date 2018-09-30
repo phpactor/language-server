@@ -4,5 +4,5 @@ namespace Phpactor\LanguageServer\Core;
 
 interface ArgumentResolver
 {
-    public function resolveArguments(string $class, string $method, array $arguments): array;
+    public function resolveArguments($object, string $method, array $arguments): array;
 }

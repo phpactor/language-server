@@ -20,8 +20,8 @@ class DTLArgumentResolver implements ArgumentResolver
         ]);
     }
 
-    public function resolveArguments(string $class, string $method, array $arguments): array
+    public function resolveArguments($object, string $method, array $arguments): array
     {
-        return $this->dtlArgumnetResolver->resolveArguments($class, $method, $arguments);
+        return $this->dtlArgumnetResolver->resolveArguments(get_class($object), $method, $arguments);
     }
 }
