@@ -2,8 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Exception;
 
-use Exception;
-
-class ResetConnection extends Exception
+class ResetConnection extends ControlException
 {
 }

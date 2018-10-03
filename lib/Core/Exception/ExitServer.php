@@ -4,6 +4,6 @@ namespace Phpactor\LanguageServer\Core\Exception;
 
 use RuntimeException;
 
-class ExitServer extends RuntimeException
+class ExitServer extends ControlException
 {
 }
