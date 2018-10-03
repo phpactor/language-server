@@ -27,6 +27,8 @@ class MethodDispatcherTest extends TestCase
     public function testDispatchesRequest()
     {
         $this->handler->name()->willReturn('foobar');
+        $handlers = new Handlers([ $this->handler->reveal() ]);
+
         $dispatcher = $this->create([
             $this->handler->reveal()
         ]);
@@ -40,7 +42,7 @@ class MethodDispatcherTest extends TestCase
             yield $expectedResult;
         });
 
-        $messages = $dispatcher->dispatch(new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
+        $messages = $dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
 
         $this->assertInstanceOf(Generator::class, $messages);
         $response = $messages->current();
@@ -51,7 +53,6 @@ class MethodDispatcherTest extends TestCase
 
     private function create(array $array): MethodDispatcher
     {
-        $handlers = new Handlers($array);
-        return new MethodDispatcher($this->argumentResolver->reveal(), $handlers);
+        return new MethodDispatcher($this->argumentResolver->reveal());
     }
 }

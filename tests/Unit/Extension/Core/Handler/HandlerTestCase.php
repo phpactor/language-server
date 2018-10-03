@@ -35,17 +35,16 @@ abstract class HandlerTestCase extends TestCase
 
     public function dispatch(string $method, array $params): array
     {
-        $dispatcher = new MethodDispatcher(
-            new DTLArgumentResolver(),
-            new Handlers([
-                $this->handler()
-            ])
-        );
+        $dispatcher = new MethodDispatcher(new DTLArgumentResolver());
+            
         $request = new RequestMessage(self::EXAMPLE_PROCESS_ID, $method, $params);
+        $handlers = new Handlers([
+            $this->handler()
+        ]);
 
         $messages = [];
 
-        foreach ($dispatcher->dispatch($request) as $message) {
+        foreach ($dispatcher->dispatch($handlers, $request) as $message) {
             $messages[] = $message;
         }
 

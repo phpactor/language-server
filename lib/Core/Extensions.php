@@ -35,7 +35,7 @@ class Extensions implements Extension
         }
     }
 
-    private function add(Extension $extension)
+    public function add(Extension $extension): void
     {
         $this->extensions[] = $extension;
     }

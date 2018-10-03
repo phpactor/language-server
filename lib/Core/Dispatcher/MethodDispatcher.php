@@ -14,24 +14,18 @@ use RuntimeException;
 class MethodDispatcher implements Dispatcher
 {
     /**
-     * @var Handlers
-     */
-    private $handlers;
-
-    /**
      * @var ArgumentResolver
      */
     private $argumentResolver;
 
-    public function __construct(ArgumentResolver $argumentResolver, Handlers $handlers)
+    public function __construct(ArgumentResolver $argumentResolver)
     {
-        $this->handlers = $handlers;
         $this->argumentResolver = $argumentResolver;
     }
 
-    public function dispatch(RequestMessage $request): Generator
+    public function dispatch(Handlers $handlers, RequestMessage $request): Generator
     {
-        $handler = $this->handlers->get($request->method);
+        $handler = $handlers->get($request->method);
 
         $arguments = $this->argumentResolver->resolveArguments(
             $handler,

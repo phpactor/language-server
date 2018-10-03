@@ -6,6 +6,8 @@ use Generator;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\MessageType;
 use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServer\Core\Extension;
+use Phpactor\LanguageServer\Core\Extensions;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
@@ -24,7 +26,7 @@ class Initialize implements Handler
     private $extensions;
 
 
-    public function __construct(Extensions $extensions, Manager $sessionManager)
+    public function __construct(Extension $extensions, Manager $sessionManager)
     {
         $this->sessionManager = $sessionManager;
         $this->extensions = $extensions;

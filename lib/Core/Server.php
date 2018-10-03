@@ -45,10 +45,16 @@ class Server
      */
     private $messageFactory;
 
+    /**
+     * @var Extension
+     */
+    private $extension;
+
     public function __construct(
         LoggerInterface $logger,
         Dispatcher $dispatcher,
         Connection $connection,
+        Extension $extension,
         Protocol $protocol = null,
         Serializer $serializer = null,
         RequestMessageFactory $messageFactory = null
@@ -59,6 +65,7 @@ class Server
         $this->protocol = $protocol ?: LanguageServerProtocol::create($logger);
         $this->serializer = $serializer ?: new JsonSerializer();
         $this->messageFactory = $messageFactory ?: new RequestMessageFactory();
+        $this->extension = $extension;
     }
 
     public function shutdown()
@@ -82,6 +89,7 @@ class Server
     {
         $this->registerSignalHandlers();
         $this->logger->info(sprintf('starting language server with pid: %s', getmypid()));
+        $this->logger->debug(sprintf('handlers: %s', implode(', ', $this->extension->handlers()->names())));
 
         while ($io = $this->connection->accept()) {
             $this->logger->info('accepted connection');
@@ -110,7 +118,7 @@ class Server
         $request = $this->serializer->deserialize($request->body());
         $request = $this->messageFactory->requestMessageFromArray($request);
 
-        $responses = $this->dispatcher->dispatch($request);
+        $responses = $this->dispatcher->dispatch($this->extension->handlers(), $request);
 
         foreach ($responses as $response) {
             $this->logger->debug('response', (array) $response);

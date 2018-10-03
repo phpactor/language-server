@@ -9,7 +9,9 @@ use Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Extensions;
 use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Extension\Core\CoreExtension;
 use Phpactor\LanguageServer\Extension\Core\ExitServer;
 use Phpactor\LanguageServer\Extension\Core\Initialize;
 use Phpactor\LanguageServer\Extension\Core\Initialized;
@@ -61,11 +63,17 @@ class LanguageServerBuilder
      */
     private $recordPath;
 
+    /**
+     * @var Extensions
+     */
+    private $extensions;
+
     private function __construct(Manager $sessionManager, ArgumentResolver $argumentResolver, LoggerInterface $logger)
     {
         $this->sessionManager = $sessionManager;
         $this->logger = $logger;
         $this->argumentResolver = $argumentResolver;
+        $this->extensions = new Extensions([]);
     }
 
     public static function create(LoggerInterface $logger = null, Manager $sessionManager = null): self
@@ -111,21 +119,14 @@ class LanguageServerBuilder
         return $this;
     }
 
-    public function coreHandlers(): self
+    public function withCoreExtension(): self
     {
-        $this->handlers[] = new Initialize($this->sessionManager);
-        $this->handlers[] = new Initialized();
-        $this->handlers[] = new ExitServer();
-        $this->handlers[] = new Shutdown();
-
-        $this->handlers[] = new DidOpen($this->sessionManager);
-        $this->handlers[] = new DidChange($this->sessionManager);
-        $this->handlers[] = new DidClose($this->sessionManager);
-        $this->handlers[] = new DidSave();
-        $this->handlers[] = new WillSave();
-        $this->handlers[] = new WillSaveWaitUntil();
-
-        $this->handlers[] = new Status($this->sessionManager);
+        $this->extensions->add(
+            new CoreExtension(
+                $this->extensions,
+                $this->sessionManager
+            )
+        );
 
         return $this;
     }
@@ -137,7 +138,7 @@ class LanguageServerBuilder
 
     public function build(): Server
     {
-        $dispatcher = new MethodDispatcher($this->argumentResolver, new Handlers($this->handlers));
+        $dispatcher = new MethodDispatcher($this->argumentResolver);
 
         if (null === $this->connection) {
             $this->stdIoServer();
@@ -153,6 +154,12 @@ class LanguageServerBuilder
             );
         }
 
-        return new Server($this->logger, $dispatcher, $connectionFactory(), $protocol);
+        return new Server(
+            $this->logger,
+            $dispatcher,
+            $connectionFactory(),
+            $this->extensions,
+            $protocol
+        );
     }
 }

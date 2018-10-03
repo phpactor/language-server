@@ -17,6 +17,19 @@ class Handlers implements IteratorAggregate
         }
     }
 
+    /**
+     * @return string[]
+     */
+    public function names(): array
+    {
+        $names = [];
+        foreach ($this->handlers as $handler) {
+            $names[] = $handler->name();
+        }
+
+        return $names;
+    }
+
     public function merge(Handlers $handlers) 
     {
         foreach ($handlers as $handler) {

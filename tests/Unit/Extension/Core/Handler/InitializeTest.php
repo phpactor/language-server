@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler;
 
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Extension\Core\Initialize;
 use Phpactor\LanguageServer\Core\Session\Session;
@@ -22,6 +23,7 @@ class InitializeTest extends HandlerTestCase
     {
         $this->sessionManager = $this->prophesize(Manager::class);
         $this->session = $this->prophesize(Session::class);
+        $this->extensions = $this->prophesize(Extension::class);
     }
 
     public function testInitialize()
@@ -63,6 +65,6 @@ class InitializeTest extends HandlerTestCase
 
     public function handler(): Handler
     {
-        return new Initialize($this->sessionManager->reveal());
+        return new Initialize($this->extensions->reveal(), $this->sessionManager->reveal());
     }
 }
