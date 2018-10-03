@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Extension\Core\Shutdown;
-use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 
 class ShutdownTest extends HandlerTestCase
 {

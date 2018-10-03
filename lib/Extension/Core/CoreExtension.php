@@ -23,7 +23,7 @@ class CoreExtension implements Extension
     private $extensions;
 
     /**
-     * @var SessionManager
+     * @var Manager
      */
     private $sessionManager;
 

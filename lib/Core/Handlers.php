@@ -30,7 +30,7 @@ class Handlers implements IteratorAggregate
         return $names;
     }
 
-    public function merge(Handlers $handlers) 
+    public function merge(Handlers $handlers)
     {
         foreach ($handlers as $handler) {
             $this->add($handler);

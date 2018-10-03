@@ -7,7 +7,6 @@ use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\MessageType;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Extension;
-use Phpactor\LanguageServer\Core\Extensions;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
@@ -21,10 +20,9 @@ class Initialize implements Handler
     private $sessionManager;
 
     /**
-     * @var Extensions
+     * @var Extension
      */
     private $extensions;
-
 
     public function __construct(Extension $extensions, Manager $sessionManager)
     {

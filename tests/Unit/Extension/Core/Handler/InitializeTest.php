@@ -10,7 +10,6 @@ use Phpactor\LanguageServer\Extension\Core\Initialize;
 use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use RuntimeException;
-use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 
 class InitializeTest extends HandlerTestCase
 {

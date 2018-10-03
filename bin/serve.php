@@ -70,7 +70,7 @@ switch ($options['type']) {
 }
 
 $builder->recordTo('recording.log');
-$builder->coreHandlers();
+$builder->withCoreExtension();
 $builder->addHandler(new ExampleCompletionHandler($sessionManager));
 $server = $builder->build();
 
