@@ -12,7 +12,6 @@ use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
-use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Extension\Core\CoreExtension;
 use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
 use Phpactor\LanguageServer\Core\Protocol\RecordingProtocol;

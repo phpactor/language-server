@@ -38,7 +38,6 @@ class ErrorCatchingDispatcher implements Dispatcher
         } catch (ControlException $controlException) {
             throw $controlException;
         } catch (Throwable $throwable) {
-
             $this->logger->error($throwable->getMessage(), [
                 'class' => get_class($throwable),
                 'trace' => $throwable->getTraceAsString(),
