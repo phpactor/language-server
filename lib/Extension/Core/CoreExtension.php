@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Extension\Core;
 
 use LanguageServerProtocol\ServerCapabilities;
+use LanguageServerProtocol\TextDocumentSyncKind;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
 use Phpactor\LanguageServer\Core\Handlers;
@@ -54,5 +55,6 @@ class CoreExtension implements Extension
 
     public function configureCapabilities(ServerCapabilities $capabilities): void
     {
+        $capabilities->textDocumentSync = TextDocumentSyncKind::FULL;
     }
 }
