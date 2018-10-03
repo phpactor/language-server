@@ -2,13 +2,22 @@
 
 namespace Phpactor\LanguageServer\Core;
 
+use ArrayIterator;
+use IteratorAggregate;
 use Phpactor\LanguageServer\Core\Exception\HandlerNotFound;
 
-class Handlers
+class Handlers implements IteratorAggregate
 {
     private $handlers = [];
 
-    public function __construct(array $handlers)
+    public function __construct(array $handlers = [])
+    {
+        foreach ($handlers as $handler) {
+            $this->add($handler);
+        }
+    }
+
+    public function merge(Handlers $handlers) 
     {
         foreach ($handlers as $handler) {
             $this->add($handler);
@@ -31,5 +40,13 @@ class Handlers
     public function add(Handler $handler)
     {
         $this->handlers[$handler->name()] = $handler;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->handlers);
     }
 }

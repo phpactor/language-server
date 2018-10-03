@@ -18,9 +18,16 @@ class Initialize implements Handler
      */
     private $sessionManager;
 
-    public function __construct(Manager $sessionManager)
+    /**
+     * @var Extensions
+     */
+    private $extensions;
+
+
+    public function __construct(Extensions $extensions, Manager $sessionManager)
     {
         $this->sessionManager = $sessionManager;
+        $this->extensions = $extensions;
     }
 
     public function name(): string
@@ -48,7 +55,11 @@ class Initialize implements Handler
 
         $this->sessionManager->initialize($rootUri, $processId);
 
-        yield new InitializeResult(new ServerCapabilities());
+        $capabilities = new ServerCapabilities();
+        $this->extensions->configureCapabilities($capabilities);
+
+        yield new InitializeResult($capabilities);
+
         yield new NotificationMessage(
             'window/showMessage',
             [
