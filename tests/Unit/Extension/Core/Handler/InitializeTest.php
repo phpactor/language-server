@@ -1,14 +1,15 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
+namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler;
 
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\Handler\Initialize;
+use Phpactor\LanguageServer\Extension\Core\Initialize;
 use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use RuntimeException;
+use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 
 class InitializeTest extends HandlerTestCase
 {

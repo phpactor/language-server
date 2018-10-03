@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Handler;
+namespace Phpactor\LanguageServer\Extension\Core;
 
 use Generator;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;

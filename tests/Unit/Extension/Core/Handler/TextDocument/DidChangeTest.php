@@ -1,12 +1,12 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler\TextDocument;
+namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\TextDocument;
 
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\Handler\TextDocument\DidChange;
-use Phpactor\LanguageServer\Tests\Unit\Core\Handler\HandlerTestCase;
+use Phpactor\LanguageServer\Extension\Core\TextDocument\DidChange;
+use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 
 class DidChangeTest extends HandlerTestCase
 {

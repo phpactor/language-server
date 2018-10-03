@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+./vendor/bin/phpunit
+./vendor/bin/phpstan analyze --level=7
+./vendor/bin/php-cs-fixer fix

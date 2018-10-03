@@ -4,7 +4,7 @@
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
-use Phpactor\LanguageServer\Core\Handler\Initialize;
+use Phpactor\LanguageServer\Extension\Core\Initialize;
 use Phpactor\LanguageServer\Example\ExampleCompletionHandler;
 use Phpactor\LanguageServer\Core\IO\StreamIO;
 use Phpactor\LanguageServer\Core\ChunkIO\TcpIO;

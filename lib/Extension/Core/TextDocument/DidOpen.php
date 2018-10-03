@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Handler\TextDocument;
+namespace Phpactor\LanguageServer\Extension\Core\TextDocument;
 
 use LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Handler;

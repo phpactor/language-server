@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
+namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;

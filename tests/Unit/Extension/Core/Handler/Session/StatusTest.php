@@ -1,13 +1,13 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler\Session;
+namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\Session;
 
 use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\Handler\Session\Status;
+use Phpactor\LanguageServer\Extension\Core\Session\Status;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
-use Phpactor\LanguageServer\Tests\Unit\Core\Handler\HandlerTestCase;
+use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 
 class StatusTest extends HandlerTestCase
 {
