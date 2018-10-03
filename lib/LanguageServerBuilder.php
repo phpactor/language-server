@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
+use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
@@ -51,6 +52,11 @@ class LanguageServerBuilder
      * @var Extensions
      */
     private $extensions;
+
+    /**
+     * @var bool
+     */
+    private $catchErrors = true;
 
     private function __construct(Manager $sessionManager, ArgumentResolver $argumentResolver, LoggerInterface $logger)
     {
@@ -120,9 +126,20 @@ class LanguageServerBuilder
         $this->recordPath = $path;
     }
 
+    public function doesNotCatchErrors(): self
+    {
+        $this->catchErrors = false;
+
+        return $this;
+    }
+
     public function build(): Server
     {
         $dispatcher = new MethodDispatcher($this->argumentResolver);
+
+        if ($this->catchErrors) {
+            $dispatcher = new ErrorCatchingDispatcher($dispatcher, $this->logger);
+        }
 
         if (null === $this->connection) {
             $this->stdIoServer();
@@ -145,5 +162,10 @@ class LanguageServerBuilder
             $this->extensions,
             $protocol
         );
+    }
+
+    public function catchErrors()
+    {
+        return $this->catchErrors;
     }
 }
