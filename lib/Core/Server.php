@@ -14,6 +14,8 @@ use Psr\Log\LoggerInterface;
 class Server
 {
     const SLEEP_INTERVAL_MICROSECONDS = 50000;
+    const PROCESS_TITLE = 'Phpactor Language Server';
+
 
     /**
      * @var Dispatcher
@@ -87,6 +89,7 @@ class Server
 
     private function doStart()
     {
+        $this->setProcessTitle();
         $this->registerSignalHandlers();
         $this->logger->info(sprintf('starting language server with pid: %s', getmypid()));
         $this->logger->debug(sprintf('handlers: %s', implode(', ', $this->extension->handlers()->names())));
@@ -131,5 +134,10 @@ class Server
         pcntl_async_signals(true);
         pcntl_signal(SIGTERM, [$this, 'shutdown']);
         pcntl_signal(SIGINT, [$this, 'shutdown']);
+    }
+
+    private function setProcessTitle()
+    {
+        cli_set_process_title(self::PROCESS_TITLE);
     }
 }
