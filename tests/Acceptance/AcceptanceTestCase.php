@@ -50,7 +50,6 @@ class AcceptanceTestCase extends TestCase
         };
 
         $this->server = LanguageServerBuilder::create($logger)
-            ->doesNotCatchErrors()
             ->withCoreExtension()
             ->withConnection(new SimpleConnection($this->io))
             ->build();

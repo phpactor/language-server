@@ -34,7 +34,7 @@ class ErrorCatchingDispatcher implements Dispatcher
     public function dispatch(Handlers $handlers, RequestMessage $request): Generator
     {
         try {
-            return $this->innerDispatcher->dispatch($handlers, $request);
+            yield from $this->innerDispatcher->dispatch($handlers, $request);
         } catch (ControlException $controlException) {
             throw $controlException;
         } catch (Throwable $throwable) {

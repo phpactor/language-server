@@ -53,11 +53,6 @@ class LanguageServerBuilder
      */
     private $extensions;
 
-    /**
-     * @var bool
-     */
-    private $catchErrors = true;
-
     private function __construct(Manager $sessionManager, ArgumentResolver $argumentResolver, LoggerInterface $logger)
     {
         $this->sessionManager = $sessionManager;
@@ -126,20 +121,10 @@ class LanguageServerBuilder
         $this->recordPath = $path;
     }
 
-    public function doesNotCatchErrors(): self
-    {
-        $this->catchErrors = false;
-
-        return $this;
-    }
-
     public function build(): Server
     {
         $dispatcher = new MethodDispatcher($this->argumentResolver);
-
-        if ($this->catchErrors) {
-            $dispatcher = new ErrorCatchingDispatcher($dispatcher, $this->logger);
-        }
+        $dispatcher = new ErrorCatchingDispatcher($dispatcher, $this->logger);
 
         if (null === $this->connection) {
             $this->stdIoServer();
@@ -162,10 +147,5 @@ class LanguageServerBuilder
             $this->extensions,
             $protocol
         );
-    }
-
-    public function catchErrors()
-    {
-        return $this->catchErrors;
     }
 }

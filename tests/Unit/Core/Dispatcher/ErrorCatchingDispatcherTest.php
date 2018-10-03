@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Handlers;
+use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseError;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
@@ -54,5 +55,20 @@ class ErrorCatchingDispatcherTest extends TestCase
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertInstanceOf(ResponseError::class, $response->responseError);
         $this->assertEquals('Hello', $response->responseError->message);
+    }
+
+    public function testReturnsResultsFromInnerDispatcher()
+    {
+        $handlers = new Handlers();
+        $message = new RequestMessage(1, 'hello', []);
+
+        $this->innerDispatcher->dispatch($handlers, $message)->will(function () {
+            yield new NotificationMessage('hello', []);
+        });
+
+        $responses = $this->dispatcher->dispatch($handlers, $message);
+
+        $response = $responses->current();
+        $this->assertInstanceOf(NotificationMessage::class, $response);
     }
 }
