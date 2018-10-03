@@ -9,6 +9,7 @@ use Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
 use Phpactor\LanguageServer\Core\Handler;
 use Phpactor\LanguageServer\Extension\Core\CoreExtension;
@@ -30,11 +31,6 @@ class LanguageServerBuilder
      * @var Closure
      */
     private $connection;
-
-    /**
-     * @var Handler[]
-     */
-    private $handlers;
 
     /**
      * @var Manager
@@ -100,9 +96,9 @@ class LanguageServerBuilder
         return $this;
     }
 
-    public function addHandler(Handler $handler): self
+    public function addExtension(Extension $extension)
     {
-        $this->handlers[] = $handler;
+        $this->extensions->add($extension);
 
         return $this;
     }
