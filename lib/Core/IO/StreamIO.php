@@ -9,6 +9,7 @@ use RuntimeException;
 class StreamIO implements IO
 {
     const SLEEP_TIME = 100000;
+    const CHUNK_SIZE = 100;
 
     private $inStream;
     private $outStream;
@@ -40,7 +41,14 @@ class StreamIO implements IO
 
     public function write(string $string)
     {
-        fwrite($this->outStream, $string);
+        $written = 0;
+
+        // write to the stream in chunks, as for some reason writing to STDOUT
+        // truncates at around 36,840 bytes and disabling stream buffering and
+        // flushing the stream seems to have no effect.
+        while ($written < strlen($string)) {
+            $written += fwrite($this->outStream, substr($string, $written, self::CHUNK_SIZE));
+        }
     }
 
     private function validateStream($stream)
