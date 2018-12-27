@@ -7,11 +7,18 @@ use Generator;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Connection\SimpleConnection;
 use Phpactor\LanguageServer\Core\IO\BufferIO;
-use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol\Reader;
+use Phpactor\LanguageServer\Core\Protocol\LspReader;
 use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
+use Phpactor\LanguageServer\Core\TcpServer;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\AbstractLogger;
 use Psr\Log\NullLogger;
+use React\EventLoop\Factory;
+use React\Promise\PromiseInterface;
+use React\Socket\ConnectionInterface;
+use React\Socket\Connector;
+use Clue\React\Block;
+use React\Promise\Stream;
 use RuntimeException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
@@ -33,67 +40,27 @@ class AcceptanceTestCase extends TestCase
      */
     private $stream;
 
-    /**
-     * @var BufferIO
-     */
-    private $io;
-
-    protected function setUp()
-    {
-        $this->io = new BufferIO();
-
-        $logger = new class extends AbstractLogger {
-            public function log($level, $message, array $context = [])
-            {
-                //fwrite(STDERR, 'TESTSERV:'.$message.PHP_EOL);
-            }
-        };
-
-        $this->server = LanguageServerBuilder::create($logger)
-            ->withCoreExtension()
-            ->withConnection(new SimpleConnection($this->io))
-            ->build();
-    }
-
     protected function playback(string $scriptPath)
     {
-        $path = $this->scriptPath($scriptPath);
+        $loop = Factory::create();
 
-        if (!file_exists($path)) {
-            throw new RuntimeException(sprintf(
-                'Playback script "%s" does not exit',
-                $path
-            ));
-        }
-        $this->io->add(file_get_contents($path));
+        $server = new TcpServer($loop, new NullLogger(), 0);
 
-        $this->server->start();
+        $connector = new Connector($loop);
 
-        $reader = new Reader(new NullLogger());
+        $input = file_get_contents(__DIR__ . '/scripts/'.$scriptPath);
 
-        $io = new BufferIO();
-        $io->add($this->io->out());
-        while (true) {
-            yield $reader->readRequest($io);
-        }
-    }
+        $result = $connector->connect($server->address())
+            ->then(function (ConnectionInterface $connection) use ($input) {
+                $connection->write($input);
 
-    public function input(): InputStream
-    {
-        return $this->input;
-    }
+                return Stream\buffer($connection);
+            })
+        ;
 
-    private function scriptPath(string $scriptPath)
-    {
-        $path = __DIR__ . '/scripts/' . $scriptPath;
-        return $path;
-    }
+        $response = Block\await($result, $loop, 1.0);
+        $process->stop();
 
-    protected function assertResponse(Closure $assertion, Generator $generator)
-    {
-        $deserializer = new JsonSerializer();
-        $response = $generator->current();
-        $assertion($deserializer->deserialize($response->body()));
-        $generator->next();
+        return $response;
     }
 }

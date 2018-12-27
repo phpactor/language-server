@@ -53,8 +53,7 @@ $logger = new class extends AbstractLogger {
 $logger->info('test language server starting');
 $logger->info('i am a demonstration server and provide no functionality');
 
-$sessionManager = new Manager();
-$builder = LanguageServerBuilder::create($logger, $sessionManager);
+$builder = LanguageServerBuilder::create($logger);
 
 switch ($options['type']) {
     case 'tcp':
@@ -68,8 +67,6 @@ switch ($options['type']) {
         exit(255);
 }
 
-$builder->recordTo('recording.log');
-$builder->withCoreExtension();
 $server = $builder->build();
 
 $server->start();
