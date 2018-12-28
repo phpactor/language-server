@@ -2,17 +2,28 @@
 
 namespace Phpactor\LanguageServer\Core\Parser;
 
+use Closure;
 use Evenement\EventEmitter;
 use Exception;
 use Phpactor\LanguageServer\Core\Transport\Request;
 use function json_encode;
 
-final class LanguageServerProtocolParser extends EventEmitter
+final class LanguageServerProtocolParser
 {
     const EVENT_REQUEST_READY = 'request.ready';
     const HEADER_CONTENT_LENGTH = 'Content-Length';
 
     private $buffer = [];
+
+    /**
+     * @var Closure
+     */
+    private $handler;
+
+    public function __construct(Closure $handler)
+    {
+        $this->handler = $handler;
+    }
 
     public function feed(string $chunk)
     {
@@ -43,12 +54,12 @@ final class LanguageServerProtocolParser extends EventEmitter
             $contentLength = (int) $headers[self::HEADER_CONTENT_LENGTH];
 
             if (count($this->buffer) === $contentLength) {
-                $this->emit(self::EVENT_REQUEST_READY, [
+                $this->handle(
                     new Request(
                         $headers,
                         $this->decodeBody($this->buffer)
                     )
-                ]);
+                );
                 $this->buffer = [];
                 $headers = null;
             }
@@ -80,5 +91,11 @@ final class LanguageServerProtocolParser extends EventEmitter
         }
 
         return $array;
+    }
+
+    private function handle(Request $request)
+    {
+        $handler = $this->handler;
+        $handler($request);
     }
 }

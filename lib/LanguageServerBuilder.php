@@ -11,6 +11,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
+use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\TcpServer;
 use Phpactor\LanguageServer\Extension\Core\CoreExtension;
 use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
@@ -42,7 +43,8 @@ class LanguageServerBuilder
 
     public function tcpServer(string $address = '127.0.0.1:8888'): self
     {
-        $this->server = new TcpServer($this->logger, $address);
+        $dispatcher = new MethodDispatcher(new DTLArgumentResolver());
+        $this->server = new TcpServer($dispatcher, $this->logger, $address);
 
         return $this;
     }

@@ -25,4 +25,13 @@ class RequestMessage extends Message
         $this->method = $method;
         $this->params = $params;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'method' => $this->method,
+            'params' => $this->params,
+        ];
+    }
 }

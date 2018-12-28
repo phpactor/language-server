@@ -15,7 +15,6 @@ class LanguageServerProtocolParserTest extends TestCase
 
     public function setUp()
     {
-        $this->parser = new LanguageServerProtocolParser();
     }
 
     public function testFeed()
@@ -30,7 +29,7 @@ class LanguageServerProtocolParserTest extends TestCase
     "params": {}
  }
 EOT;
-        $this->parser->on(LanguageServerProtocolParser::EVENT_REQUEST_READY, function (Request $request) {
+        $handler = function (Request $request) {
             $this->assertEquals([
                 'Content-Length' => '80',
                 'Content-Type' => 'foo',
@@ -42,8 +41,9 @@ EOT;
                 'method' => 'test',
                 'params' => [],
             ], $request->body());
-        });
-        $this->parser->feed($payload);
+        };
+        $parser = new LanguageServerProtocolParser($handler);
+        $parser->feed($payload);
         $this->assertEquals(2, $this->getCount());
     }
 }

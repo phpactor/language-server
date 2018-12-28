@@ -42,25 +42,6 @@ class AcceptanceTestCase extends TestCase
 
     protected function playback(string $scriptPath)
     {
-        $loop = Factory::create();
-
-        $server = new TcpServer($loop, new NullLogger(), 0);
-
-        $connector = new Connector($loop);
-
-        $input = file_get_contents(__DIR__ . '/scripts/'.$scriptPath);
-
-        $result = $connector->connect($server->address())
-            ->then(function (ConnectionInterface $connection) use ($input) {
-                $connection->write($input);
-
-                return Stream\buffer($connection);
-            })
-        ;
-
-        $response = Block\await($result, $loop, 1.0);
-        $process->stop();
-
         return $response;
     }
 }

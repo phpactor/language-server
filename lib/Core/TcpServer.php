@@ -2,9 +2,14 @@
 
 namespace Phpactor\LanguageServer\Core;
 
+use Amp\ByteStream\StreamException;
+use Amp\Loop;
+use Amp\Socket\ServerSocket;
 use Phpactor\LanguageServer\Core\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Protocol\LspReader;
 use Phpactor\LanguageServer\Core\Transport\Request;
+use Phpactor\LanguageServer\Core\Transport\RequestMessage;
+use Phpactor\LanguageServer\Core\Transport\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\EventLoop\LoopInterface;
@@ -33,30 +38,52 @@ class TcpServer implements Server
      */
     private $logger;
 
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
+
     public function __construct(
-        LoopInterface $eventLoop,
+        Dispatcher $dispatcher,
         LoggerInterface $logger,
         string $address
     )
     {
-        $this->parser = new LanguageServerProtocolParser();
         $this->logger = $logger;
-
-        $server = new ReactSocketServer($address, $eventLoop);
-        $server->on('connection', function (ConnectionInterface $connection) {
-            $connection->on('data', [ $this->parser, 'feed' ]);
-        });
-
-        $this->parser->on(LanguageServerProtocolParser::EVENT_REQUEST_READY, function (Request $request) {
-        });
-        $this->address = $server->getAddress();
-        $this->eventLoop = $eventLoop;
+        $this->address = $address;
+        $this->dispatcher = $dispatcher;
     }
 
 
     public function start(): void
     {
-        $this->eventLoop->run();
+        $parser = new LanguageServerProtocolParser(function (Request $request) {
+            $this->logger->info('Dispatching', $request->body());
+            $requestMessage = RequestMessageFactory::fromRequest($request);
+            $this->dispatcher->dispatch(new Handlers(), $requestMessage);
+        });
+
+        Loop::run(function () use ($parser) {
+            $server = \Amp\Socket\listen($this->address);
+
+            $handler = function (ServerSocket $socket) use ($parser) {
+                while (null !== $chunk = yield $socket->read()) {
+                    $parser->feed($chunk);
+                    try {
+                        yield $socket->write($chunk);
+                    } catch (StreamException $exception) {
+                        $this->logger->error($exception->getMessage());
+                        yield $socket->end();
+                    }
+                }
+            };
+
+            while ($socket = yield $server->accept()) {
+                    \Amp\asyncCall($handler, $socket);
+            }
+
+
+        });
     }
 
     public function address(): string
