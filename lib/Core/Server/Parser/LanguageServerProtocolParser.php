@@ -9,8 +9,6 @@ use Generator;
 use Phpactor\LanguageServer\Core\Transport\Request;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use function json_encode;
-use Phpactor\LanguageServer\Core\Server\CouldNotDecodeBody;
-use Phpactor\LanguageServer\Core\Server\CouldNotParseHeader;
 
 final class LanguageServerProtocolParser
 {
@@ -19,42 +17,52 @@ final class LanguageServerProtocolParser
 
     private $buffer = [];
 
-    public function feed(string $chunk): Generator
+    public function __invoke(): Generator
     {
         $headers = null;
 
-        for ($i = 0; $i < strlen($chunk); $i++) {
-            $this->buffer[] = $chunk[$i];
+        $chunk = yield;
 
-            if ($headers === null && array_slice($this->buffer, -4, 4) === [
-                "\r", "\n",
-                "\r", "\n"
-            ]) {
-                $headers = $this->parseHeaders(implode('', array_slice($this->buffer, 0, -4)));
-                $this->buffer = [];
-                continue;
+        while (true) {
+            for ($i = 0; $i < strlen($chunk); $i++) {
+
+                // start by parsing the headers:
+                $this->buffer[] = $chunk[$i];
+
+                if ($headers === null && array_slice($this->buffer, -4, 4) === [
+                    "\r", "\n",
+                    "\r", "\n"
+                ]) {
+                    $headers = $this->parseHeaders(implode('', array_slice($this->buffer, 0, -4)));
+                    $this->buffer = [];
+                    continue;
+                }
+
+                if (null === $headers) {
+                    continue;
+                }
+
+                // we finished parsing the headers, now parse the body
+
+                if (!isset($headers[self::HEADER_CONTENT_LENGTH])) {
+                    throw new CouldNotParseHeader(sprintf(
+                        'Header did not contain mandatory Content-Length in "%s"',
+                        json_encode($headers)
+                    ));
+                }
+
+                $contentLength = (int) $headers[self::HEADER_CONTENT_LENGTH];
+
+                if (count($this->buffer) === $contentLength) {
+                    $request = new Request($headers, $this->decodeBody($this->buffer));
+                    $this->buffer = [];
+                    $headers = null;
+
+                    $chunk = yield $request;
+                }
             }
 
-            if (null === $headers) {
-                continue;
-            }
-
-            if (!isset($headers[self::HEADER_CONTENT_LENGTH])) {
-                throw new CouldNotParseHeader(sprintf(
-                    'Header did not contain mandatory Content-Length in "%s"',
-                    json_encode($headers)
-                ));
-            }
-
-            $contentLength = (int) $headers[self::HEADER_CONTENT_LENGTH];
-
-            if (count($this->buffer) === $contentLength) {
-                $request = new Request($headers, $this->decodeBody($this->buffer));
-                $this->buffer = [];
-                $headers = null;
-
-                yield $request;
-            }
+            $chunk = yield null;
         }
 
         yield null;
