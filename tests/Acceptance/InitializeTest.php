@@ -9,9 +9,14 @@ class InitializeTest extends AcceptanceTestCase
      */
     public function testInitialize(string $scriptPath)
     {
-        $response = $this->playback($scriptPath);
-        var_dump($response);
+        $script = file_get_contents(__DIR__ . '/scripts/' .$scriptPath);
+        $client = $this->client();
 
+        $responses = $client->send($script);
+        $response = $responses[0];
+
+        $this->assertArrayHasKey('result', $response->body());
+        $this->assertArrayHasKey('capabilities', $response->body()['result']);
     }
 
     public function provideScripts()

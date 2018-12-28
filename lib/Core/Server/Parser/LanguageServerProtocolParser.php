@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Parser;
+namespace Phpactor\LanguageServer\Core\Server\Parser;
 
 use Closure;
 use Evenement\EventEmitter;
@@ -9,6 +9,8 @@ use Generator;
 use Phpactor\LanguageServer\Core\Transport\Request;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use function json_encode;
+use Phpactor\LanguageServer\Core\Server\CouldNotDecodeBody;
+use Phpactor\LanguageServer\Core\Server\CouldNotParseHeader;
 
 final class LanguageServerProtocolParser
 {
@@ -47,7 +49,7 @@ final class LanguageServerProtocolParser
             $contentLength = (int) $headers[self::HEADER_CONTENT_LENGTH];
 
             if (count($this->buffer) === $contentLength) {
-                $request =  new Request($headers, $this->decodeBody($this->buffer));
+                $request = new Request($headers, $this->decodeBody($this->buffer));
                 $this->buffer = [];
                 $headers = null;
 

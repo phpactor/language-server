@@ -1,10 +1,12 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core;
+namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use ArrayIterator;
 use IteratorAggregate;
-use Phpactor\LanguageServer\Core\Exception\HandlerNotFound;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerNotFound;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 
 class Handlers implements IteratorAggregate
 {

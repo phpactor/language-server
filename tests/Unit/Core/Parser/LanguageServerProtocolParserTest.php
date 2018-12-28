@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Parser;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Server\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Transport\Request;
 
 class LanguageServerProtocolParserTest extends TestCase

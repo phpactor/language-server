@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Extension\Core\TextDocument;
 
 use LanguageServerProtocol\TextDocumentItem;
-use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
 
 class DidOpen implements Handler

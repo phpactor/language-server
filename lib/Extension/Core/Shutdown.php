@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Extension\Core;
 
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
-use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 
 class Shutdown implements Handler
 {

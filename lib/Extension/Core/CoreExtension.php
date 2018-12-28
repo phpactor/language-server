@@ -6,7 +6,7 @@ use LanguageServerProtocol\ServerCapabilities;
 use LanguageServerProtocol\TextDocumentSyncKind;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
-use Phpactor\LanguageServer\Core\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Phpactor\LanguageServer\Extension\Core\Session\Status;
 use Phpactor\LanguageServer\Extension\Core\TextDocument\DidChange;

@@ -4,10 +4,10 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
 
 use Generator;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
 use stdClass;
@@ -18,17 +18,26 @@ class MethodDispatcherTest extends TestCase
 
     private $argumentResolver;
 
+    /**
+     * @var ObjectProphecy
+     */
+    private $handler;
+
+    /**
+     * @var Handlers
+     */
+    private $handlers;
+
     public function setUp()
     {
         $this->argumentResolver = $this->prophesize(ArgumentResolver::class);
         $this->handler = $this->prophesize(Handler::class);
+        $this->handler->name()->willReturn('foobar');
+        $this->handlers = new Handlers([ $this->handler->reveal() ]);
     }
 
     public function testDispatchesRequest()
     {
-        $this->handler->name()->willReturn('foobar');
-        $handlers = new Handlers([ $this->handler->reveal() ]);
-
         $dispatcher = $this->create([
             $this->handler->reveal()
         ]);
@@ -42,7 +51,7 @@ class MethodDispatcherTest extends TestCase
             yield $expectedResult;
         });
 
-        $messages = $dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
+        $messages = $dispatcher->dispatch(new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
 
         $this->assertInstanceOf(Generator::class, $messages);
         $response = $messages->current();
@@ -53,6 +62,6 @@ class MethodDispatcherTest extends TestCase
 
     private function create(array $array): MethodDispatcher
     {
-        return new MethodDispatcher($this->argumentResolver->reveal());
+        return new MethodDispatcher($this->argumentResolver->reveal(), $this->handlers);
     }
 }

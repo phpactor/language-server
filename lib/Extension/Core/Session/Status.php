@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Extension\Core\Session;
 
 use LanguageServerProtocol\MessageType;
-use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
 

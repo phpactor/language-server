@@ -2,6 +2,9 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
+use Amp\Loop;
+use Amp\Loop\DriverFactory;
+use Amp\Socket\ClientSocket;
 use Closure;
 use Generator;
 use PHPUnit\Framework\TestCase;
@@ -9,7 +12,10 @@ use Phpactor\LanguageServer\Core\Connection\SimpleConnection;
 use Phpactor\LanguageServer\Core\IO\BufferIO;
 use Phpactor\LanguageServer\Core\Protocol\LspReader;
 use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
-use Phpactor\LanguageServer\Core\TcpServer;
+use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Server\TcpServer;
+use Phpactor\LanguageServer\Core\Transport\Request;
+use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\AbstractLogger;
 use Psr\Log\NullLogger;
@@ -40,8 +46,22 @@ class AcceptanceTestCase extends TestCase
      */
     private $stream;
 
-    protected function playback(string $scriptPath)
+    protected function setUp()
     {
-        return $response;
+        Loop::set((new DriverFactory())->create());
+    }
+
+    protected function client(): TestClient
+    {
+        $address = '127.0.0.1:1337';
+        $server = LanguageServerBuilder::create()->build($address);
+
+        $server->start();
+
+        $socket = \Amp\Socket\connect($address);
+        $socket = \Amp\Promise\wait($socket);
+        assert($socket instanceof ClientSocket);
+
+        return new TestClient($socket);
     }
 }

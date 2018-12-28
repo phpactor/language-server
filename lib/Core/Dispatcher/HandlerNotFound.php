@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Exception;
+namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use RuntimeException;
 

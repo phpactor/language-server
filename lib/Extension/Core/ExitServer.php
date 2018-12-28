@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Extension\Core;
 
 use Generator;
 use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
-use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
 
 class ExitServer implements Handler

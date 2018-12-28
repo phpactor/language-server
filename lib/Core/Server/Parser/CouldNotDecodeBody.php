@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Parser;
+namespace Phpactor\LanguageServer\Core\Server\Parser;
 
 use RuntimeException;
 

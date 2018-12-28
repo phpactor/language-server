@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\TextDocument
 
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Extension\Core\TextDocument\DidChange;
 use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 

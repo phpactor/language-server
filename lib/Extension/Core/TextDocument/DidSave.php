@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Extension\Core\TextDocument;
 
 use LanguageServerProtocol\TextDocumentIdentifier;
-use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 
 class DidSave implements Handler
 {

@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Extension\Core;
 
-use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 
 class Initialized implements Handler
 {

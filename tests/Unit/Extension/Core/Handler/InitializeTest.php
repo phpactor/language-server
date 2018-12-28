@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Extension;
-use Phpactor\LanguageServer\Core\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Extension\Core\Initialize;
 use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\Manager;

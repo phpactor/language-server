@@ -6,8 +6,8 @@ use LanguageServerProtocol\ServerCapabilities;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
-use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 
 class ExtensionsTest extends TestCase
 {

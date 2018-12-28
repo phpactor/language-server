@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core;
+namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 interface ArgumentResolver
 {

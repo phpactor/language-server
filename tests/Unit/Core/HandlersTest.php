@@ -3,9 +3,9 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\Exception\HandlerNotFound;
-use Phpactor\LanguageServer\Core\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerNotFound;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 
 class HandlersTest extends TestCase
 {

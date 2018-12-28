@@ -4,19 +4,19 @@ namespace Phpactor\LanguageServer;
 
 use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Core\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
-use Phpactor\LanguageServer\Core\Handlers;
-use Phpactor\LanguageServer\Core\TcpServer;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
+use Phpactor\LanguageServer\Core\Server\TcpServer;
 use Phpactor\LanguageServer\Extension\Core\CoreExtension;
 use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
 use Phpactor\LanguageServer\Core\Protocol\RecordingProtocol;
-use Phpactor\LanguageServer\Core\Server;
+use Phpactor\LanguageServer\Core\Server\Server;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -42,27 +42,18 @@ class LanguageServerBuilder
         );
     }
 
-    public function tcpServer(string $address = '127.0.0.1:8888'): self
+    public function build(string $address = '127.0.0.1:8888'): Server
     {
         $dispatcher = new ErrorCatchingDispatcher(
-            new MethodDispatcher(new DTLArgumentResolver(), (new CoreExtension(new Manager()))->handlers()),
+            new MethodDispatcher(
+                new DTLArgumentResolver(),
+                (new CoreExtension(
+                    new Manager()
+                ))->handlers()
+            ),
             $this->logger
         );
 
-        $this->server = new TcpServer($dispatcher, $this->logger, $address);
-
-        return $this;
-    }
-
-    public function addExtension(Extension $extension)
-    {
-        $this->extensions->add($extension);
-
-        return $this;
-    }
-
-    public function build(): Server
-    {
-        return $this->server;
+        return new TcpServer($dispatcher, $this->logger, $address);
     }
 }

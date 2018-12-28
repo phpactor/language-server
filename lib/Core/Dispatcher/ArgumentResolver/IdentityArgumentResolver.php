@@ -1,8 +1,8 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\ArgumentResolver;
+namespace Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 
-use Phpactor\LanguageServer\Core\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 
 class IdentityArgumentResolver implements ArgumentResolver
 {
