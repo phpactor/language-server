@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+use Amp\Loop;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
@@ -69,4 +70,6 @@ switch ($options['type']) {
 
 $server = $builder->build();
 
-$server->start();
+Loop::run(function () use ($server) {
+    $server->start();
+});

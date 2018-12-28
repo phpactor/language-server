@@ -21,6 +21,7 @@ use Phpactor\LanguageServer\Core\Session\Manager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\Factory;
+use SessionHandler;
 
 class LanguageServerBuilder
 {
@@ -43,17 +44,12 @@ class LanguageServerBuilder
 
     public function tcpServer(string $address = '127.0.0.1:8888'): self
     {
-        $dispatcher = new MethodDispatcher(new DTLArgumentResolver());
+        $dispatcher = new ErrorCatchingDispatcher(
+            new MethodDispatcher(new DTLArgumentResolver(), (new CoreExtension(new Manager()))->handlers()),
+            $this->logger
+        );
+
         $this->server = new TcpServer($dispatcher, $this->logger, $address);
-
-        return $this;
-    }
-
-    public function stdIoServer(): self
-    {
-        $this->connection = function () {
-            return new StreamConnection($this->logger);
-        };
 
         return $this;
     }

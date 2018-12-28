@@ -31,10 +31,10 @@ class ErrorCatchingDispatcher implements Dispatcher
         $this->logger = $logger;
     }
 
-    public function dispatch(Handlers $handlers, RequestMessage $request): Generator
+    public function dispatch(RequestMessage $request): Generator
     {
         try {
-            yield from $this->innerDispatcher->dispatch($handlers, $request);
+            yield from $this->innerDispatcher->dispatch($request);
         } catch (ControlException $controlException) {
             throw $controlException;
         } catch (Throwable $throwable) {

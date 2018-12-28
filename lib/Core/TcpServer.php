@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Core;
 use Amp\ByteStream\StreamException;
 use Amp\Loop;
 use Amp\Socket\ServerSocket;
+use Generator;
 use Phpactor\LanguageServer\Core\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Protocol\LspReader;
 use Phpactor\LanguageServer\Core\Transport\Request;
@@ -54,21 +55,34 @@ class TcpServer implements Server
         $this->dispatcher = $dispatcher;
     }
 
-
     public function start(): void
     {
-        $parser = new LanguageServerProtocolParser(function (Request $request) {
-            $this->logger->info('Dispatching', $request->body());
-            $requestMessage = RequestMessageFactory::fromRequest($request);
-            $this->dispatcher->dispatch(new Handlers(), $requestMessage);
-        });
-
-        Loop::run(function () use ($parser) {
+        \Amp\asyncCall(function () {
             $server = \Amp\Socket\listen($this->address);
+            $handler = $this->createHandler();
 
-            $handler = function (ServerSocket $socket) use ($parser) {
-                while (null !== $chunk = yield $socket->read()) {
-                    $parser->feed($chunk);
+            while ($socket = yield $server->accept()) {
+                \Amp\asyncCall($handler, $socket);
+            }
+        });
+    }
+
+    private function createHandler()
+    {
+       return function (ServerSocket $socket) {
+        
+            $parser = new LanguageServerProtocolParser();
+
+            while (null !== $chunk = yield $socket->read()) {
+
+                foreach ($parser->feed($chunk) as $request) {
+
+                    if (null === $request) {
+                        continue 2;
+                    }
+
+                    $this->dispatch($request, $socket);
+
                     try {
                         yield $socket->write($chunk);
                     } catch (StreamException $exception) {
@@ -76,18 +90,18 @@ class TcpServer implements Server
                         yield $socket->end();
                     }
                 }
-            };
-
-            while ($socket = yield $server->accept()) {
-                    \Amp\asyncCall($handler, $socket);
             }
-
-
-        });
+       };
     }
 
-    public function address(): string
+    private function dispatch(Request $request, ServerSocket $socket)
     {
-        return $this->address;
+        $this->logger->info('Dispatching request', $request->body());
+
+        $responses = $this->dispatcher->dispatch(RequestMessageFactory::fromRequest($request));
+
+        foreach ($responses as $response) {
+            $socket->write(json_encode($response));
+        }
     }
 }

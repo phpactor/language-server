@@ -16,28 +16,22 @@ use Phpactor\LanguageServer\Extension\Core\TextDocument\DidSave;
 use Phpactor\LanguageServer\Extension\Core\TextDocument\WillSave;
 use Phpactor\LanguageServer\Extension\Core\TextDocument\WillSaveWaitUntil;
 
-class CoreExtension implements Extension
+class CoreExtension
 {
-    /**
-     * @var Extensions
-     */
-    private $extensions;
-
     /**
      * @var Manager
      */
     private $sessionManager;
 
-    public function __construct(Extensions $extensions, Manager $sessionManager)
+    public function __construct(Manager $sessionManager)
     {
-        $this->extensions = $extensions;
         $this->sessionManager = $sessionManager;
     }
 
     public function handlers(): Handlers
     {
         return new Handlers([
-            new Initialize($this->extensions, $this->sessionManager),
+            new Initialize($this->sessionManager),
             new Initialized(),
             new ExitServer(),
             new Shutdown(),

@@ -14,22 +14,6 @@ use RuntimeException;
 
 class Initialize implements Handler
 {
-    /**
-     * @var Manager
-     */
-    private $sessionManager;
-
-    /**
-     * @var Extension
-     */
-    private $extensions;
-
-    public function __construct(Extension $extensions, Manager $sessionManager)
-    {
-        $this->sessionManager = $sessionManager;
-        $this->extensions = $extensions;
-    }
-
     public function name(): string
     {
         return 'initialize';
@@ -53,10 +37,7 @@ class Initialize implements Handler
             );
         }
 
-        $this->sessionManager->initialize($rootUri, $processId);
-
         $capabilities = new ServerCapabilities();
-        $this->extensions->configureCapabilities($capabilities);
 
         yield new InitializeResult($capabilities);
 

@@ -5,7 +5,9 @@ namespace Phpactor\LanguageServer\Core\Parser;
 use Closure;
 use Evenement\EventEmitter;
 use Exception;
+use Generator;
 use Phpactor\LanguageServer\Core\Transport\Request;
+use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use function json_encode;
 
 final class LanguageServerProtocolParser
@@ -15,19 +17,10 @@ final class LanguageServerProtocolParser
 
     private $buffer = [];
 
-    /**
-     * @var Closure
-     */
-    private $handler;
-
-    public function __construct(Closure $handler)
-    {
-        $this->handler = $handler;
-    }
-
-    public function feed(string $chunk)
+    public function feed(string $chunk): Generator
     {
         $headers = null;
+
         for ($i = 0; $i < strlen($chunk); $i++) {
             $this->buffer[] = $chunk[$i];
 
@@ -54,16 +47,15 @@ final class LanguageServerProtocolParser
             $contentLength = (int) $headers[self::HEADER_CONTENT_LENGTH];
 
             if (count($this->buffer) === $contentLength) {
-                $this->handle(
-                    new Request(
-                        $headers,
-                        $this->decodeBody($this->buffer)
-                    )
-                );
+                $request =  new Request($headers, $this->decodeBody($this->buffer));
                 $this->buffer = [];
                 $headers = null;
+
+                yield $request;
             }
         }
+
+        yield null;
     }
 
     private function parseHeaders(string $rawHeaders)
@@ -91,11 +83,5 @@ final class LanguageServerProtocolParser
         }
 
         return $array;
-    }
-
-    private function handle(Request $request)
-    {
-        $handler = $this->handler;
-        $handler($request);
     }
 }
