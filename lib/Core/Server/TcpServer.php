@@ -22,7 +22,7 @@ class TcpServer implements Server
     private $eventLoop;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $address;
 
@@ -63,7 +63,7 @@ class TcpServer implements Server
         $this->server = \Amp\Socket\listen($this->address);
     }
 
-    public function address(): string
+    public function address(): ?string
     {
         return $this->server->getAddress();
     }
