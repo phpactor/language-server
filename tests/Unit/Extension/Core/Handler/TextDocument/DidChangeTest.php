@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\TextDocument
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Protocol\DidChangeTextDocumentParams;
+use LanguageServerProtocol\DidChangeTextDocumentParams;
 use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 
 class DidChangeTest extends HandlerTestCase

@@ -3,20 +3,13 @@
 namespace Phpactor\LanguageServer\Core\Server;
 
 use Amp\ByteStream\StreamException;
-use Amp\Loop;
 use Amp\Socket\ServerSocket;
-use Generator;
-use Phpactor\LanguageServer\Core\Protocol\LspReader;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Transport\Request;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
-use React\EventLoop\Factory as EventLoopFactory;
 use React\EventLoop\LoopInterface;
-use React\Socket\ConnectionInterface;
-use React\Socket\Server as ReactSocketServer;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 class TcpServer implements Server
@@ -55,8 +48,7 @@ class TcpServer implements Server
         Dispatcher $dispatcher,
         LoggerInterface $logger,
         string $address
-    )
-    {
+    ) {
         $this->logger = $logger;
         $this->address = $address;
         $this->dispatcher = $dispatcher;
@@ -79,15 +71,12 @@ class TcpServer implements Server
     private function createHandler()
     {
         return function (ServerSocket $socket) {
-
             $parser = (new LanguageServerProtocolParser())->__invoke();
 
             while (null !== $chunk = yield $socket->read()) {
-
                 while ($request = $parser->send($chunk)) {
                     try {
                         $this->dispatch($request, $socket);
-
                     } catch (StreamException $exception) {
                         $this->logger->error($exception->getMessage());
 
@@ -96,7 +85,7 @@ class TcpServer implements Server
                     $chunk = null;
                 }
             }
-       };
+        };
     }
 
     private function dispatch(Request $request, ServerSocket $socket)

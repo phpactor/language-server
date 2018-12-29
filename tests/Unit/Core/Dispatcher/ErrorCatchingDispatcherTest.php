@@ -6,7 +6,6 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseError;

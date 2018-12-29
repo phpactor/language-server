@@ -3,9 +3,6 @@
 namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use Generator;
-use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Transport\Message;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseMessage;

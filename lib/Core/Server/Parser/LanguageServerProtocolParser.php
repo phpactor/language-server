@@ -2,12 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Parser;
 
-use Closure;
-use Evenement\EventEmitter;
-use Exception;
 use Generator;
 use Phpactor\LanguageServer\Core\Transport\Request;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use function json_encode;
 
 final class LanguageServerProtocolParser

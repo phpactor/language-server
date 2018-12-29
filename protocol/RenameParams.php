@@ -1,9 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
-
-use LanguageServerProtocol\Position;
-use LanguageServerProtocol\TextDocumentIdentifier;
+namespace LanguageServerProtocol;
 
 class RenameParams
 {

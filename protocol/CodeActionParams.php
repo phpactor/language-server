@@ -1,10 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
-
-use LanguageServerProtocol\CodeActionContext;
-use LanguageServerProtocol\Range;
-use LanguageServerProtocol\TextDocumentIdentifier;
+namespace LanguageServerProtocol;
 
 class CodeActionParams
 {

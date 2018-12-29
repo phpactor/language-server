@@ -1,10 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
-
-use LanguageServerProtocol\TextDocumentItem;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Session\Manager;
+namespace LanguageServerProtocol;
 
 class DidOpenTextDocumentParams
 {

@@ -1,10 +1,8 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
+namespace LanguageServerProtocol;
 
-use LanguageServerProtocol\TextDocumentIdentifier;
-
-class CodeLensParams
+class DocumentSymbolParams
 {
     /**
      * @var TextDocumentIdentifier
@@ -15,5 +13,4 @@ class CodeLensParams
     {
         $this->textDocument = $textDocument;
     }
-
 }

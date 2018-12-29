@@ -1,8 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
-
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+namespace LanguageServerProtocol;
 
 class DidChangeTextDocumentParams
 {
@@ -21,5 +19,4 @@ class DidChangeTextDocumentParams
         $this->textDocument = $textDocument;
         $this->contentChanges = $contentChanges;
     }
-    
 }

@@ -3,9 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use Generator;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Exception\ControlException;
-use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Transport\ErrorCodes;
 use Phpactor\LanguageServer\Core\Transport\RequestMessage;
 use Phpactor\LanguageServer\Core\Transport\ResponseError;

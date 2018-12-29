@@ -1,16 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
-
-use Generator;
-use LanguageServerProtocol\InitializeResult;
-use LanguageServerProtocol\MessageType;
-use LanguageServerProtocol\ServerCapabilities;
-use Phpactor\LanguageServer\Core\Extension;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Session\Manager;
-use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
-use RuntimeException;
+namespace LanguageServerProtocol;
 
 class InitializeParams
 {

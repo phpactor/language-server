@@ -1,8 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
-
-use LanguageServerProtocol\MessageActionItem;
+namespace LanguageServerProtocol;
 
 class ShowMessageRequestParams extends ShowMessageParams
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
+namespace LanguageServerProtocol;
 
 class UnregistrationParams
 {

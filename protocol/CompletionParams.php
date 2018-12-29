@@ -1,10 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
-
-use LanguageServerProtocol\CompletionContext;
-use LanguageServerProtocol\Position;
-use LanguageServerProtocol\TextDocumentIdentifier;
+namespace LanguageServerProtocol;
 
 class CompletionParams extends TextDocumentPositionParams
 {

@@ -1,9 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Protocol;
-
-use LanguageServerProtocol\TextDocumentIdentifier;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+namespace LanguageServerProtocol;
 
 class WillSaveTextDocumentParams
 {
@@ -22,5 +19,4 @@ class WillSaveTextDocumentParams
         $this->identifier = $identifier;
         $this->reason = $reason;
     }
-    
 }
