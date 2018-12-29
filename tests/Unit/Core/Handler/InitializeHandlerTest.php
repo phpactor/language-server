@@ -1,28 +1,54 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
 use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 use RuntimeException;
 
-class InitializeTest extends HandlerTestCase
+class InitializeHandlerTest extends HandlerTestCase
 {
     /**
      * @var ObjectProphecy
      */
     private $session;
 
+    /**
+     * @var ObjectProphecy
+     */
+    private $sessionManager;
+
+    /**
+     * @var EvenementEmitter
+     */
+    private $emitter;
+
+    /**
+     * @var ObjectProphecy
+     */
+    private $extensions;
+
+
     public function setUp()
     {
         $this->sessionManager = $this->prophesize(SessionManager::class);
         $this->session = $this->prophesize(Session::class);
+        $this->emitter = new EvenementEmitter();
         $this->extensions = $this->prophesize(Extension::class);
+    }
+
+    public function handler(): Handler
+    {
+        return new InitializeHandler(
+            $this->emitter,
+            $this->sessionManager->reveal()
+        );
     }
 
     public function testInitialize()
@@ -60,10 +86,5 @@ class InitializeTest extends HandlerTestCase
             'initializationOptions' => [],
             'processId' => '1234',
         ]);
-    }
-
-    public function handler(): Handler
-    {
-        return new InitializeParams($this->extensions->reveal(), $this->sessionManager->reveal());
     }
 }

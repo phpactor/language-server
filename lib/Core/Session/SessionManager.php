@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Session;
 
 use RuntimeException;
 
-class Manager
+class SessionManager
 {
     /**
      * @var Session|null

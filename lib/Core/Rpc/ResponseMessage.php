@@ -2,9 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
-use Phpactor\LanguageServer\Core\Rpc\Message;
-use Phpactor\LanguageServer\Core\Rpc\ResponseError;
-
 class ResponseMessage extends Message
 {
     /**

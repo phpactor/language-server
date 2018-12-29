@@ -4,12 +4,11 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use Generator;
 use LanguageServerProtocol\InitializeResult;
-use LanguageServerProtocol\InitializedParams;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
-use Phpactor\LanguageServer\Core\Session\Manager;
+use Phpactor\LanguageServer\Core\Session\SessionManager;
 use RuntimeException;
 
 class InitializeHandler implements Handler
@@ -24,7 +23,7 @@ class InitializeHandler implements Handler
      */
     private $manager;
 
-    public function __construct(EventEmitter $emitter, Manager $manager)
+    public function __construct(EventEmitter $emitter, SessionManager $manager)
     {
         $this->emitter = $emitter;
         $this->manager = $manager;
@@ -45,8 +44,7 @@ class InitializeHandler implements Handler
         ?string $rootPath = null,
         ?string $rootUri = null,
         ?string $trace = null
-    ): Generator
-    {
+    ): Generator {
         if (!$rootUri && $rootPath) {
             $rootUri = $rootPath;
         }

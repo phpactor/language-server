@@ -2,8 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
-use Phpactor\LanguageServer\Core\Rpc\Message;
-
 class NotificationMessage extends Message
 {
     /**

@@ -7,7 +7,7 @@ use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
-use Phpactor\LanguageServer\Core\Session\Manager;
+use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 abstract class HandlerTestCase extends TestCase
@@ -21,12 +21,12 @@ abstract class HandlerTestCase extends TestCase
 
     abstract public function handler(): Handler;
 
-    protected function session(): Manager
+    protected function session(): SessionManager
     {
         if ($this->manager) {
             return $this->manager;
         }
-        $manager = new Manager();
+        $manager = new SessionManager();
         $manager->initialize(__DIR__);
         $this->manager = $manager;
 

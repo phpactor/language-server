@@ -1,15 +1,13 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\Session;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Protocol\Session\Status;
-use Phpactor\LanguageServer\Core\Session\SessionManager;
+use Phpactor\LanguageServer\Core\Handler\SessionHandler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 
-class StatusTest extends HandlerTestCase
+class SessionHandlerTest extends HandlerTestCase
 {
     /**
      * @var Manager
@@ -18,13 +16,13 @@ class StatusTest extends HandlerTestCase
 
     public function setUp()
     {
-        $this->sessionManager = new SessionManager();
+        $this->sessionManager = $this->sessionManager();
         $this->sessionManager->initialize(__DIR__);
     }
 
     public function handler(): Handler
     {
-        return new Status($this->sessionManager);
+        return new SessionHandler($this->sessionManager);
     }
 
     public function testItReturnsTheCurrentSessionStatus()

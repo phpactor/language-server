@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
@@ -12,10 +13,8 @@ use Phpactor\LanguageServer\Core\Handler\ExitHandler;
 use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
 use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Server\TcpServer;
-use Phpactor\LanguageServer\Core\Protocol\CoreExtension;
 use Phpactor\LanguageServer\Core\Server\Server;
-use Phpactor\LanguageServer\Core\Session\Manager;
-use Phpactor\LanguageServer\Core\Session\Session;
+use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -26,50 +25,113 @@ class LanguageServerBuilder
      */
     private $logger;
 
-    private function __construct(LoggerInterface $logger)
-    {
+    /**
+     * @var Handler[]
+     */
+    private $handlers = [];
+
+    /**
+     * @var EventEmitter
+     */
+    private $eventEmitter;
+
+    /**
+     * @var SessionManager
+     */
+    private $sessionManager;
+
+    /**
+     * @var bool
+     */
+    private $defaultHandlers = true;
+
+    /**
+     * @var bool
+     */
+    private $catchExceptions = true;
+
+    /**
+     * @var string
+     */
+    private $tcpAddress = '0.0.0.0:0';
+
+    private function __construct(
+        LoggerInterface $logger,
+        EventEmitter $eventEmitter,
+        SessionManager $sessionManager
+    ) {
         $this->logger = $logger;
+        $this->eventEmitter = $eventEmitter;
+        $this->sessionManager = $sessionManager;
     }
 
-    public static function create(LoggerInterface $logger = null): self
-    {
+    public static function create(
+        LoggerInterface $logger = null,
+        SessionManager $sessionManager = null,
+        EventEmitter $eventEmitter = null
+    ): self {
         return new self(
-            $logger ?: new NullLogger()
+            $logger ?: new NullLogger(),
+            $eventEmitter ?: new EvenementEmitter(),
+            $sessionManager ?: new SessionManager()
         );
     }
 
-    public function build(string $address = '127.0.0.1:8888'): Server
+    public function useDefaultHandlers(bool $useDefaultHandlers = true): self
     {
-        $manager = $this->sessionManager();
-        $emitter = $this->emitter();
-        $dispatcher = new ErrorCatchingDispatcher(
-            new MethodDispatcher(
-                new DTLArgumentResolver(),
-                new Handlers([
-                    new InitializeHandler(
-                        $emitter,
-                        $manager
-                    ),
-                    new TextDocumentHandler(
-                        $emitter,
-                        $manager
-                    ),
-                    new ExitHandler(),
-                ])
-            ),
-            $this->logger
+        $this->defaultHandlers = $useDefaultHandlers;
+
+        return $this;
+    }
+
+    public function catchExceptions(bool $enabled = true): self
+    {
+        $this->catchExceptions = $enabled;
+
+        return $this;
+    }
+
+    public function addHandler(Handler $handler): self
+    {
+        $this->handlers[] = $handler;
+
+        return $this;
+    }
+
+    public function tcpServer(string $address = '0.0.0.0:0'): self
+    {
+        $this->tcpAddress = $address;
+
+        return $this;
+    }
+
+    public function build(): Server
+    {
+        if ($this->defaultHandlers) {
+            $this->addDefaultHandlers();
+        }
+
+        $dispatcher = new MethodDispatcher(
+            new DTLArgumentResolver(),
+            new Handlers($this->handlers)
         );
 
-        return new TcpServer($dispatcher, $this->logger, $address);
+        if ($this->catchExceptions) {
+            $dispatcher = new ErrorCatchingDispatcher($dispatcher, $this->logger);
+        }
+
+        return new TcpServer($dispatcher, $this->logger, $this->tcpAddress);
     }
 
-    private function emitter(): EventEmitter
+    private function addDefaultHandlers(): void
     {
-        return new EvenementEmitter();
-    }
-
-    private function sessionManager(): Manager
-    {
-        return new Manager();
+        $this->addHandler(new InitializeHandler(
+            $this->eventEmitter,
+            $this->sessionManager
+        ));
+        $this->addHandler(
+            new TextDocumentHandler($this->eventEmitter, $this->sessionManager)
+        );
+        $this->addHandler(new ExitHandler());
     }
 }

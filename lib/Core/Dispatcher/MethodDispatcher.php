@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use Generator;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -71,7 +70,9 @@ class MethodDispatcher implements Dispatcher
         if (!method_exists($handler, $method)) {
             throw new RuntimeException(sprintf(
                 'Handler "%s" for method "%s" does not have the "%s" method defined, it has "%s"',
-                get_class($handler), $request->method, $method,
+                get_class($handler),
+                $request->method,
+                $method,
                 implode('", "', get_class_methods($handler))
             ));
         }

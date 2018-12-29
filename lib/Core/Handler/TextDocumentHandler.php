@@ -2,19 +2,18 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
-use Amp\Emitter;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
-use Phpactor\LanguageServer\Core\Session\Manager;
+use Phpactor\LanguageServer\Core\Session\SessionManager;
 
 final class TextDocumentHandler implements Handler
 {
     /**
-     * @var Manager
+     * @var SessionManager
      */
     private $manager;
 
@@ -23,7 +22,7 @@ final class TextDocumentHandler implements Handler
      */
     private $emitter;
 
-    public function __construct(EventEmitter $emitter, Manager $manager)
+    public function __construct(EventEmitter $emitter, SessionManager $manager)
     {
         $this->manager = $manager;
         $this->emitter = $emitter;
@@ -35,6 +34,7 @@ final class TextDocumentHandler implements Handler
             'textDocument/didOpen' => 'didOpen',
             'textDocument/didChange' => 'didChange',
             'textDocument/didClose' => 'didClose',
+            'textDocument/willSave' => 'willSave',
         ];
     }
 
@@ -72,5 +72,20 @@ final class TextDocumentHandler implements Handler
             LanguageServerEvents::TEXT_DOCUMENT_CLOSED,
             [ $textDocument ]
         );
+    }
+
+    public function willSave(TextDocumentIdentifier $identifier, int $reason)
+    {
+        $this->emitter->emit(
+            LanguageServerEvents::TEXT_DOCUMENT_WILL_SAVE,
+            [
+                $identifier,
+                $reason
+            ]
+        );
+    }
+
+    public function willSaveWaitUntil(TextDocumentIdentifier $identifier, int $reason)
+    {
     }
 }

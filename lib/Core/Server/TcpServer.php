@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Server;
 
 use Amp\ByteStream\StreamException;
+use Amp\Loop;
 use Amp\Socket\ServerSocket;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
@@ -57,14 +58,17 @@ class TcpServer implements Server
 
     public function start(): void
     {
-        \Amp\asyncCall(function () {
-            $server = \Amp\Socket\listen($this->address);
-            $this->logger->info(sprintf('I am listening on "%s"', $server->getAddress()));
-            $handler = $this->createHandler();
+        Loop::run(function () {
+            \Amp\asyncCall(function () {
+                $server = \Amp\Socket\listen($this->address);
+                $this->logger->info(sprintf('I am listening on "%s"', $server->getAddress()));
+                $handler = $this->createHandler();
 
-            while ($socket = yield $server->accept()) {
-                \Amp\asyncCall($handler, $socket);
-            }
+                while ($socket = yield $server->accept()) {
+                    $this->logger->info(sprintf('Accepted connection on %s', $server->getAddress()));
+                    \Amp\asyncCall($handler, $socket);
+                }
+            });
         });
     }
 

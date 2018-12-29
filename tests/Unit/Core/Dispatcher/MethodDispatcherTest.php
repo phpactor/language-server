@@ -3,16 +3,13 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
 
 use Generator;
-use LanguageServerProtocol\MessageType;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
-use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Prophecy\Prophecy\ObjectProphecy;
 use stdClass;
 
 class MethodDispatcherTest extends TestCase
@@ -35,7 +32,8 @@ class MethodDispatcherTest extends TestCase
     {
         $this->argumentResolver = $this->prophesize(ArgumentResolver::class);
         $this->handler = new class implements Handler {
-            public function methods(): array {
+            public function methods(): array
+            {
                 return [
                     'foobar' => 'foobar',
                 ];
