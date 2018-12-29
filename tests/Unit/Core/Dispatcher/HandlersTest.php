@@ -22,14 +22,14 @@ class HandlersTest extends TestCase
     public function testThrowsExceptionNotFound()
     {
         $this->expectException(HandlerNotFound::class);
-        $this->handler->name()->willReturn('barbra');
+        $this->handler->methods()->willReturn(['barbra']);
         $registry = $this->create([ $this->handler->reveal() ]);
         $registry->get('foobar');
     }
 
     public function testReturnsHandler()
     {
-        $this->handler->name()->willReturn('foobar');
+        $this->handler->methods()->willReturn(['foobar' => 'foobar']);
         $registry = $this->create([ $this->handler->reveal() ]);
         $handler = $registry->get('foobar');
         $this->assertSame($this->handler->reveal(), $handler);
