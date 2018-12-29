@@ -67,7 +67,7 @@ class TcpServer implements Server
     {
         \Amp\asyncCall(function () {
             $server = \Amp\Socket\listen($this->address);
-            $this->logger->info(sprintf('Listening on "%s"', $server->getAddress()));
+            $this->logger->info(sprintf('I am listening on "%s"', $server->getAddress()));
             $handler = $this->createHandler();
 
             while ($socket = yield $server->accept()) {
@@ -80,22 +80,20 @@ class TcpServer implements Server
     {
         return function (ServerSocket $socket) {
 
-            $parser = new LanguageServerProtocolParser();
+            $parser = (new LanguageServerProtocolParser())->__invoke();
 
             while (null !== $chunk = yield $socket->read()) {
 
-                foreach ($parser->feed($chunk) as $request) {
-
-                    if (null === $request) {
-                        continue 2;
-                    }
-
+                while ($request = $parser->send($chunk)) {
                     try {
                         $this->dispatch($request, $socket);
+
                     } catch (StreamException $exception) {
                         $this->logger->error($exception->getMessage());
+
                         yield $socket->end();
                     }
+                    $chunk = null;
                 }
             }
        };

@@ -59,4 +59,34 @@ EOT;
         $request = $parser->send($payload);
         $this->assertInstanceOf(Request::class, $request);
     }
+
+    public function testYieldsMultipleRequests()
+    {
+        $parser = (new LanguageServerProtocolParser())->__invoke();
+
+        $payload = <<<EOT
+Content-Length: 74\r\n
+Content-Type: foo\r\n\r\n
+{
+   "jsonrpc": "2.0",
+   "id": 1,
+   "method": "test",
+   "params": {}
+}Content-Length: 74\r\n
+Content-Type: foo\r\n\r\n
+{
+   "jsonrpc": "2.0",
+   "id": 1,
+   "method": "tset",
+   "params": {}
+}
+EOT;
+        $requests = [ $parser->send($payload) ];
+
+        while ($request = $parser->send(null)) {
+            $requests[] = $request;
+        }
+
+        $this->assertCount(2, $requests);
+    }
 }

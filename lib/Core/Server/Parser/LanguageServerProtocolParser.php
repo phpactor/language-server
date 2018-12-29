@@ -57,8 +57,7 @@ final class LanguageServerProtocolParser
                     $request = new Request($headers, $this->decodeBody($this->buffer));
                     $this->buffer = [];
                     $headers = null;
-
-                    $chunk = yield $request;
+                    $chunk .= (string) yield $request;
                 }
             }
 

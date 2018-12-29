@@ -35,14 +35,12 @@ class CoreExtension
             new Initialized(),
             new ExitServer(),
             new Shutdown(),
-
             new DidOpen($this->sessionManager),
             new DidChange($this->sessionManager),
             new DidClose($this->sessionManager),
             new DidSave(),
             new WillSave(),
             new WillSaveWaitUntil(),
-
             new Status($this->sessionManager),
         ]);
     }

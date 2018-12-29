@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Acceptance;
 
 use Amp\Socket\ClientSocket;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Transport\Request;
 
 class TestClient
 {
@@ -17,12 +18,12 @@ class TestClient
         $this->socket = $socket;
     }
 
-    public function send(string $request)
+    public function send(string $request): Request
     {
-        $parser = new LanguageServerProtocolParser();
+        $parser = (new LanguageServerProtocolParser())->__invoke();
         $this->socket->write($request);
         $rawResponse = \Amp\Promise\Wait($this->socket->read());
 
-        return array_filter(iterator_to_array($parser->feed($rawResponse)));
+        return $parser->send($rawResponse);
     }
 }

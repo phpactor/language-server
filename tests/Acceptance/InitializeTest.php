@@ -12,8 +12,7 @@ class InitializeTest extends AcceptanceTestCase
         $script = file_get_contents(__DIR__ . '/scripts/' .$scriptPath);
         $client = $this->client();
 
-        $responses = $client->send($script);
-        $response = $responses[0];
+        $response = $client->send($script);
 
         $this->assertArrayHasKey('result', $response->body());
         $this->assertArrayHasKey('capabilities', $response->body()['result']);

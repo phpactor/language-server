@@ -2,8 +2,8 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler;
 
-use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Extension\Core\ExitServer;
 
 class ExitServerTest extends HandlerTestCase

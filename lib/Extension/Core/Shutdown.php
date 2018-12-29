@@ -2,8 +2,8 @@
 
 namespace Phpactor\LanguageServer\Extension\Core;
 
-use Phpactor\LanguageServer\Core\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 
 class Shutdown implements Handler
 {
