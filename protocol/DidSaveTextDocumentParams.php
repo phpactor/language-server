@@ -14,7 +14,6 @@ class DidSaveTextDocumentParams
      */
     public $text;
 
-
     public function __construct(TextDocumentIdentifier $textDocument, ?string $text = null)
     {
         $this->textDocument = $textDocument;

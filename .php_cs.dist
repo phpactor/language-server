@@ -2,6 +2,7 @@
 
 $finder = PhpCsFixer\Finder::create()
     ->in('lib')
+    ->in('protocol')
     ->in('tests')
 ;
 

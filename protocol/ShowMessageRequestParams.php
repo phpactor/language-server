@@ -9,6 +9,9 @@ class ShowMessageRequestParams extends ShowMessageParams
      */
     public $actions;
 
+    /**
+     * @param MessageActionItem[] $actions
+     */
     public function __construct(int $type, string $message, ?array $actions = [])
     {
         parent::__construct($type, $message);
