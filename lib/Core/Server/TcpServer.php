@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Core\Server;
 
 use Amp\ByteStream\StreamException;
 use Amp\Loop;
+use Amp\Socket\Server as SocketServer;
 use Amp\Socket\ServerSocket;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
@@ -45,6 +46,11 @@ class TcpServer implements Server
      */
     private $writer;
 
+    /**
+     * @var SocketServer
+     */
+    private $server;
+
     public function __construct(
         Dispatcher $dispatcher,
         LoggerInterface $logger,
@@ -54,21 +60,31 @@ class TcpServer implements Server
         $this->address = $address;
         $this->dispatcher = $dispatcher;
         $this->writer = new LanguageServerProtocolWriter();
+        $this->server = \Amp\Socket\listen($this->address);
+    }
+
+    public function address(): string
+    {
+        return $this->server->getAddress();
     }
 
     public function start(): void
     {
         Loop::run(function () {
-            \Amp\asyncCall(function () {
-                $server = \Amp\Socket\listen($this->address);
-                $this->logger->info(sprintf('I am listening on "%s"', $server->getAddress()));
-                $handler = $this->createHandler();
+            $this->startNoLoop();
+        });
+    }
 
-                while ($socket = yield $server->accept()) {
-                    $this->logger->info(sprintf('Accepted connection on %s', $server->getAddress()));
-                    \Amp\asyncCall($handler, $socket);
-                }
-            });
+    public function startNoLoop(): void
+    {
+        \Amp\asyncCall(function () {
+            $this->logger->info(sprintf('I am listening on "%s"', $this->server->getAddress()));
+            $handler = $this->createHandler();
+
+            while ($socket = yield $this->server->accept()) {
+                $this->logger->info(sprintf('Accepted connection on %s', $this->server->getAddress()));
+                \Amp\asyncCall($handler, $socket);
+            }
         });
     }
 

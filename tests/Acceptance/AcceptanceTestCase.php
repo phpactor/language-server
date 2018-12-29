@@ -35,12 +35,11 @@ class AcceptanceTestCase extends TestCase
 
     protected function client(): TestClient
     {
-        $address = '127.0.0.1:1337';
+        $address = '127.0.0.1:0';
         $server = LanguageServerBuilder::create()->build($address);
+        $server->startNoLoop();
 
-        $server->start();
-
-        $socket = \Amp\Socket\connect($address);
+        $socket = \Amp\Socket\connect($server->address());
         $socket = \Amp\Promise\wait($socket);
         assert($socket instanceof ClientSocket);
 
