@@ -10,12 +10,12 @@ class WillSaveTextDocumentParams
     /**
      * @var TextDocumentIdentifier
      */
-    private $identifier;
+    public $identifier;
 
     /**
      * @var int
      */
-    private $reason;
+    public $reason;
 
     public function __construct(TextDocumentIdentifier $identifier, int $reason)
     {

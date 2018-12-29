@@ -7,7 +7,7 @@ class UnregistrationParams
     /**
      * @var Unregistration[]
      */
-    private $unregistrations;
+    public $unregistrations;
 
     /**
      * @param Unregistration[] $unregistrations

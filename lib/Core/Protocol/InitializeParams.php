@@ -17,32 +17,32 @@ class InitializeParams
     /**
      * @var array
      */
-    private $capabilities;
+    public $capabilities;
 
     /**
      * @var array
      */
-    private $initializationOptions;
+    public $initializationOptions;
 
     /**
      * @var int|null
      */
-    private $processId;
+    public $processId;
 
     /**
      * @var string|null
      */
-    private $rootPath;
+    public $rootPath;
 
     /**
      * @var string
      */
-    private $rootUri;
+    public $rootUri;
 
     /**
      * @var string
      */
-    private $trace;
+    public $trace;
 
     public function __construct(
         array $capabilities = [],

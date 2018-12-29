@@ -9,7 +9,7 @@ class ShowMessageRequestParams extends ShowMessageParams
     /**
      * @var MessageActionItem[]
      */
-    private $actions;
+    public $actions;
 
     public function __construct(int $type, string $message, ?array $actions = [])
     {
