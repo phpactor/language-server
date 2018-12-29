@@ -10,7 +10,7 @@ use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 class SessionHandler implements Handler
 {
     /**
-     * @var Manager
+     * @var SessionManager
      */
     private $sessionManager;
 

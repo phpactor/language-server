@@ -19,7 +19,7 @@ class InitializeHandler implements Handler
     private $emitter;
 
     /**
-     * @var Manager
+     * @var SessionManager
      */
     private $manager;
 

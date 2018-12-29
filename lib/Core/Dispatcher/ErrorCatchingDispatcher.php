@@ -33,8 +33,6 @@ class ErrorCatchingDispatcher implements Dispatcher
     {
         try {
             yield from $this->innerDispatcher->dispatch($request);
-        } catch (ControlException $controlException) {
-            throw $controlException;
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage(), [
                 'class' => get_class($throwable),
