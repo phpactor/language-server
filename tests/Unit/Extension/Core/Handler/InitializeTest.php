@@ -6,7 +6,7 @@ use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Extension\Core\Initialize;
+use Phpactor\LanguageServer\Core\Protocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\Manager;
 use RuntimeException;
@@ -64,6 +64,6 @@ class InitializeTest extends HandlerTestCase
 
     public function handler(): Handler
     {
-        return new Initialize($this->extensions->reveal(), $this->sessionManager->reveal());
+        return new InitializeParams($this->extensions->reveal(), $this->sessionManager->reveal());
     }
 }
