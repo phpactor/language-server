@@ -4,10 +4,10 @@ namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use Generator;
 use Phpactor\LanguageServer\Core\Exception\ControlException;
-use Phpactor\LanguageServer\Core\Transport\ErrorCodes;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseError;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseError;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -43,7 +43,8 @@ class ErrorCatchingDispatcher implements Dispatcher
 
             yield new ResponseMessage($request->id, null, new ResponseError(
                 ErrorCodes::InternalError,
-                $throwable->getMessage()
+                $throwable->getMessage(),
+                $throwable->getTraceAsString()
             ));
         }
     }

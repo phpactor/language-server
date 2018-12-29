@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Session\Manager;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 abstract class HandlerTestCase extends TestCase
 {

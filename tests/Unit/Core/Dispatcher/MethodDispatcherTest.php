@@ -9,9 +9,9 @@ use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
-use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Prophecy\Prophecy\ObjectProphecy;
 use stdClass;
 

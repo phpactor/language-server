@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Transport;
+namespace Phpactor\LanguageServer\Core\Rpc;
 
 class ResponseError
 {

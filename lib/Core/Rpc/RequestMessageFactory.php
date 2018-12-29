@@ -1,8 +1,10 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Transport;
+namespace Phpactor\LanguageServer\Core\Rpc;
 
 use RuntimeException;
+use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 class RequestMessageFactory
 {

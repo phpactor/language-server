@@ -6,6 +6,7 @@ use Amp\Loop;
 use Amp\Loop\DriverFactory;
 use Amp\Socket\ClientSocket;
 use PHPUnit\Framework\TestCase;
+use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
@@ -44,5 +45,24 @@ class AcceptanceTestCase extends TestCase
         assert($socket instanceof ClientSocket);
 
         return new TestClient($socket);
+    }
+
+    protected function assertAllSuccess(array $responses)
+    {
+        foreach ($responses as $response) {
+            $this->assertSuccess($response);
+        }
+    }
+
+    protected function assertSuccess(Request $response)
+    {
+        if (!isset($response->body()['responseError'])) {
+            return;
+        }
+        $this->fail(sprintf(
+            '%s'.PHP_EOL.'%s',
+            $response->body()['responseError']['message'],
+            ''//$response->body()['responseError']['data']
+        ));
     }
 }

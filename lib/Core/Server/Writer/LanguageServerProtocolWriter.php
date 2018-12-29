@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Writer;
 
-use Phpactor\LanguageServer\Core\Transport\Message;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 
 final class LanguageServerProtocolWriter
 {

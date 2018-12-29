@@ -6,10 +6,10 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
-use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseError;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseError;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 

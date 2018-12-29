@@ -5,8 +5,8 @@ namespace Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\Session;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Protocol\Session\Status;
 use Phpactor\LanguageServer\Core\Session\Manager;
-use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Tests\Unit\Extension\Core\Handler\HandlerTestCase;
 
 class StatusTest extends HandlerTestCase

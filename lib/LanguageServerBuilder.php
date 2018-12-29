@@ -3,8 +3,12 @@
 namespace Phpactor\LanguageServer;
 
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
+use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Event\EventEmitter;
+use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
 use Phpactor\LanguageServer\Core\Server\TcpServer;
 use Phpactor\LanguageServer\Core\Protocol\CoreExtension;
 use Phpactor\LanguageServer\Core\Server\Server;
@@ -36,13 +40,18 @@ class LanguageServerBuilder
         $dispatcher = new ErrorCatchingDispatcher(
             new MethodDispatcher(
                 new DTLArgumentResolver(),
-                (new CoreExtension(
-                    new Manager()
-                ))->handlers()
+                new Handlers([
+                    new InitializeHandler($this->emitter())
+                ])
             ),
             $this->logger
         );
 
         return new TcpServer($dispatcher, $this->logger, $address);
+    }
+
+    private function emitter(): EventEmitter
+    {
+        return new EvenementEmitter();
     }
 }

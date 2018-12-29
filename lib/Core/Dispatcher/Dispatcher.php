@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use Generator;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 interface Dispatcher
 {

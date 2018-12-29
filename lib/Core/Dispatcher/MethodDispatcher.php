@@ -4,9 +4,9 @@ namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Transport\Message;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
 
 class MethodDispatcher implements Dispatcher
@@ -63,15 +63,16 @@ class MethodDispatcher implements Dispatcher
         }
     }
 
-    private function resolveHandlerMethod(Handler $handler, RequestMessage $request)
+    private function resolveHandlerMethod(Handler $handler, RequestMessage $request): string
     {
         $handlerMethods = $handler->methods();
         $method = $handlerMethods[$request->method];
 
         if (!method_exists($handler, $method)) {
             throw new RuntimeException(sprintf(
-                'Handler "%s" for method "%s" does not have the "%s" method defined',
-                get_class($handler), $request->method, $method
+                'Handler "%s" for method "%s" does not have the "%s" method defined, it has "%s"',
+                get_class($handler), $request->method, $method,
+                implode('", "', get_class_methods($handler))
             ));
         }
 

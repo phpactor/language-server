@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Acceptance;
 
 use Amp\Socket\ClientSocket;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
-use Phpactor\LanguageServer\Core\Transport\Request;
+use Phpactor\LanguageServer\Core\Rpc\Request;
 
 class TestClient
 {
@@ -18,12 +18,21 @@ class TestClient
         $this->socket = $socket;
     }
 
-    public function send(string $request): Request
+    /**
+     * @retrun Request[]
+     */
+    public function send(string $request): array
     {
         $parser = (new LanguageServerProtocolParser())->__invoke();
         $this->socket->write($request);
         $rawResponse = \Amp\Promise\Wait($this->socket->read());
 
-        return $parser->send($rawResponse);
+        $responses = [];
+        while ($response = $parser->send($rawResponse)) {
+            $responses[] = $response;
+            $rawResponse = '';
+        }
+
+        return $responses;
     }
 }

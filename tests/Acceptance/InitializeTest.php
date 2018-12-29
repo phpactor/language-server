@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
+use Phpactor\LanguageServer\Core\Rpc\Request;
+
 class InitializeTest extends AcceptanceTestCase
 {
     /**
@@ -12,8 +14,10 @@ class InitializeTest extends AcceptanceTestCase
         $script = file_get_contents(__DIR__ . '/scripts/' .$scriptPath);
         $client = $this->client();
 
-        $response = $client->send($script);
+        $responses = $client->send($script);
+        $this->assertAllSuccess($responses);
 
+        $response = $responses[0];
         $this->assertArrayHasKey('result', $response->body());
         $this->assertArrayHasKey('capabilities', $response->body()['result']);
     }
