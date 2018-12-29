@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer;
 
+use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
@@ -9,8 +10,10 @@ use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
+use Phpactor\LanguageServer\Core\Event\EventSubscriber;
 use Phpactor\LanguageServer\Core\Handler\ExitHandler;
 use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
+use Phpactor\LanguageServer\Core\Handler\SessionHandler;
 use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Server\TcpServer;
 use Phpactor\LanguageServer\Core\Server\Server;
@@ -93,6 +96,12 @@ class LanguageServerBuilder
 
     public function addHandler(Handler $handler): self
     {
+        if ($handler instanceof EventSubscriber) {
+            foreach ($handler->events() as $eventName => $method) {
+                $this->eventEmitter->on($eventName, Closure::fromCallable([ $handler, $method ]));
+            }
+        }
+
         $this->handlers[] = $handler;
 
         return $this;
@@ -133,5 +142,6 @@ class LanguageServerBuilder
             new TextDocumentHandler($this->eventEmitter, $this->sessionManager)
         );
         $this->addHandler(new ExitHandler());
+        $this->addHandler(new SessionHandler($this->sessionManager));
     }
 }

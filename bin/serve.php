@@ -55,6 +55,7 @@ $logger->info('test language server starting');
 $logger->info('i am a demonstration server and provide no functionality');
 
 $builder = LanguageServerBuilder::create($logger);
+$builder->tcpServer($options['address']);
 
 $server = $builder->build();
 $server->start();
