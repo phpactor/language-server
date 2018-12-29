@@ -51,7 +51,9 @@ class Handlers implements IteratorAggregate
 
     public function add(Handler $handler)
     {
-        $this->handlers[$handler->name()] = $handler;
+        foreach (array_keys($handler->methods()) as $languageServerMethod) {
+            $this->handlers[$languageServerMethod] = $handler;
+        }
     }
 
     /**
