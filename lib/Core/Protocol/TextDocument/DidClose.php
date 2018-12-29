@@ -1,12 +1,12 @@
 <?php
 
-namespace Phpactor\LanguageServer\Extension\Core\TextDocument;
+namespace Phpactor\LanguageServer\Core\Protocol\TextDocument;
 
-use LanguageServerProtocol\TextDocumentItem;
+use LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Session\Manager;
 
-class DidOpen implements Handler
+class DidClose implements Handler
 {
     /**
      * @var Manager
@@ -20,12 +20,12 @@ class DidOpen implements Handler
 
     public function name(): string
     {
-        return 'textDocument/didOpen';
+        return 'textDocument/didClose';
     }
 
 
-    public function __invoke(TextDocumentItem $textDocument)
+    public function __invoke(TextDocumentIdentifier $textDocument)
     {
-        $this->sessionManager->current()->workspace()->open($textDocument);
+        $this->sessionManager->current()->workspace()->remove($textDocument);
     }
 }

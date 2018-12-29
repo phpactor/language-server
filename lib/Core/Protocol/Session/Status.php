@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Extension\Core\Session;
+namespace Phpactor\LanguageServer\Core\Protocol\Session;
 
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;

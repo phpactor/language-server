@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Extension\Core;
+namespace Phpactor\LanguageServer\Core\Protocol;
 
 use LanguageServerProtocol\ServerCapabilities;
 use LanguageServerProtocol\TextDocumentSyncKind;
@@ -8,13 +8,15 @@ use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Extensions;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Session\Manager;
-use Phpactor\LanguageServer\Extension\Core\Session\Status;
-use Phpactor\LanguageServer\Extension\Core\TextDocument\DidChange;
-use Phpactor\LanguageServer\Extension\Core\TextDocument\DidClose;
-use Phpactor\LanguageServer\Extension\Core\TextDocument\DidOpen;
-use Phpactor\LanguageServer\Extension\Core\TextDocument\DidSave;
-use Phpactor\LanguageServer\Extension\Core\TextDocument\WillSave;
-use Phpactor\LanguageServer\Extension\Core\TextDocument\WillSaveWaitUntil;
+use Phpactor\LanguageServer\Core\Protocol\Session\Status;
+use Phpactor\LanguageServer\Core\Protocol\TextDocument\DidChange;
+use Phpactor\LanguageServer\Core\Protocol\TextDocument\DidClose;
+use Phpactor\LanguageServer\Core\Protocol\TextDocument\DidOpen;
+use Phpactor\LanguageServer\Core\Protocol\TextDocument\DidSave;
+use Phpactor\LanguageServer\Core\Protocol\TextDocument\WillSave;
+use Phpactor\LanguageServer\Core\Protocol\TextDocument\WillSaveWaitUntil;
+use Phpactor\LanguageServer\Core\Protocol\InitializeParams;
+use Phpactor\LanguageServer\Core\Protocol\InitializedParams;
 
 class CoreExtension
 {
@@ -31,8 +33,8 @@ class CoreExtension
     public function handlers(): Handlers
     {
         return new Handlers([
-            new Initialize($this->sessionManager),
-            new Initialized(),
+            new InitializeParams($this->sessionManager),
+            new InitializedParams(),
             new ExitServer(),
             new Shutdown(),
             new DidOpen($this->sessionManager),

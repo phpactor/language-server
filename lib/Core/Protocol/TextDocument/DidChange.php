@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Extension\Core\TextDocument;
+namespace Phpactor\LanguageServer\Core\Protocol\TextDocument;
 
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
