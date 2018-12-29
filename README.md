@@ -6,8 +6,8 @@ Phpactor Language Server
 This package provides a language server infrastructure without any language
 server functionality:
 
-- Serves as either STDIO or TCP.
-- Manages files.
+- Asynchronous TCP server.
+- Manages text document synchronization.
 - Allows you to define server capabilities and supply handlers.
 
 Example
@@ -18,7 +18,7 @@ Create a dumb language server with no functionality:
 ```php
 $server = LanguageServerBuilder::create()
     ->tcpServer()
-    ->coreHandlers()
+    ->useDefaultHandlers()
     ->build();
 
 $server->start();
@@ -35,8 +35,8 @@ use LanguageServerProtocol\CompletionItem;
 use LanguageServerProtocol\CompletionList;
 use LanguageServerProtocol\Position;
 use LanguageServerProtocol\TextDocumentItem;
-use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\SessionManager;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Session\SessionManager;
 
 class ExampleCompletionHandler implements Handler
 {
@@ -47,12 +47,14 @@ class ExampleCompletionHandler implements Handler
         $this->sessionManager = $sessionManager;
     }
 
-    public function name(): string
+    public function methods(): array
     {
-        return 'textDocument/completion';
+        return [
+            'textDocument/completion' => 'complete'
+        ];
     }
 
-    public function __invoke(TextDocumentItem $textDocument, Position $position): CompletionList
+    public function complete(TextDocumentItem $textDocument, Position $position): CompletionList
     {
         $textDocument = $this->sessionManager->current()->workspace()->get($textDocument->uri);
         $completionList = new CompletionList();
@@ -73,7 +75,7 @@ Which can then be registered with the server, for example with the builder:
 $sessionManager = new SessionManager();
 $server = LanguageServerBuilder::create($sessionManager)
     ->tcpServer()
-    ->coreHandlers()
+    ->useDefaultHandlers()
     ->addHandler(new MyCompletionHandler($sessionManager))
     ->build();
 
