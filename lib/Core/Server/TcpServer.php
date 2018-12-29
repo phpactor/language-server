@@ -90,11 +90,12 @@ class TcpServer implements Server
 
     private function dispatch(Request $request, ServerSocket $socket)
     {
-        $this->logger->info('Dispatching request', $request->body());
+        $this->logger->info('Request', $request->body());
 
         $responses = $this->dispatcher->dispatch(RequestMessageFactory::fromRequest($request));
 
         foreach ($responses as $response) {
+            $this->logger->info('Response', (array) $response);
             $socket->write($this->writer->write($response));
         }
     }

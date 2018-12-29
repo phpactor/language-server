@@ -9,6 +9,8 @@ use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
+use Phpactor\LanguageServer\Core\Session\Manager;
+use RuntimeException;
 
 class InitializeHandler implements Handler
 {
@@ -17,9 +19,15 @@ class InitializeHandler implements Handler
      */
     private $emitter;
 
-    public function __construct(EventEmitter $emitter)
+    /**
+     * @var Manager
+     */
+    private $manager;
+
+    public function __construct(EventEmitter $emitter, Manager $manager)
     {
         $this->emitter = $emitter;
+        $this->manager = $manager;
     }
 
     public function methods(): array
@@ -39,19 +47,34 @@ class InitializeHandler implements Handler
         ?string $trace = null
     ): Generator
     {
-        $capabilities = new ServerCapabilities();
+        if (!$rootUri && $rootPath) {
+            $rootUri = $rootPath;
+        }
 
+        if (!$rootUri) {
+            throw new RuntimeException(
+                'rootUri (or deprecated rootPath) must be specified'
+            );
+        }
+
+        $this->manager->initialize($rootUri, $processId);
+        yield $this->gatherServerCapabilities($capabilities);
+    }
+
+    public function initialized()
+    {
+    }
+
+    private function gatherServerCapabilities(array $capabilities): InitializeResult
+    {
+        $capabilities = new ServerCapabilities();
+        
         $result = new InitializeResult();
         $result->capabilities = $capabilities;
         $this->emitter->emit(
             LanguageServerEvents::CAPABILITIES_REGISTER,
             [ $result ]
         );
-
-        yield $result;
-    }
-
-    public function initialized()
-    {
+        return $result;
     }
 }

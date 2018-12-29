@@ -56,20 +56,7 @@ $logger->info('i am a demonstration server and provide no functionality');
 
 $builder = LanguageServerBuilder::create($logger);
 
-switch ($options['type']) {
-    case 'tcp':
-        $builder->tcpServer($options['address']);
-        break;
-    case 'stdio':
-        $builder->stdIoServer();
-        break;
-    default:
-        echo sprintf('Invalid builder type, must be either "tcp" or "stdio", got "%s"', $options['type']);
-        exit(255);
-}
-
-$server = $builder->build();
-
+$server = $builder->build($options['address']);
 Loop::run(function () use ($server) {
     $server->start();
 });
