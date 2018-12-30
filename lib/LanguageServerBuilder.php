@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer;
 
+use Amp\ByteStream\ResourceInputStream;
+use Amp\ByteStream\ResourceOutputStream;
 use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
@@ -15,6 +17,9 @@ use Phpactor\LanguageServer\Core\Handler\ExitHandler;
 use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
 use Phpactor\LanguageServer\Core\Handler\SessionHandler;
 use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
+use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
+use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
+use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\TcpServer;
 use Phpactor\LanguageServer\Core\Server\Server;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
@@ -129,7 +134,24 @@ class LanguageServerBuilder
             $dispatcher = new ErrorCatchingDispatcher($dispatcher, $this->logger);
         }
 
-        return new TcpServer($dispatcher, $this->logger, $this->tcpAddress);
+        if ($this->tcpAddress) {
+            $provider = new SocketStreamProvider(
+                \Amp\Socket\listen($this->tcpAddress)
+            );
+        } else {
+            $provider = new ResourceStreamProvider(
+                new ResourceDuplexStream(
+                    new ResourceInputStream(STDIN),
+                    new ResourceOutputStream(STDOUT)
+                )
+            );
+        }
+
+        return new TcpServer(
+            $dispatcher,
+            $this->logger,
+            $provider
+        );
     }
 
     private function addDefaultHandlers(): void

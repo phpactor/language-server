@@ -7,13 +7,18 @@ use Amp\ByteStream\StreamException;
 use Amp\Loop;
 use Amp\Socket\Server as SocketServer;
 use Amp\Socket\ServerSocket;
+use Generator;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
+use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
+use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
 use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
+use RuntimeException;
 
 class TcpServer implements Server
 {
@@ -21,11 +26,6 @@ class TcpServer implements Server
      * @var LoopInterface
      */
     private $eventLoop;
-
-    /**
-     * @var string|null
-     */
-    private $address;
 
     /**
      * @var LanguageServerProtocolParser
@@ -52,21 +52,33 @@ class TcpServer implements Server
      */
     private $server;
 
+    /**
+     * @var StreamProvider
+     */
+    private $streamProvider;
+
     public function __construct(
         Dispatcher $dispatcher,
         LoggerInterface $logger,
-        string $address
+        StreamProvider $streamProvider
     ) {
         $this->logger = $logger;
-        $this->address = $address;
         $this->dispatcher = $dispatcher;
+
         $this->writer = new LanguageServerProtocolWriter();
-        $this->server = \Amp\Socket\listen($this->address);
+        $this->streamProvider = $streamProvider;
     }
 
-    public function address(): ?string
+    public function address(): string
     {
-        return $this->server->getAddress();
+        if (!$this->streamProvider instanceof SocketStreamProvider) {
+            throw new RuntimeException(sprintf(
+                'Cannot get address on non-socket stream provider, using "%s"',
+                get_class($this->streamProvider)
+            ));
+        }
+
+        return $this->streamProvider->address();
     }
 
     public function start(): void
@@ -79,37 +91,31 @@ class TcpServer implements Server
     public function startNoLoop(): void
     {
         \Amp\asyncCall(function () {
-            $this->logger->info(sprintf('I am listening on "%s"', $this->server->getAddress()));
-            $handler = $this->createHandler();
-
-            while ($socket = yield $this->server->accept()) {
-                $this->logger->info(sprintf('Accepted connection on %s', $this->server->getAddress()));
-                \Amp\asyncCall($handler, $socket);
+            while ($stream = yield $this->streamProvider->provide()) {
+                $value = yield from $this->handle($stream);
             }
         });
     }
 
-    private function createHandler()
+    private function handle(DuplexStream $stream): Generator
     {
-        return function (InputStream $socket) {
-            $parser = (new LanguageServerProtocolParser())->__invoke();
+        $parser = (new LanguageServerProtocolParser())->__invoke();
 
-            while (null !== $chunk = yield $socket->read()) {
-                while ($request = $parser->send($chunk)) {
-                    try {
-                        $this->dispatch($request, $socket);
-                    } catch (StreamException $exception) {
-                        $this->logger->error($exception->getMessage());
+        while (null !== ($chunk = yield $stream->read())) {
+            while ($request = $parser->send($chunk)) {
+                try {
+                    $this->dispatch($request, $stream);
+                } catch (StreamException $exception) {
+                    $this->logger->error($exception->getMessage());
 
-                        yield $socket->end();
-                    }
-                    $chunk = null;
+                    yield $stream->end();
                 }
+                $chunk = null;
             }
-        };
+        }
     }
 
-    private function dispatch(Request $request, ServerSocket $socket)
+    private function dispatch(Request $request, DuplexStream $socket)
     {
         $this->logger->info('Request', $request->body());
 
