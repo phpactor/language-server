@@ -144,7 +144,8 @@ class LanguageServerBuilder
                 new ResourceDuplexStream(
                     new ResourceInputStream(STDIN),
                     new ResourceOutputStream(STDOUT)
-                )
+                ),
+                $this->logger
             );
         }
 
