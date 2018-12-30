@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server;
 use Generator;
 use LanguageServerProtocol\InitializeResult;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\LanguageServerBuilder;

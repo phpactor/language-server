@@ -6,7 +6,6 @@ use Amp\ByteStream\StreamException;
 use Amp\Loop;
 use Amp\Socket\Server as SocketServer;
 use Generator;
-use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Server\Exception\ServerControlException;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
