@@ -68,7 +68,7 @@ class LanguageServer
         $this->streamProvider = $streamProvider;
     }
 
-    public function address(): string
+    public function address(): ?string
     {
         if (!$this->streamProvider instanceof SocketStreamProvider) {
             throw new RuntimeException(sprintf(

@@ -58,7 +58,7 @@ class LanguageServerBuilder
     private $catchExceptions = true;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $tcpAddress = null;
 

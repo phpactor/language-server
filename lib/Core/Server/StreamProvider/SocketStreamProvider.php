@@ -39,7 +39,7 @@ class SocketStreamProvider implements StreamProvider
         return $deferrer->promise();
     }
 
-    public function address(): string
+    public function address(): ?string
     {
         return $this->server->getAddress();
     }
