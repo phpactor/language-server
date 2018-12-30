@@ -1,9 +1,0 @@
-<?php
-
-namespace Phpactor\LanguageServer\Core\Event;
-
-use PHPUnit\Framework\TestCase;
-
-class EventSubscriber extends TestCase
-{
-}

@@ -7,6 +7,7 @@ use Amp\Loop;
 use Amp\Socket\Server as SocketServer;
 use Generator;
 use Phpactor\LanguageServer\Core\Server\Exception\ServerControlException;
+use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
@@ -92,10 +93,20 @@ class LanguageServer
      */
     public function start(): void
     {
-        if ($this->enableEventLoop) {
-            Loop::run(function () {
-                $this->waitForConnections();
-            });
+        Loop::onSignal(SIGINT, function (string $watcherId) {
+            Loop::cancel($watcherId);
+            throw new ShutdownServer('SIGINT received');
+        });
+
+        try {
+            if ($this->enableEventLoop) {
+                Loop::run(function () {
+                    $this->waitForConnections();
+                });
+                return;
+            }
+        } catch (ShutdownServer $shutdown) {
+            $this->logger->info($shutdown->getMessage());
             return;
         }
 
