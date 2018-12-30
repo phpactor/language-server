@@ -6,6 +6,7 @@ use Amp\ByteStream\StreamException;
 use Amp\Loop;
 use Amp\Socket\Server as SocketServer;
 use Generator;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Server\Exception\ServerControlException;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
@@ -56,16 +57,23 @@ class LanguageServer
      */
     private $streamProvider;
 
+    /**
+     * @var bool
+     */
+    private $enableEventLoop;
+
     public function __construct(
         Dispatcher $dispatcher,
         LoggerInterface $logger,
-        StreamProvider $streamProvider
+        StreamProvider $streamProvider,
+        bool $enableEventLoop = true
     ) {
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
 
         $this->writer = new LanguageServerProtocolWriter();
         $this->streamProvider = $streamProvider;
+        $this->enableEventLoop = $enableEventLoop;
     }
 
     public function address(): ?string
@@ -80,14 +88,22 @@ class LanguageServer
         return $this->streamProvider->address();
     }
 
+    /**
+     * Start the server in an event loop
+     */
     public function start(): void
     {
-        Loop::run(function () {
-            $this->startNoLoop();
-        });
+        if ($this->enableEventLoop) {
+            Loop::run(function () {
+                $this->waitForConnections();
+            });
+            return;
+        }
+
+        $this->waitForConnections();
     }
 
-    public function startNoLoop(): void
+    protected function waitForConnections(): void
     {
         \Amp\asyncCall(function () {
             while ($stream = yield $this->streamProvider->provide()) {

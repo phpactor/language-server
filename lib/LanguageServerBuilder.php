@@ -7,6 +7,7 @@ use Amp\ByteStream\ResourceOutputStream;
 use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
@@ -62,6 +63,11 @@ class LanguageServerBuilder
      */
     private $tcpAddress = null;
 
+    /**
+     * @var bool
+     */
+    private $eventLoop = true;
+
     private function __construct(
         LoggerInterface $logger,
         EventEmitter $eventEmitter,
@@ -98,6 +104,13 @@ class LanguageServerBuilder
         return $this;
     }
 
+    public function eventLoop(bool $enabled = true): self
+    {
+        $this->eventLoop = $enabled;
+
+        return $this;
+    }
+
     public function addHandler(Handler $handler): self
     {
         if ($handler instanceof EventSubscriber) {
@@ -118,20 +131,14 @@ class LanguageServerBuilder
         return $this;
     }
 
+    /**
+     * Build the language server.
+     * The returned language server can then be started
+     * by calling `start()`.
+     */
     public function build(): LanguageServer
     {
-        if ($this->defaultHandlers) {
-            $this->addDefaultHandlers();
-        }
-
-        $dispatcher = new MethodDispatcher(
-            new DTLArgumentResolver(),
-            new Handlers($this->handlers)
-        );
-
-        if ($this->catchExceptions) {
-            $dispatcher = new ErrorCatchingDispatcher($dispatcher, $this->logger);
-        }
+        $dispatcher = $this->buildDispatcher();
 
         if ($this->tcpAddress) {
             $provider = new SocketStreamProvider(
@@ -151,8 +158,34 @@ class LanguageServerBuilder
         return new LanguageServer(
             $dispatcher,
             $this->logger,
-            $provider
+            $provider,
+            $this->eventLoop
         );
+    }
+
+    /**
+     * Return the RPC dispatcher used by the server.
+     * Useful for testing.
+     */
+    public function buildDispatcher(): Dispatcher
+    {
+        if ($this->defaultHandlers) {
+            $this->addDefaultHandlers();
+        }
+
+        $dispatcher = new MethodDispatcher(
+            new DTLArgumentResolver(),
+            new Handlers($this->handlers)
+        );
+
+        if ($this->catchExceptions) {
+            $dispatcher = new ErrorCatchingDispatcher(
+                $dispatcher,
+                $this->logger
+            );
+        }
+
+        return $dispatcher;
     }
 
     private function addDefaultHandlers(): void

@@ -37,8 +37,10 @@ class AcceptanceTestCase extends TestCase
     {
         $server = LanguageServerBuilder::create()
             ->tcpServer()
+            ->eventLoop(false)
             ->build();
-        $server->startNoLoop();
+
+        $server->start();
 
         $socket = \Amp\Socket\connect($server->address());
         $socket = \Amp\Promise\wait($socket);
