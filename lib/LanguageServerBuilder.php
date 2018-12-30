@@ -112,7 +112,7 @@ class LanguageServerBuilder
         return $this;
     }
 
-    public function tcpServer(string $address = '0.0.0.0:0'): self
+    public function tcpServer(?string $address = '0.0.0.0:0'): self
     {
         $this->tcpAddress = $address;
 
@@ -136,7 +136,8 @@ class LanguageServerBuilder
 
         if ($this->tcpAddress) {
             $provider = new SocketStreamProvider(
-                \Amp\Socket\listen($this->tcpAddress)
+                \Amp\Socket\listen($this->tcpAddress),
+                $this->logger
             );
         } else {
             $provider = new ResourceStreamProvider(

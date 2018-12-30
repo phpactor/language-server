@@ -20,7 +20,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $options = [
     'type' => 'tcp',
-    'address' => '127.0.0.1:8888',
+    'address' => null,
 ];
 
 $options = array_merge($options, getopt('t::a::', ['type::', 'address::']));
