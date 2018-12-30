@@ -20,7 +20,7 @@ use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
-use Phpactor\LanguageServer\Core\Server\TcpServer;
+use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\Core\Server\Server;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Psr\Log\LoggerInterface;
@@ -61,7 +61,7 @@ class LanguageServerBuilder
     /**
      * @var string
      */
-    private $tcpAddress = '0.0.0.0:0';
+    private $tcpAddress = null;
 
     private function __construct(
         LoggerInterface $logger,
@@ -119,7 +119,7 @@ class LanguageServerBuilder
         return $this;
     }
 
-    public function build(): Server
+    public function build(): LanguageServer
     {
         if ($this->defaultHandlers) {
             $this->addDefaultHandlers();
@@ -147,7 +147,7 @@ class LanguageServerBuilder
             );
         }
 
-        return new TcpServer(
+        return new LanguageServer(
             $dispatcher,
             $this->logger,
             $provider

@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventSubscriber;
+use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\Core\Server\Server;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 
@@ -24,7 +25,7 @@ class LanguageServerBuilderTest extends TestCase
             ->tcpServer('127.0.0.1:8888')
             ->build();
 
-        $this->assertInstanceOf(Server::class, $server);
+        $this->assertInstanceOf(LanguageServer::class, $server);
     }
 
     public function testHandlersSubscribeToEvents()
@@ -49,6 +50,6 @@ class LanguageServerBuilderTest extends TestCase
             })
             ->build();
 
-        $this->assertInstanceOf(Server::class, $server);
+        $this->assertInstanceOf(LanguageServer::class, $server);
     }
 }

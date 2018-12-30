@@ -35,8 +35,9 @@ class AcceptanceTestCase extends TestCase
 
     protected function client(): TestClient
     {
-        $address = '127.0.0.1:0';
-        $server = LanguageServerBuilder::create()->build($address);
+        $server = LanguageServerBuilder::create()
+            ->tcpServer()
+            ->build();
         $server->startNoLoop();
 
         $socket = \Amp\Socket\connect($server->address());

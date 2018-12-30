@@ -20,7 +20,7 @@ use React\EventLoop\LoopInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use RuntimeException;
 
-class TcpServer implements Server
+class LanguageServer
 {
     /**
      * @var LoopInterface
