@@ -8,6 +8,7 @@ use Amp\Loop;
 use Amp\Socket\Server as SocketServer;
 use Amp\Socket\ServerSocket;
 use Generator;
+use Phpactor\LanguageServer\Core\Server\Exception\ServerControlException;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
@@ -105,11 +106,17 @@ class LanguageServer
             while ($request = $parser->send($chunk)) {
                 try {
                     $this->dispatch($request, $stream);
+
                 } catch (StreamException $exception) {
                     $this->logger->error($exception->getMessage());
 
                     yield $stream->end();
+                } catch (ServerControlException $exception) {
+                    $this->logger->info($exception->getMessage());
+
+                    yield $stream->end();
                 }
+
                 $chunk = null;
             }
         }
