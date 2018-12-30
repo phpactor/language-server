@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
+use Amp\ByteStream\InputStream;
 use Amp\ByteStream\StreamException;
 use Amp\Loop;
 use Amp\Socket\Server as SocketServer;
@@ -90,7 +91,7 @@ class TcpServer implements Server
 
     private function createHandler()
     {
-        return function (ServerSocket $socket) {
+        return function (InputStream $socket) {
             $parser = (new LanguageServerProtocolParser())->__invoke();
 
             while (null !== $chunk = yield $socket->read()) {
