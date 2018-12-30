@@ -2,17 +2,12 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
-use Closure;
-use Generator;
+use Amp\Loop;
+use Amp\Loop\DriverFactory;
+use Amp\Socket\ClientSocket;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Connection\SimpleConnection;
-use Phpactor\LanguageServer\Core\IO\BufferIO;
-use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol\Reader;
-use Phpactor\LanguageServer\Core\Serializer\JsonSerializer;
+use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\LanguageServerBuilder;
-use Psr\Log\AbstractLogger;
-use Psr\Log\NullLogger;
-use RuntimeException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
@@ -33,67 +28,43 @@ class AcceptanceTestCase extends TestCase
      */
     private $stream;
 
-    /**
-     * @var BufferIO
-     */
-    private $io;
-
     protected function setUp()
     {
-        $this->io = new BufferIO();
+        Loop::set((new DriverFactory())->create());
+    }
 
-        $logger = new class extends AbstractLogger {
-            public function log($level, $message, array $context = [])
-            {
-                //fwrite(STDERR, 'TESTSERV:'.$message.PHP_EOL);
-            }
-        };
-
-        $this->server = LanguageServerBuilder::create($logger)
-            ->withCoreExtension()
-            ->withConnection(new SimpleConnection($this->io))
+    protected function client(): TestClient
+    {
+        $server = LanguageServerBuilder::create()
+            ->tcpServer()
+            ->eventLoop(false)
             ->build();
+
+        $server->start();
+
+        $socket = \Amp\Socket\connect($server->address());
+        $socket = \Amp\Promise\wait($socket);
+        assert($socket instanceof ClientSocket);
+
+        return new TestClient($socket);
     }
 
-    protected function playback(string $scriptPath)
+    protected function assertAllSuccess(array $responses)
     {
-        $path = $this->scriptPath($scriptPath);
-
-        if (!file_exists($path)) {
-            throw new RuntimeException(sprintf(
-                'Playback script "%s" does not exit',
-                $path
-            ));
-        }
-        $this->io->add(file_get_contents($path));
-
-        $this->server->start();
-
-        $reader = new Reader(new NullLogger());
-
-        $io = new BufferIO();
-        $io->add($this->io->out());
-        while (true) {
-            yield $reader->readRequest($io);
+        foreach ($responses as $response) {
+            $this->assertSuccess($response);
         }
     }
 
-    public function input(): InputStream
+    protected function assertSuccess(Request $response)
     {
-        return $this->input;
-    }
-
-    private function scriptPath(string $scriptPath)
-    {
-        $path = __DIR__ . '/scripts/' . $scriptPath;
-        return $path;
-    }
-
-    protected function assertResponse(Closure $assertion, Generator $generator)
-    {
-        $deserializer = new JsonSerializer();
-        $response = $generator->current();
-        $assertion($deserializer->deserialize($response->body()));
-        $generator->next();
+        if (!isset($response->body()['responseError'])) {
+            return;
+        }
+        $this->fail(sprintf(
+            '%s'.PHP_EOL.'%s',
+            $response->body()['responseError']['message'],
+            ''//$response->body()['responseError']['data']
+        ));
     }
 }

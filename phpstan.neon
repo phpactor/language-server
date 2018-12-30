@@ -1,2 +1,4 @@
 parameters:
     paths: [ lib ]
+    ignoreErrors:
+        - '#Closure..fromCallable.. expects callable#'

@@ -4,12 +4,12 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
 
 use Generator;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Handler;
-use Phpactor\LanguageServer\Core\Handlers;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use stdClass;
 
 class MethodDispatcherTest extends TestCase
@@ -18,31 +18,47 @@ class MethodDispatcherTest extends TestCase
 
     private $argumentResolver;
 
+    /**
+     * @var Handler
+     */
+    private $handler;
+
+    /**
+     * @var Handlers
+     */
+    private $handlers;
+
     public function setUp()
     {
         $this->argumentResolver = $this->prophesize(ArgumentResolver::class);
-        $this->handler = $this->prophesize(Handler::class);
+        $this->handler = new class implements Handler {
+            public function methods(): array
+            {
+                return [
+                    'foobar' => 'foobar',
+                ];
+            }
+
+            public function foobar(string $one, string $two)
+            {
+                yield new stdClass();
+            }
+        };
     }
 
     public function testDispatchesRequest()
     {
-        $this->handler->name()->willReturn('foobar');
-        $handlers = new Handlers([ $this->handler->reveal() ]);
-
         $dispatcher = $this->create([
-            $this->handler->reveal()
+            $this->handler
         ]);
-        $this->argumentResolver->resolveArguments($this->handler->reveal(), '__invoke', [
+        $this->argumentResolver->resolveArguments($this->handler, 'foobar', [
             'one',
             'two'
         ])->willReturn([ 'one', 'two' ]);
 
         $expectedResult = new stdClass();
-        $this->handler->__invoke('one', 'two')->will(function () use ($expectedResult) {
-            yield $expectedResult;
-        });
 
-        $messages = $dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
+        $messages = $dispatcher->dispatch(new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
 
         $this->assertInstanceOf(Generator::class, $messages);
         $response = $messages->current();
@@ -53,6 +69,6 @@ class MethodDispatcherTest extends TestCase
 
     private function create(array $array): MethodDispatcher
     {
-        return new MethodDispatcher($this->argumentResolver->reveal());
+        return new MethodDispatcher($this->argumentResolver->reveal(), new Handlers($array));
     }
 }

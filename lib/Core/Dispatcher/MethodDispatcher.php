@@ -3,12 +3,9 @@
 namespace Phpactor\LanguageServer\Core\Dispatcher;
 
 use Generator;
-use Phpactor\LanguageServer\Core\ArgumentResolver;
-use Phpactor\LanguageServer\Core\Dispatcher;
-use Phpactor\LanguageServer\Core\Handlers;
-use Phpactor\LanguageServer\Core\Transport\Message;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
 
 class MethodDispatcher implements Dispatcher
@@ -18,22 +15,30 @@ class MethodDispatcher implements Dispatcher
      */
     private $argumentResolver;
 
-    public function __construct(ArgumentResolver $argumentResolver)
+    /**
+     * @var Handlers
+     */
+    private $handlers;
+
+    public function __construct(ArgumentResolver $argumentResolver, Handlers $handlers)
     {
         $this->argumentResolver = $argumentResolver;
+        $this->handlers = $handlers;
     }
 
-    public function dispatch(Handlers $handlers, RequestMessage $request): Generator
+    public function dispatch(RequestMessage $request): Generator
     {
-        $handler = $handlers->get($request->method);
+        $handler = $this->handlers->get($request->method);
+
+        $method = $this->resolveHandlerMethod($handler, $request);
 
         $arguments = $this->argumentResolver->resolveArguments(
             $handler,
-            '__invoke',
+            $method,
             $request->params
         );
 
-        $messages = $handler->__invoke(...$arguments);
+        $messages = $handler->$method(...$arguments);
 
         if (null === $messages) {
             return;
@@ -55,5 +60,23 @@ class MethodDispatcher implements Dispatcher
             }
             yield new ResponseMessage($request->id, $message);
         }
+    }
+
+    private function resolveHandlerMethod(Handler $handler, RequestMessage $request): string
+    {
+        $handlerMethods = $handler->methods();
+        $method = $handlerMethods[$request->method];
+
+        if (!method_exists($handler, $method)) {
+            throw new RuntimeException(sprintf(
+                'Handler "%s" for method "%s" does not have the "%s" method defined, it has "%s"',
+                get_class($handler),
+                $request->method,
+                $method,
+                implode('", "', get_class_methods($handler))
+            ));
+        }
+
+        return $method;
     }
 }

@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Session\Manager;
+use Phpactor\LanguageServer\Core\Session\SessionManager;
 use RuntimeException;
 
 class ManagerTest extends TestCase
@@ -15,7 +15,7 @@ class ManagerTest extends TestCase
 
     public function setUp()
     {
-        $this->manager = new Manager();
+        $this->manager = new SessionManager();
     }
 
     public function testThrowsExceptionWhenNotInitialized()

@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+use Amp\Loop;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
@@ -11,7 +12,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handlers;
 use Phpactor\LanguageServer\Core\Server;
-use Phpactor\LanguageServer\Core\Session\Manager;
+use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\AbstractLogger;
 
@@ -19,7 +20,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $options = [
     'type' => 'tcp',
-    'address' => '127.0.0.1:8888',
+    'address' => null,
 ];
 
 $options = array_merge($options, getopt('t::a::', ['type::', 'address::']));
@@ -53,23 +54,8 @@ $logger = new class extends AbstractLogger {
 $logger->info('test language server starting');
 $logger->info('i am a demonstration server and provide no functionality');
 
-$sessionManager = new Manager();
-$builder = LanguageServerBuilder::create($logger, $sessionManager);
+$builder = LanguageServerBuilder::create($logger);
+$builder->tcpServer($options['address']);
 
-switch ($options['type']) {
-    case 'tcp':
-        $builder->tcpServer($options['address']);
-        break;
-    case 'stdio':
-        $builder->stdIoServer();
-        break;
-    default:
-        echo sprintf('Invalid builder type, must be either "tcp" or "stdio", got "%s"', $options['type']);
-        exit(255);
-}
-
-$builder->recordTo('recording.log');
-$builder->withCoreExtension();
 $server = $builder->build();
-
 $server->start();

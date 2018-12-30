@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Adapter\DTL;
 
 use DTL\ArgumentResolver\ArgumentResolver as UpstreamArgumentResolver;
 use DTL\ArgumentResolver\ParamConverter\RecursiveInstantiator;
-use Phpactor\LanguageServer\Core\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 
 class DTLArgumentResolver implements ArgumentResolver
 {

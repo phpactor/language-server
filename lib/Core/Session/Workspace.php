@@ -23,6 +23,11 @@ class Workspace
         $this->rootUri = $rootUri ?: getcwd();
     }
 
+    public function has(string $uri): bool
+    {
+        return isset($this->documents[$uri]);
+    }
+
     public function get(string $uri): TextDocumentItem
     {
         if (!isset($this->documents[$uri])) {

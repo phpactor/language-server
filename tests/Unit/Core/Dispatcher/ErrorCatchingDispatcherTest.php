@@ -4,13 +4,12 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Dispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
-use Phpactor\LanguageServer\Core\Handlers;
-use Phpactor\LanguageServer\Core\Transport\NotificationMessage;
-use Phpactor\LanguageServer\Core\Transport\RequestMessage;
-use Phpactor\LanguageServer\Core\Transport\ResponseError;
-use Phpactor\LanguageServer\Core\Transport\ResponseMessage;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseError;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 
@@ -43,13 +42,12 @@ class ErrorCatchingDispatcherTest extends TestCase
 
     public function testCatchesErrorsThrownDuringInnerDispatch()
     {
-        $handlers = new Handlers();
         $message = new RequestMessage(1, 'hello', []);
-        $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new Exception('Hello'));
+        $this->innerDispatcher->dispatch($message)->willThrow(new Exception('Hello'));
 
         $this->logger->error('Hello', Argument::cetera())->shouldBeCalled();
 
-        $responses = $this->dispatcher->dispatch($handlers, $message);
+        $responses = $this->dispatcher->dispatch($message);
 
         $response = $responses->current();
         $this->assertInstanceOf(ResponseMessage::class, $response);
@@ -59,14 +57,13 @@ class ErrorCatchingDispatcherTest extends TestCase
 
     public function testReturnsResultsFromInnerDispatcher()
     {
-        $handlers = new Handlers();
         $message = new RequestMessage(1, 'hello', []);
 
-        $this->innerDispatcher->dispatch($handlers, $message)->will(function () {
+        $this->innerDispatcher->dispatch($message)->will(function () {
             yield new NotificationMessage('hello', []);
         });
 
-        $responses = $this->dispatcher->dispatch($handlers, $message);
+        $responses = $this->dispatcher->dispatch($message);
 
         $response = $responses->current();
         $this->assertInstanceOf(NotificationMessage::class, $response);

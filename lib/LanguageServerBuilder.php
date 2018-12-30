@@ -2,21 +2,27 @@
 
 namespace Phpactor\LanguageServer;
 
+use Amp\ByteStream\ResourceInputStream;
+use Amp\ByteStream\ResourceOutputStream;
 use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Core\ArgumentResolver;
-use Phpactor\LanguageServer\Core\Connection;
-use Phpactor\LanguageServer\Core\Connection\StreamConnection;
-use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
+use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Extension;
-use Phpactor\LanguageServer\Core\Extensions;
-use Phpactor\LanguageServer\Extension\Core\CoreExtension;
-use Phpactor\LanguageServer\Core\Protocol\LanguageServerProtocol;
-use Phpactor\LanguageServer\Core\Protocol\RecordingProtocol;
-use Phpactor\LanguageServer\Core\Server;
-use Phpactor\LanguageServer\Core\Session\Manager;
+use Phpactor\LanguageServer\Core\Event\EventEmitter;
+use Phpactor\LanguageServer\Core\Event\EventSubscriber;
+use Phpactor\LanguageServer\Core\Handler\ExitHandler;
+use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
+use Phpactor\LanguageServer\Core\Handler\SystemHandler;
+use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
+use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
+use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
+use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
+use Phpactor\LanguageServer\Core\Server\LanguageServer;
+use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -28,123 +34,170 @@ class LanguageServerBuilder
     private $logger;
 
     /**
-     * @var Closure
+     * @var Handler[]
      */
-    private $connection;
+    private $handlers = [];
 
     /**
-     * @var Manager
+     * @var EventEmitter
+     */
+    private $eventEmitter;
+
+    /**
+     * @var SessionManager
      */
     private $sessionManager;
 
     /**
-     * @var ArgumentResolver
+     * @var bool
      */
-    private $argumentResolver;
+    private $defaultHandlers = true;
 
     /**
-     * @var string
+     * @var bool
      */
-    private $recordPath;
+    private $catchExceptions = true;
 
     /**
-     * @var Extensions
+     * @var string|null
      */
-    private $extensions;
+    private $tcpAddress = null;
 
-    private function __construct(Manager $sessionManager, ArgumentResolver $argumentResolver, LoggerInterface $logger)
-    {
-        $this->sessionManager = $sessionManager;
+    /**
+     * @var bool
+     */
+    private $eventLoop = true;
+
+    private function __construct(
+        LoggerInterface $logger,
+        EventEmitter $eventEmitter,
+        SessionManager $sessionManager
+    ) {
         $this->logger = $logger;
-        $this->argumentResolver = $argumentResolver;
-        $this->extensions = new Extensions([]);
+        $this->eventEmitter = $eventEmitter;
+        $this->sessionManager = $sessionManager;
     }
 
-    public static function create(LoggerInterface $logger = null, Manager $sessionManager = null): self
-    {
+    public static function create(
+        LoggerInterface $logger = null,
+        SessionManager $sessionManager = null,
+        EventEmitter $eventEmitter = null
+    ): self {
         return new self(
-            $sessionManager ?: new Manager(),
-            new DTLArgumentResolver(),
-            $logger ?: new NullLogger()
+            $logger ?: new NullLogger(),
+            $eventEmitter ?: new EvenementEmitter(),
+            $sessionManager ?: new SessionManager()
         );
     }
 
-    public function tcpServer(string $address = '127.0.0.1:8888'): self
+    public function useDefaultHandlers(bool $useDefaultHandlers = true): self
     {
-        $this->connection = function () use ($address) {
-            return new TcpServerConnection($this->logger, $address);
-        };
+        $this->defaultHandlers = $useDefaultHandlers;
 
         return $this;
     }
 
-    public function stdIoServer(): self
+    public function catchExceptions(bool $enabled = true): self
     {
-        $this->connection = function () {
-            return new StreamConnection($this->logger);
-        };
+        $this->catchExceptions = $enabled;
 
         return $this;
     }
 
-    public function withConnection(Connection $connection)
+    public function eventLoop(bool $enabled = true): self
     {
-        $this->connection = function () use ($connection) {
-            return $connection;
-        };
+        $this->eventLoop = $enabled;
 
         return $this;
     }
 
-    public function addExtension(Extension $extension)
+    public function addHandler(Handler $handler): self
     {
-        $this->extensions->add($extension);
-
-        return $this;
-    }
-
-    public function withCoreExtension(): self
-    {
-        $this->extensions->add(
-            new CoreExtension(
-                $this->extensions,
-                $this->sessionManager
-            )
-        );
-
-        return $this;
-    }
-
-    public function recordTo(string $path)
-    {
-        $this->recordPath = $path;
-    }
-
-    public function build(): Server
-    {
-        $dispatcher = new MethodDispatcher($this->argumentResolver);
-        $dispatcher = new ErrorCatchingDispatcher($dispatcher, $this->logger);
-
-        if (null === $this->connection) {
-            $this->stdIoServer();
+        if ($handler instanceof EventSubscriber) {
+            foreach ($handler->events() as $eventName => $method) {
+                $this->eventEmitter->on($eventName, Closure::fromCallable([ $handler, $method ]));
+            }
         }
 
-        $connectionFactory = $this->connection;
+        $this->handlers[] = $handler;
 
-        $protocol = LanguageServerProtocol::create($this->logger);
-        if ($this->recordPath) {
-            $protocol = new RecordingProtocol(
-                $protocol,
-                $this->recordPath
+        return $this;
+    }
+
+    public function tcpServer(?string $address = '0.0.0.0:0'): self
+    {
+        $this->tcpAddress = $address;
+
+        return $this;
+    }
+
+    /**
+     * Build the language server.
+     * The returned language server can then be started
+     * by calling `start()`.
+     */
+    public function build(): LanguageServer
+    {
+        $dispatcher = $this->buildDispatcher();
+
+        if ($this->tcpAddress) {
+            $provider = new SocketStreamProvider(
+                \Amp\Socket\listen($this->tcpAddress),
+                $this->logger
+            );
+        } else {
+            $provider = new ResourceStreamProvider(
+                new ResourceDuplexStream(
+                    new ResourceInputStream(STDIN),
+                    new ResourceOutputStream(STDOUT)
+                ),
+                $this->logger
             );
         }
 
-        return new Server(
-            $this->logger,
+        return new LanguageServer(
             $dispatcher,
-            $connectionFactory(),
-            $this->extensions,
-            $protocol
+            $this->logger,
+            $provider,
+            $this->eventLoop
         );
+    }
+
+    /**
+     * Return the RPC dispatcher used by the server.
+     * Useful for testing.
+     */
+    public function buildDispatcher(): Dispatcher
+    {
+        if ($this->defaultHandlers) {
+            $this->addDefaultHandlers();
+        }
+
+        $dispatcher = new MethodDispatcher(
+            new DTLArgumentResolver(),
+            new Handlers($this->handlers)
+        );
+
+        if ($this->catchExceptions) {
+            $dispatcher = new ErrorCatchingDispatcher(
+                $dispatcher,
+                $this->logger
+            );
+        }
+
+        return $dispatcher;
+    }
+
+    private function addDefaultHandlers(): void
+    {
+        $this->addHandler(new InitializeHandler(
+            $this->eventEmitter,
+            $this->sessionManager
+        ));
+        $this->addHandler(
+            new TextDocumentHandler($this->eventEmitter, $this->sessionManager)
+        );
+        $this->addHandler(new ExitHandler());
+        $this->addHandler(new SystemHandler($this->sessionManager));
     }
 }
