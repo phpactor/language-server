@@ -15,13 +15,12 @@ use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\EventSubscriber;
 use Phpactor\LanguageServer\Core\Handler\ExitHandler;
 use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
-use Phpactor\LanguageServer\Core\Handler\SessionHandler;
+use Phpactor\LanguageServer\Core\Handler\SystemHandler;
 use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
-use Phpactor\LanguageServer\Core\Server\Server;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -166,6 +165,6 @@ class LanguageServerBuilder
             new TextDocumentHandler($this->eventEmitter, $this->sessionManager)
         );
         $this->addHandler(new ExitHandler());
-        $this->addHandler(new SessionHandler($this->sessionManager));
+        $this->addHandler(new SystemHandler($this->sessionManager));
     }
 }

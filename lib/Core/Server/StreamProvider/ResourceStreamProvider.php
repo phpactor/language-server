@@ -2,9 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Server\StreamProvider;
 
-use Amp\ByteStream\ResourceInputStream;
-use Amp\ByteStream\ResourceOutputStream;
-use Amp\Loop;
 use Amp\Promise;
 use Amp\Success;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;

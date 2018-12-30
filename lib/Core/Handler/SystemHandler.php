@@ -7,7 +7,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 
-class SessionHandler implements Handler
+class SystemHandler implements Handler
 {
     /**
      * @var SessionManager
@@ -22,7 +22,7 @@ class SessionHandler implements Handler
     public function methods(): array
     {
         return [
-            'session/status' => 'status',
+            'system/status' => 'status',
         ];
     }
 

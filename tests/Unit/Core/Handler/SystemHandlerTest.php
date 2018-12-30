@@ -3,11 +3,11 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Handler\SessionHandler;
+use Phpactor\LanguageServer\Core\Handler\SystemHandler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
-class SessionHandlerTest extends HandlerTestCase
+class SystemHandlerTest extends HandlerTestCase
 {
     /**
      * @var Manager
@@ -22,12 +22,12 @@ class SessionHandlerTest extends HandlerTestCase
 
     public function handler(): Handler
     {
-        return new SessionHandler($this->sessionManager);
+        return new SystemHandler($this->sessionManager);
     }
 
     public function testItReturnsTheCurrentSessionStatus()
     {
-        $responses = $this->dispatch('session/status', []);
+        $responses = $this->dispatch('system/status', []);
         $this->assertInstanceOf(ResponseMessage::class, $responses[0], 'Returns dummy response to request');
         $this->assertInstanceOf(NotificationMessage::class, $responses[1], 'Issues notification with status');
     }

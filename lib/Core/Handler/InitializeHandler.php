@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Handler;
 
 use Generator;
+use LanguageServerProtocol\InitializeParams;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
@@ -56,6 +57,14 @@ class InitializeHandler implements Handler
         }
 
         $this->manager->initialize($rootUri, $processId);
+        $this->emitter->emit(LanguageServerEvents::INITIALIZED, [new InitializeParams(
+            $capabilities,
+            $initializationOptions,
+            $processId,
+            $rootPath,
+            $rootUri,
+            $trace
+        )]);
         yield $this->gatherServerCapabilities($capabilities);
     }
 

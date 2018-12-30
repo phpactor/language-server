@@ -2,11 +2,9 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
-use Amp\ByteStream\InputStream;
 use Amp\ByteStream\StreamException;
 use Amp\Loop;
 use Amp\Socket\Server as SocketServer;
-use Amp\Socket\ServerSocket;
 use Generator;
 use Phpactor\LanguageServer\Core\Server\Exception\ServerControlException;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
@@ -106,7 +104,6 @@ class LanguageServer
             while ($request = $parser->send($chunk)) {
                 try {
                     $this->dispatch($request, $stream);
-
                 } catch (StreamException $exception) {
                     $this->logger->error($exception->getMessage());
 

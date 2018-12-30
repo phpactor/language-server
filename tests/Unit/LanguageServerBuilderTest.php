@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventSubscriber;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
-use Phpactor\LanguageServer\Core\Server\Server;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 
 class LanguageServerBuilderTest extends TestCase

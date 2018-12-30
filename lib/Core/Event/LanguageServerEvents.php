@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Core\Event;
 
 interface LanguageServerEvents
 {
+    const INITIALIZED = 'initialized';
     const CAPABILITIES_REGISTER = 'register_capabilities';
     const TEXT_DOCUMENT_OPENED = 'text_document.opened';
     const TEXT_DOCUMENT_UPDATED = 'text_document.updated';

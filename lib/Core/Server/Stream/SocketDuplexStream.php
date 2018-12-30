@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Server\Stream;
 
 use Amp\Promise;
 use Amp\Socket\Socket;
-use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
 
 class SocketDuplexStream implements DuplexStream
 {

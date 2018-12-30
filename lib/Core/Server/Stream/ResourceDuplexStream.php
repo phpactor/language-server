@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Core\Server\Stream;
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
 use Amp\Promise;
-use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
 
 class ResourceDuplexStream implements DuplexStream
 {
