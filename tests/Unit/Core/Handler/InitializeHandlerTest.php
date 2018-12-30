@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
+use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
 use Phpactor\LanguageServer\Core\Extension;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
@@ -53,6 +54,10 @@ class InitializeHandlerTest extends HandlerTestCase
 
     public function testInitialize()
     {
+        $capabiltiesCalled = false;
+        $this->emitter->on(LanguageServerEvents::CAPABILITIES_REGISTER, function (ServerCapabilities $capabilities) use (&$capabiltiesCalled) {
+            $capabiltiesCalled = true;
+        });
         $messages = $this->dispatch('initialize', [
             'capabilities' => [],
             'initializationOptions' => [],
@@ -62,6 +67,7 @@ class InitializeHandlerTest extends HandlerTestCase
 
         $this->assertInstanceOf(InitializeResult::class, $messages[0]->result);
         $this->assertInstanceOf(ServerCapabilities::class, $messages[0]->result->capabilities);
+        $this->assertTrue($capabiltiesCalled);
     }
 
     public function testAcceptsDeprecatedRootPath()

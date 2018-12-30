@@ -80,7 +80,7 @@ class InitializeHandler implements Handler
         $result->capabilities = $capabilities;
         $this->emitter->emit(
             LanguageServerEvents::CAPABILITIES_REGISTER,
-            [ $result ]
+            [ $capabilities ]
         );
         return $result;
     }
