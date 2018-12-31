@@ -5,7 +5,9 @@ namespace Phpactor\LanguageServer\Core\Session;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServer\Core\Session\Exception\DocumentNotFound;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
+use RuntimeException;
 
 class Workspace
 {
@@ -31,7 +33,7 @@ class Workspace
     public function get(string $uri): TextDocumentItem
     {
         if (!isset($this->documents[$uri])) {
-            throw new UnknownDocument($uri);
+            $this->tryAndOpen($uri);
         }
 
         return $this->documents[$uri];
@@ -68,5 +70,24 @@ class Workspace
         }
 
         unset($this->documents[$textDocument->uri]);
+    }
+
+    private function tryAndOpen(string $uri)
+    {
+        if (!file_exists($uri)) {
+            throw new DocumentNotFound(sprintf(
+                'Document at "%s" not found',
+                $uri
+            ));
+        }
+
+        $contents = file_get_contents($uri);
+        if (false === $contents) {
+            throw new RuntimeException(sprintf(
+                'Could not read file at "%s"',
+                $uri
+            ));
+        }
+        $this->open(new TextDocumentItem($uri, null, null, $contents));
     }
 }

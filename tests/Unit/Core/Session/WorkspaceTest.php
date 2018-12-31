@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use PHPUnit\Framework\TestCase;
+use Phpactor\LanguageServer\Core\Session\Exception\DocumentNotFound;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 
@@ -22,7 +23,7 @@ class WorkspaceTest extends TestCase
 
     public function testThrowsExceptionGetUnknown()
     {
-        $this->expectException(UnknownDocument::class);
+        $this->expectException(DocumentNotFound::class);
         $this->workspace->get('foobar');
     }
 
@@ -34,6 +35,14 @@ class WorkspaceTest extends TestCase
         $document = $this->workspace->get('foobar');
 
         $this->assertSame($expectedDocument, $document);
+    }
+
+    public function testLoadsCurrentlyNotLoadedDocument()
+    {
+        $this->workspace->get(__FILE__);
+        $document = $this->workspace->get(__FILE__);
+
+        $this->assertEquals(file_get_contents(__FILE__), $document->text);
     }
 
     public function testThrowsExceptionUpdateUnknown()
