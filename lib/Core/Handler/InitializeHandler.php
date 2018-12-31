@@ -6,6 +6,7 @@ use Generator;
 use LanguageServerProtocol\InitializeParams;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
+use LanguageServerProtocol\TextDocumentSyncKind;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
@@ -75,6 +76,7 @@ class InitializeHandler implements Handler
     private function gatherServerCapabilities(array $capabilities): InitializeResult
     {
         $capabilities = new ServerCapabilities();
+        $capabilities->textDocumentSync = TextDocumentSyncKind::FULL;
         
         $result = new InitializeResult();
         $result->capabilities = $capabilities;
