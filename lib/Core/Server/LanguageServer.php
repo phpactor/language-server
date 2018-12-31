@@ -22,6 +22,8 @@ use RuntimeException;
 
 class LanguageServer
 {
+    const WRITE_CHUNK_SIZE = 256;
+
     /**
      * @var LoopInterface
      */
@@ -153,7 +155,11 @@ class LanguageServer
 
         foreach ($responses as $response) {
             $this->logger->info('Response', (array) $response);
-            $socket->write($this->writer->write($response));
+            $responseBody = $this->writer->write($response);
+
+            foreach (str_split($responseBody, self::WRITE_CHUNK_SIZE) as $chunk) {
+                $socket->write($chunk);
+            }
         }
     }
 }
