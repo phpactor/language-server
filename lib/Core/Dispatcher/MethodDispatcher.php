@@ -65,6 +65,15 @@ class MethodDispatcher implements Dispatcher
     private function resolveHandlerMethod(Handler $handler, RequestMessage $request): string
     {
         $handlerMethods = $handler->methods();
+
+        if (!array_key_exists($request->method, $handlerMethods)) {
+            throw new RuntimeException(sprintf(
+                'Resolved handler "%s" has not declared the method "%s"',
+                get_class($handler),
+                $request->method
+            ));
+        }
+
         $method = $handlerMethods[$request->method];
 
         if (!method_exists($handler, $method)) {
