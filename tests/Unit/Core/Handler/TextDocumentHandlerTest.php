@@ -9,6 +9,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
 use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
+use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 
 class TextDocumentHandlerTest extends HandlerTestCase
@@ -27,7 +28,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
     {
         $this->manager = $this->sessionManager();
         $this->emitter = $this->emitter();
-        $this->manager->initialize('path/to');
+        $this->manager->load(new Session('path/to'));
     }
 
     public function handler(): Handler

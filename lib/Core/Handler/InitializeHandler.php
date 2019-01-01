@@ -10,6 +10,7 @@ use LanguageServerProtocol\TextDocumentSyncKind;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
+use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 use RuntimeException;
 
@@ -57,7 +58,7 @@ class InitializeHandler implements Handler
             );
         }
 
-        $this->manager->initialize($rootUri, $processId);
+        $this->manager->load($this->createSession($rootUri, $processId));
         $this->emitter->emit(LanguageServerEvents::INITIALIZED, [new InitializeParams(
             $capabilities,
             $initializationOptions,
@@ -85,5 +86,10 @@ class InitializeHandler implements Handler
             [ $capabilities ]
         );
         return $result;
+    }
+
+    protected function createSession(string $rootUri, ?int $processId = null): Session
+    {
+        return new Session($rootUri, $processId);
     }
 }

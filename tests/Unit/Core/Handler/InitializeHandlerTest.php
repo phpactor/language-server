@@ -11,6 +11,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
 use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
+use Prophecy\Argument;
 use RuntimeException;
 
 class InitializeHandlerTest extends HandlerTestCase
@@ -79,7 +80,7 @@ class InitializeHandlerTest extends HandlerTestCase
             'rootPath' => '/home/daniel/foobar',
         ]);
 
-        $this->sessionManager->initialize('/home/daniel/foobar', 1234)->shouldBeCalled();
+        $this->sessionManager->load(Argument::type(Session::class))->shouldBeCalledOnce();
         $this->assertInstanceOf(InitializeResult::class, $messages[0]->result);
     }
 

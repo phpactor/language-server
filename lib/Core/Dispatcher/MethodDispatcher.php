@@ -16,19 +16,19 @@ class MethodDispatcher implements Dispatcher
     private $argumentResolver;
 
     /**
-     * @var Handlers
+     * @var HandlerRegistry
      */
-    private $handlers;
+    private $handlerRegistry;
 
-    public function __construct(ArgumentResolver $argumentResolver, Handlers $handlers)
+    public function __construct(ArgumentResolver $argumentResolver, HandlerRegistry $handlerRegistry)
     {
         $this->argumentResolver = $argumentResolver;
-        $this->handlers = $handlers;
+        $this->handlerRegistry = $handlerRegistry;
     }
 
     public function dispatch(RequestMessage $request): Generator
     {
-        $handler = $this->handlers->get($request->method);
+        $handler = $this->handlerRegistry->get($request->method);
 
         $method = $this->resolveHandlerMethod($handler, $request);
 
@@ -65,6 +65,15 @@ class MethodDispatcher implements Dispatcher
     private function resolveHandlerMethod(Handler $handler, RequestMessage $request): string
     {
         $handlerMethods = $handler->methods();
+
+        if (!array_key_exists($request->method, $handlerMethods)) {
+            throw new RuntimeException(sprintf(
+                'Resolved handler "%s" has not declared the method "%s"',
+                get_class($handler),
+                $request->method
+            ));
+        }
+
         $method = $handlerMethods[$request->method];
 
         if (!method_exists($handler, $method)) {

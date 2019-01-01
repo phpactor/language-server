@@ -7,10 +7,12 @@ use Amp\ByteStream\ResourceOutputStream;
 use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
+use Phpactor\LanguageServer\Core\Dispatcher\ChainHandlerRegistry;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\LazyContainerHandlerRegistry;
 use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\EventSubscriber;
@@ -68,6 +70,11 @@ class LanguageServerBuilder
      */
     private $eventLoop = true;
 
+    /**
+     * @var array
+     */
+    private $factories = [];
+
     private function __construct(
         LoggerInterface $logger,
         EventEmitter $eventEmitter,
@@ -107,6 +114,13 @@ class LanguageServerBuilder
     public function eventLoop(bool $enabled = true): self
     {
         $this->eventLoop = $enabled;
+
+        return $this;
+    }
+
+    public function addHandlerFactory(string $method, Closure $closure): self
+    {
+        $this->factories[$method] = $closure;
 
         return $this;
     }
@@ -173,9 +187,18 @@ class LanguageServerBuilder
             $this->addDefaultHandlers();
         }
 
+        $handlers = new Handlers($this->handlers);
+
+        if ($this->factories) {
+            $handlers= new ChainHandlerRegistry([
+                $handlers,
+                new LazyContainerHandlerRegistry($this->sessionManager, $this->factories),
+            ]);
+        }
+
         $dispatcher = new MethodDispatcher(
             new DTLArgumentResolver(),
-            new Handlers($this->handlers)
+            $handlers
         );
 
         if ($this->catchExceptions) {
