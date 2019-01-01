@@ -11,9 +11,9 @@ class SessionManager
      */
     private $session;
 
-    public function initialize(string $rootUri, int $processId = null)
+    public function load(Session $session)
     {
-        $this->session = new Session($rootUri, $processId);
+        $this->session = $session;
     }
 
     public function current(): Session

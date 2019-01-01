@@ -6,6 +6,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Handler\SystemHandler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Core\Session\Session;
 
 class SystemHandlerTest extends HandlerTestCase
 {
@@ -17,7 +18,7 @@ class SystemHandlerTest extends HandlerTestCase
     public function setUp()
     {
         $this->sessionManager = $this->sessionManager();
-        $this->sessionManager->initialize(__DIR__);
+        $this->sessionManager->load(new Session(__DIR__));
     }
 
     public function handler(): Handler

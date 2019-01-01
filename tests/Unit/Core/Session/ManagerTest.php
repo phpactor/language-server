@@ -3,13 +3,14 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 
 use PHPUnit\Framework\TestCase;
+use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 use RuntimeException;
 
 class ManagerTest extends TestCase
 {
     /**
-     * @var Manager
+     * @var SessionManager
      */
     private $manager;
 
@@ -26,7 +27,7 @@ class ManagerTest extends TestCase
 
     public function testInitializesSession()
     {
-        $this->manager->initialize(__FILE__, 1234);
+        $this->manager->load(new Session(__FILE__, 1234));
         $session = $this->manager->current();
 
         $this->assertEquals(__FILE__, $session->rootUri());

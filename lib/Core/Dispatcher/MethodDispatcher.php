@@ -16,19 +16,19 @@ class MethodDispatcher implements Dispatcher
     private $argumentResolver;
 
     /**
-     * @var Handlers
+     * @var HandlerRegistry
      */
-    private $handlers;
+    private $handlerRegistry;
 
-    public function __construct(ArgumentResolver $argumentResolver, Handlers $handlers)
+    public function __construct(ArgumentResolver $argumentResolver, HandlerRegistry $handlerRegistry)
     {
         $this->argumentResolver = $argumentResolver;
-        $this->handlers = $handlers;
+        $this->handlerRegistry = $handlerRegistry;
     }
 
     public function dispatch(RequestMessage $request): Generator
     {
-        $handler = $this->handlers->get($request->method);
+        $handler = $this->handlerRegistry->get($request->method);
 
         $method = $this->resolveHandlerMethod($handler, $request);
 

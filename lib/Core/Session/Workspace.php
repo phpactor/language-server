@@ -14,14 +14,7 @@ class Workspace
      */
     private $documents = [];
 
-    private $rootUri;
-
     private $processId;
-
-    public function __construct(string $rootUri)
-    {
-        $this->rootUri = $rootUri ?: getcwd();
-    }
 
     public function has(string $uri): bool
     {
@@ -54,11 +47,6 @@ class Workspace
     public function openFiles(): int
     {
         return count($this->documents);
-    }
-
-    public function initialize(string $rootUri)
-    {
-        $this->rootUri = $rootUri;
     }
 
     public function remove(TextDocumentIdentifier $textDocument)

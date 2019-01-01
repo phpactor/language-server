@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Core\Dispatcher;
 use ArrayIterator;
 use IteratorAggregate;
 
-class Handlers implements IteratorAggregate
+class Handlers implements IteratorAggregate, HandlerRegistry
 {
     private $handlers = [];
 
@@ -29,7 +29,7 @@ class Handlers implements IteratorAggregate
         return $names;
     }
 
-    public function merge(Handlers $handlers)
+    public function merge(Handlers $handlers): void
     {
         foreach ($handlers as $handler) {
             $this->add($handler);
