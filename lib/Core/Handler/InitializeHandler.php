@@ -58,7 +58,7 @@ class InitializeHandler implements Handler
             );
         }
 
-        $this->manager->load(new Session($rootUri, $processId));
+        $this->manager->load($this->createSession($rootUri, $processId));
         $this->emitter->emit(LanguageServerEvents::INITIALIZED, [new InitializeParams(
             $capabilities,
             $initializationOptions,
@@ -86,5 +86,10 @@ class InitializeHandler implements Handler
             [ $capabilities ]
         );
         return $result;
+    }
+
+    protected function createSession(string $rootUri, ?int $processId = null): Session
+    {
+        return new Session($rootUri, $processId);
     }
 }
