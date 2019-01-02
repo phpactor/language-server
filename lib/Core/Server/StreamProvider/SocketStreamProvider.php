@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Core\Server\StreamProvider;
 use Amp\Deferred;
 use Amp\Promise;
 use Amp\Socket\Server;
+use Amp\Socket\Socket;
 use Phpactor\LanguageServer\Core\Server\Stream\SocketDuplexStream;
 use Psr\Log\LoggerInterface;
 
@@ -29,11 +30,11 @@ class SocketStreamProvider implements StreamProvider
     public function provide(): Promise
     {
         $promise = $this->server->accept();
-        $this->logger->info(sprintf('Listening on %s', $this->server->getAddress()));
 
         $deferrer = new Deferred();
-        $promise->onResolve(function ($reason, $value) use ($deferrer) {
-            $deferrer->resolve(new SocketDuplexStream($value));
+        $promise->onResolve(function ($reason, Socket $socket) use ($deferrer) {
+            $this->logger->info(sprintf('Accepted connection from "%s"', $socket->getRemoteAddress()));
+            $deferrer->resolve(new Connection($socket->getRemoteAddress(), new SocketDuplexStream($socket)));
         });
 
         return $deferrer->promise();

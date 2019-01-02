@@ -4,11 +4,14 @@ namespace Phpactor\LanguageServer\Core\Server;
 
 use Amp\ByteStream\StreamException;
 use Amp\Loop;
+use Amp\Promise;
 use Amp\Socket\Server as SocketServer;
+use Amp\Success;
 use Generator;
 use Phpactor\LanguageServer\Core\Server\Exception\ServerControlException;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
@@ -22,12 +25,12 @@ use RuntimeException;
 
 class LanguageServer
 {
-    const WRITE_CHUNK_SIZE = 256;
+    private const WRITE_CHUNK_SIZE = 256;
+    private const STATE_RUNNING = 'running';
+    private const STATE_STARTING = 'starting';
+    private const STATE_SHUTTING_DOWN = 'shutting_down';
 
-    /**
-     * @var LoopInterface
-     */
-    private $eventLoop;
+    private $state = self::STATE_STARTING;
 
     /**
      * @var LanguageServerProtocolParser
@@ -50,11 +53,6 @@ class LanguageServer
     private $writer;
 
     /**
-     * @var SocketServer
-     */
-    private $server;
-
-    /**
      * @var StreamProvider
      */
     private $streamProvider;
@@ -63,6 +61,8 @@ class LanguageServer
      * @var bool
      */
     private $enableEventLoop;
+
+    private $acceptWatcherIds = [];
 
     public function __construct(
         Dispatcher $dispatcher,
@@ -98,18 +98,19 @@ class LanguageServer
         $this->logger->info(sprintf('Process ID: %s', getmypid()));
         Loop::onSignal(SIGINT, function (string $watcherId) {
             Loop::cancel($watcherId);
-            throw new ShutdownServer('SIGINT received');
+            yield $this->shutdown();
         });
 
-        try {
-            if ($this->enableEventLoop) {
-                Loop::run(function () {
-                    $this->waitForConnections();
-                });
-                return;
-            }
-        } catch (ShutdownServer $shutdown) {
-            $this->logger->info(sprintf('Shutdown Exception Received: %s', $shutdown->getMessage()));
+        if ($this->enableEventLoop) {
+            Loop::run(function () {
+                $this->waitForConnections();
+
+                if ($this->isShuttingDown()) {
+                    Loop::stop();
+                }
+
+            });
+
             return;
         }
 
@@ -118,10 +119,25 @@ class LanguageServer
 
     protected function waitForConnections(): void
     {
+        $this->state = self::STATE_RUNNING;
+
+        if ($this->streamProvider instanceof SocketStreamProvider) {
+            $this->logger->info(sprintf(
+                'Listening on %s',
+                $this->streamProvider->address()
+            ));
+        }
+
         \Amp\asyncCall(function () {
-            while ($stream = yield $this->streamProvider->provide()) {
-                \Amp\asyncCall(function () use ($stream) {
-                    return $this->handle($stream);
+            /** @var Connection $connection */
+            while (
+                $this->isRunning() &&
+                $connection = yield $this->streamProvider->provide()
+            ) {
+                $this->connections[$connection->id()] = $connection;
+
+                \Amp\asyncCall(function () use ($connection) {
+                    return $this->handle($connection->stream());
                 });
             }
         });
@@ -131,15 +147,16 @@ class LanguageServer
     {
         $parser = (new LanguageServerProtocolParser())->__invoke();
 
-        while (null !== ($chunk = yield $stream->read())) {
-            while ($request = $parser->send($chunk)) {
+        while (
+            $this->isRunning() && 
+            null !== ($chunk = yield $stream->read())
+        ) {
+            while ($this->isRunning() && $request = $parser->send($chunk)) {
                 try {
                     $this->dispatch($request, $stream);
                 } catch (ServerControlException $exception) {
                     $this->logger->info($exception->getMessage());
-                    \Amp\Promise\wait($stream->end());
-
-                    throw $exception;
+                    yield $this->shutdown();
                 }
 
                 $chunk = null;
@@ -161,5 +178,32 @@ class LanguageServer
                 $socket->write($chunk);
             }
         }
+    }
+
+    private function isRunning(): bool
+    {
+        return $this->state === self::STATE_RUNNING;
+    }
+
+    private function shutdown(): Promise
+    {
+        $this->logger->info('Shutting down');
+        $this->state = self::STATE_SHUTTING_DOWN;
+
+        foreach ($this->acceptWatcherIds as $watcherId) {
+            Loop::cancel($watcherId);
+        }
+
+        $proimises = [];
+        foreach ($this->connections as $connection) {
+            $promises[] = $connection->stream()->end();
+        }
+
+        return \Amp\Promise\any($proimises);
+    }
+
+    private function isShuttingDown(): bool
+    {
+        return $this->state === self::STATE_SHUTTING_DOWN;
     }
 }

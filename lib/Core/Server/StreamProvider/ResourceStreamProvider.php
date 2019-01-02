@@ -38,6 +38,7 @@ class ResourceStreamProvider implements StreamProvider
         $this->provided = true;
 
         $this->logger->info('Listening on STDIO');
-        return new Success($this->duplexStream);
+
+        return new Success(new Connection('stdio', $this->duplexStream));
     }
 }
