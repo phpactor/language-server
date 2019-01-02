@@ -95,6 +95,7 @@ class LanguageServer
      */
     public function start(): void
     {
+        $this->logger->info(sprintf('Process ID: %s', getmypid()));
         Loop::onSignal(SIGINT, function (string $watcherId) {
             Loop::cancel($watcherId);
             throw new ShutdownServer('SIGINT received');
@@ -108,7 +109,7 @@ class LanguageServer
                 return;
             }
         } catch (ShutdownServer $shutdown) {
-            $this->logger->info($shutdown->getMessage());
+            $this->logger->info(sprintf('Shutdown Exception Received: %s', $shutdown->getMessage()));
             return;
         }
 
@@ -134,14 +135,11 @@ class LanguageServer
             while ($request = $parser->send($chunk)) {
                 try {
                     $this->dispatch($request, $stream);
-                } catch (StreamException $exception) {
-                    $this->logger->error($exception->getMessage());
-
-                    yield $stream->end();
                 } catch (ServerControlException $exception) {
                     $this->logger->info($exception->getMessage());
+                    \Amp\Promise\wait($stream->end());
 
-                    yield $stream->end();
+                    throw $exception;
                 }
 
                 $chunk = null;
