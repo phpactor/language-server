@@ -119,7 +119,9 @@ class LanguageServer
     {
         \Amp\asyncCall(function () {
             while ($stream = yield $this->streamProvider->provide()) {
-                $value = yield from $this->handle($stream);
+                \Amp\asyncCall(function () use ($stream) {
+                    return $this->handle($stream);
+                });
             }
         });
     }
