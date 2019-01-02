@@ -101,4 +101,18 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
         $this->assertFalse($this->manager->current()->workspace()->has('foobar'));
     }
+
+    public function testSavesDocument()
+    {
+        $document = new TextDocumentItem();
+        $document->uri = 'foobar';
+        $workspace = $this->manager->current()->workspace();
+        $workspace->open($document);
+        $this->dispatch('textDocument/didSave', [
+            'textDocument' => new TextDocumentIdentifier('foobar'),
+            'text' => 'hello',
+        ]);
+
+        $this->assertEquals('hello', $workspace->get('foobar')->text);
+    }
 }

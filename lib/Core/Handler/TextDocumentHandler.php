@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
+use LanguageServerProtocol\DidSaveTextDocumentParams;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
@@ -34,7 +35,9 @@ final class TextDocumentHandler implements Handler
             'textDocument/didOpen' => 'didOpen',
             'textDocument/didChange' => 'didChange',
             'textDocument/didClose' => 'didClose',
+            'textDocument/didSave' => 'didSave',
             'textDocument/willSave' => 'willSave',
+            'textDocument/willSaveWaitUntil' => 'willSaveWaitUntil',
         ];
     }
 
@@ -71,6 +74,18 @@ final class TextDocumentHandler implements Handler
         $this->emitter->emit(
             LanguageServerEvents::TEXT_DOCUMENT_CLOSED,
             [ $textDocument ]
+        );
+    }
+
+    public function didSave(TextDocumentIdentifier $textDocument, string $text = null)
+    {
+        if ($text !== null) {
+            $this->manager->current()->workspace()->get($textDocument->uri)->text = $text;
+        }
+
+        $this->emitter->emit(
+            LanguageServerEvents::TEXT_DOCUMENT_SAVED,
+            [ new DidSaveTextDocumentParams($textDocument, $text) ]
         );
     }
 
