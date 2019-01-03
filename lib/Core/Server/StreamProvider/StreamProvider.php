@@ -6,5 +6,7 @@ use Amp\Promise;
 
 interface StreamProvider
 {
-    public function provide(): Promise;
+    public function accept(): Promise;
+
+    public function close(): void;
 }

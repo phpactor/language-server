@@ -27,21 +27,26 @@ class SocketStreamProvider implements StreamProvider
         $this->logger = $logger;
     }
 
-    public function provide(): Promise
+    public function accept(): Promise
     {
         $promise = $this->server->accept();
 
-        $deferrer = new Deferred();
-        $promise->onResolve(function ($reason, Socket $socket) use ($deferrer) {
+        $deferred = new Deferred();
+        $promise->onResolve(function ($reason, Socket $socket) use ($deferred) {
             $this->logger->info(sprintf('Accepted connection from "%s"', $socket->getRemoteAddress()));
-            $deferrer->resolve(new Connection($socket->getRemoteAddress(), new SocketDuplexStream($socket)));
+            $deferred->resolve(new Connection($socket->getRemoteAddress(), new SocketDuplexStream($socket)));
         });
 
-        return $deferrer->promise();
+        return $deferred->promise();
     }
 
     public function address(): ?string
     {
         return $this->server->getAddress();
+    }
+
+    public function close(): void
+    {
+        $this->server->close();
     }
 }
