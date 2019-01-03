@@ -6,10 +6,11 @@ use Amp\Coroutine;
 use Amp\Loop;
 use Amp\Promise;
 use Generator;
-use Phpactor\LanguageServer\Core\Server\Exception\ServerControlException;
+use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
+use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
@@ -112,10 +113,6 @@ class LanguageServer
         
         Loop::run(function () {
             $this->listenForConnections();
-        
-            if ($this->isShuttingDown()) {
-                Loop::stop();
-            }
         });
     }
 
@@ -136,7 +133,17 @@ class LanguageServer
                 $this->connections[] = $connection;
 
                 \Amp\asyncCall(function () use ($connection) {
-                    return $this->handle($connection->stream());
+                    try {
+                        yield from $this->handle($connection->stream());
+                    } catch (ExitSession $exception) {
+                        $connection->stream()->end();
+
+                        if ($this->streamProvider instanceof ResourceStreamProvider) {
+                            throw new ShutdownServer(
+                                'Exit called on STDIO connection, exiting the server'
+                            );
+                        }
+                    }
                 });
             }
         });
@@ -152,7 +159,7 @@ class LanguageServer
             while ($request = $parser->send($chunk)) {
                 try {
                     $this->dispatch($request, $stream);
-                } catch (ServerControlException $exception) {
+                } catch (ShutdownServer $exception) {
                     $this->logger->info($exception->getMessage());
                     yield $this->shutdown();
                 }
@@ -196,6 +203,6 @@ class LanguageServer
 
         $this->streamProvider->close();
 
-        throw new ShutdownServer('asd');
+        throw new ShutdownServer('shutdown server invoked');
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Server\StreamProvider;
 
-use Amp\Promise;
 use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
 
 class Connection
@@ -31,10 +30,5 @@ class Connection
     public function id(): string
     {
         return $this->id;
-    }
-
-    public function close(): Promise
-    {
-        return $this->stream->end();
     }
 }
