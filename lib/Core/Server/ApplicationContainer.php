@@ -12,7 +12,6 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerLoader;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
-use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 

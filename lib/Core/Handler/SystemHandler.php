@@ -4,9 +4,7 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
-use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 
 class SystemHandler implements Handler

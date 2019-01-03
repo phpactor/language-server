@@ -176,7 +176,7 @@ final class LanguageServer implements StatProvider
             while ($connection = yield $this->streamProvider->accept()) {
 
                 // create a reference to the connection so that we can later
-                // terminate it if necessary 
+                // terminate it if necessary
                 $this->connections[$connection->id()] = $connection;
 
                 // handle the request as a co-routine. If the handler throws an
@@ -185,10 +185,8 @@ final class LanguageServer implements StatProvider
                 // exception and exit the process.
                 \Amp\asyncCall(function () use ($connection) {
                     try {
-
                         yield from $this->handle($connection);
                     } catch (ExitSession $exception) {
-
                         $connection->stream()->end();
 
                         if ($this->streamProvider instanceof ResourceStreamProvider) {

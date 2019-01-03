@@ -3,14 +3,12 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use DateInterval;
-use DateTimeImmutable;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Handler\SystemHandler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
-use Phpactor\LanguageServer\Core\Session\Session;
 
 class SystemHandlerTest extends HandlerTestCase
 {

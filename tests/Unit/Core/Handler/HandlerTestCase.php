@@ -3,10 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Event\EventEmitter;
-use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Phpactor\LanguageServer\Test\HandlerTester;
 
 abstract class HandlerTestCase extends TestCase

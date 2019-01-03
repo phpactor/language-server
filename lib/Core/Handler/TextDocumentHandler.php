@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
-use LanguageServerProtocol\DidSaveTextDocumentParams;
 use LanguageServerProtocol\ServerCapabilities;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
@@ -10,8 +9,6 @@ use LanguageServerProtocol\TextDocumentSyncKind;
 use LanguageServerProtocol\TextDocumentSyncOptions;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Event\EventEmitter;
-use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 
 final class TextDocumentHandler implements Handler, CanRegisterCapabilities
@@ -54,7 +51,7 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
     }
 
     public function didClose(TextDocumentIdentifier $textDocument)
-     {
+    {
         $this->workspace->remove(
             $textDocument
         );

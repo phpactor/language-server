@@ -11,14 +11,10 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Event\EventSubscriber;
-use Phpactor\LanguageServer\Core\Handler\ExitHandler;
-use Phpactor\LanguageServer\Core\Handler\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
-use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
