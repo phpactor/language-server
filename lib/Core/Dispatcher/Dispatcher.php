@@ -7,5 +7,5 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 interface Dispatcher
 {
-    public function dispatch(RequestMessage $request): Generator;
+    public function dispatch(HandlerRegistry $handlers, RequestMessage $request): Generator;
 }

@@ -169,8 +169,11 @@ class LanguageServerBuilder
             );
         }
 
+        $handlers = new Handlers($this->handlers);
+
         return new LanguageServer(
             $dispatcher,
+            $handlers,
             $this->logger,
             $provider,
             $this->eventLoop
@@ -187,18 +190,8 @@ class LanguageServerBuilder
             $this->addDefaultHandlers();
         }
 
-        $handlers = new Handlers($this->handlers);
-
-        if ($this->factories) {
-            $handlers= new ChainHandlerRegistry([
-                $handlers,
-                new LazyContainerHandlerRegistry($this->sessionManager, $this->factories),
-            ]);
-        }
-
         $dispatcher = new MethodDispatcher(
-            new DTLArgumentResolver(),
-            $handlers
+            new DTLArgumentResolver()
         );
 
         if ($this->catchExceptions) {

@@ -6,6 +6,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
@@ -43,11 +44,12 @@ class ErrorCatchingDispatcherTest extends TestCase
     public function testCatchesErrorsThrownDuringInnerDispatch()
     {
         $message = new RequestMessage(1, 'hello', []);
-        $this->innerDispatcher->dispatch($message)->willThrow(new Exception('Hello'));
+        $handlers = new Handlers([]);
+        $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new Exception('Hello'));
 
         $this->logger->error('Hello', Argument::cetera())->shouldBeCalled();
 
-        $responses = $this->dispatcher->dispatch($message);
+        $responses = $this->dispatcher->dispatch($handlers, $message);
 
         $response = $responses->current();
         $this->assertInstanceOf(ResponseMessage::class, $response);
@@ -58,13 +60,13 @@ class ErrorCatchingDispatcherTest extends TestCase
     public function testReturnsResultsFromInnerDispatcher()
     {
         $message = new RequestMessage(1, 'hello', []);
+        $handlers = new Handlers([]);
 
-        $this->innerDispatcher->dispatch($message)->will(function () {
+        $this->innerDispatcher->dispatch($handlers, $message)->will(function () {
             yield new NotificationMessage('hello', []);
         });
 
-        $responses = $this->dispatcher->dispatch($message);
-
+        $responses = $this->dispatcher->dispatch($handlers, $message);
         $response = $responses->current();
         $this->assertInstanceOf(NotificationMessage::class, $response);
     }

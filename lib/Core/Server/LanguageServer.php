@@ -6,6 +6,8 @@ use Amp\Coroutine;
 use Amp\Loop;
 use Amp\Promise;
 use Generator;
+use Phpactor\LanguageServer\Core\Dispatcher\CallbackHandlerLoader;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
@@ -60,8 +62,14 @@ class LanguageServer
      */
     private $connections = [];
 
+    /**
+     * @var HandlerRegistry
+     */
+    private $handlers;
+
     public function __construct(
         Dispatcher $dispatcher,
+        HandlerRegistry $handlers,
         LoggerInterface $logger,
         StreamProvider $streamProvider,
         bool $enableEventLoop = true
@@ -72,6 +80,7 @@ class LanguageServer
         $this->writer = new LanguageServerProtocolWriter();
         $this->streamProvider = $streamProvider;
         $this->enableEventLoop = $enableEventLoop;
+        $this->handlers = $handlers;
     }
 
     public function address(): ?string
@@ -126,16 +135,18 @@ class LanguageServer
         }
 
         \Amp\asyncCall(function () {
-            /** @var Connection $connection */
-            while (
-                $connection = yield $this->streamProvider->accept()
-            ) {
-                $this->connections[] = $connection;
+            // accept incoming connections (in the case of a TCP server this is
+            // a connection, with a STDIO stream this just returns the stream
+            // immediately.)
+            while ($connection = yield $this->streamProvider->accept()) {
 
                 \Amp\asyncCall(function () use ($connection) {
                     try {
-                        yield from $this->handle($connection->stream());
+
+                        yield from $this->handle($connection);
+
                     } catch (ExitSession $exception) {
+
                         $connection->stream()->end();
 
                         if ($this->streamProvider instanceof ResourceStreamProvider) {
@@ -143,44 +154,54 @@ class LanguageServer
                                 'Exit called on STDIO connection, exiting the server'
                             );
                         }
+
                     }
                 });
             }
         });
     }
 
-    private function handle(DuplexStream $stream): Generator
+    private function handle(Connection $connection): Generator
     {
         $parser = (new LanguageServerProtocolParser())->__invoke();
 
-        while (
-            null !== ($chunk = yield $stream->read())
-        ) {
+        $container = new ApplicationContainer(
+            $this->dispatcher,
+            $this->handlers,
+            new CallbackHandlerLoader()
+        );
+
+        while (null !== ($chunk = yield $connection->stream()->read())) {
+
             while ($request = $parser->send($chunk)) {
                 try {
-                    $this->dispatch($request, $stream);
+
+                    $this->logger->info('REQUEST', $request->body());
+
+                    $responses = $container->dispatch(
+                        RequestMessageFactory::fromRequest($request)
+                    );
+
+                    foreach ($responses as $response) {
+
+                        $this->logger->info('RESPONSE', (array) $response);
+
+                        $responseBody = $this->writer->write($response);
+
+                        foreach (str_split($responseBody, self::WRITE_CHUNK_SIZE) as $chunk) {
+                            $connection->stream()->write($chunk);
+                        }
+                    }
+
                 } catch (ShutdownServer $exception) {
+
                     $this->logger->info($exception->getMessage());
+
                     yield $this->shutdown();
+
                 }
 
                 $chunk = null;
-            }
-        }
-    }
-
-    private function dispatch(Request $request, DuplexStream $socket)
-    {
-        $this->logger->info('Request', $request->body());
-
-        $responses = $this->dispatcher->dispatch(RequestMessageFactory::fromRequest($request));
-
-        foreach ($responses as $response) {
-            $this->logger->info('Response', (array) $response);
-            $responseBody = $this->writer->write($response);
-
-            foreach (str_split($responseBody, self::WRITE_CHUNK_SIZE) as $chunk) {
-                $socket->write($chunk);
             }
         }
     }
