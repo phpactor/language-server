@@ -1,8 +1,10 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Dispatcher;
+namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 use Generator;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
 use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
@@ -29,7 +31,7 @@ class ErrorCatchingDispatcher implements Dispatcher
         $this->logger = $logger;
     }
 
-    public function dispatch(HandlerRegistry $handlers, RequestMessage $request): Generator
+    public function dispatch(HandlerCollection $handlers, RequestMessage $request): Generator
     {
         try {
             yield from $this->innerDispatcher->dispatch($handlers, $request);

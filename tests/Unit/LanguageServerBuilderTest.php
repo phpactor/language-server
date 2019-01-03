@@ -5,10 +5,8 @@ namespace Phpactor\LanguageServer\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventSubscriber;
-use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\LanguageServerBuilder;
-use Phpactor\LanguageServer\Test\ServerTester;
 
 class LanguageServerBuilderTest extends TestCase
 {

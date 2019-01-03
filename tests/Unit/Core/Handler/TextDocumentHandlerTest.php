@@ -9,8 +9,6 @@ use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
 use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
-use Phpactor\LanguageServer\Core\Session\Session;
-use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 
 class TextDocumentHandlerTest extends HandlerTestCase

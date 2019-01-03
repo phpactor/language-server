@@ -4,23 +4,27 @@ namespace Phpactor\LanguageServer\Core\Server;
 
 use Generator;
 use LanguageServerProtocol\InitializeParams;
+use LanguageServerProtocol\InitializeResult;
+use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\ChainHandlerRegistry;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerLoader;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerNotFound;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
+use Phpactor\LanguageServer\Core\Event\EventEmitter;
+use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
-use RuntimeException;
 
-final class ApplicationContainer
+final class ApplicationContainer implements Handler
 {
     /**
-     * @var HandlerRegistry
+     * @var HandlerCollection
      */
     private $serverHandlers;
 
     /**
-     * @var HandlerRegistry
+     * @var HandlerCollection
      */
     private $applicationHandlers;
 
@@ -34,39 +38,97 @@ final class ApplicationContainer
      */
     private $dispatcher;
 
+    /**
+     * @var HandlerCollection
+     */
+    private $defaultHandlers;
+
+    /**
+     * @var EventEmitter
+     */
+    private $emitter;
+
     public function __construct(
         Dispatcher $dispatcher,
-        HandlerRegistry $serverHandlers,
+        HandlerCollection $serverHandlers,
         HandlerLoader $applicationHandlerLoader
-    )
-    {
+    ) {
         $this->serverHandlers = $serverHandlers;
         $this->applicationHandlerLoader = $applicationHandlerLoader;
         $this->dispatcher = $dispatcher;
+        $this->defaultHandlers = new Handlers([
+            'initialize' => $this,
+            'initialized' => $this,
+        ]);
     }
 
     public function dispatch(RequestMessage $message): Generator
     {
-        try {
-            yield from $this->dispatcher->dispatch($this->serverHandlers, $message);
-            return;
-        } catch (HandlerNotFound $exception) {
-            yield from $this->dispatcher->dispatch($this->applicationHandlers(), $message);
-        }
+        yield from $this->dispatcher->dispatch($this->handlers(), $message);
     }
 
-    public function initialize(InitializeParams $params)
+    public function methods(): array
     {
-        $this->applicationHandlers = $this->applicationHandlerLoader->load($params);
+        return [
+            'initialize' => 'initialize',
+            'initialized' => 'initialized',
+        ];
     }
 
-    private function applicationHandlers(): HandlerRegistry
-    {
-        if (null === $this->applicationHandlers) {
-            throw new RuntimeException(
-                'The application has not been initialized, cannot invoke RPC methods (other than "initialize")');
+    public function initialize(
+        array $capabilities = [],
+        array $initializationOptions = [],
+        ?int $processId = null,
+        ?string $rootPath = null,
+        ?string $rootUri = null,
+        ?string $trace = null
+    ) {
+        $this->applicationHandlers = $this->applicationHandlerLoader->load(
+            new InitializeParams(
+                $capabilities,
+                $initializationOptions,
+                $processId,
+                $rootPath,
+                $rootUri,
+                $trace
+            )
+        );
+
+        $capabilities = new ServerCapabilities();
+
+        foreach ($this->handlers() as $handler) {
+            if (!$handler instanceof CanRegisterCapabilities) {
+                continue;
+            }
+
+            $handler->registerCapabiltiies($capabilities);
         }
 
-        return $this->applicationHandlers;
+        $result = new InitializeResult();
+        $result->capabilities = $capabilities;
+
+        yield $result;
+    }
+
+    public function initialized(): void
+    {
+        // nothing to see here
+    }
+
+    /**
+     * @return HandlerCollection
+     */
+    private function handlers(): HandlerCollection
+    {
+        $handlers = [
+            $this->defaultHandlers,
+            $this->serverHandlers
+        ];
+
+        if ($this->applicationHandlers !== null) {
+            $handlers[] = $this->applicationHandlers;
+        }
+
+        return new ChainHandlerRegistry($handlers);
     }
 }

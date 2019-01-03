@@ -3,30 +3,33 @@
 namespace Phpactor\LanguageServer\Core\Handler;
 
 use LanguageServerProtocol\DidSaveTextDocumentParams;
+use LanguageServerProtocol\ServerCapabilities;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
+use LanguageServerProtocol\TextDocumentSyncKind;
+use LanguageServerProtocol\TextDocumentSyncOptions;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
-use Phpactor\LanguageServer\Core\Session\SessionManager;
+use Phpactor\LanguageServer\Core\Session\Workspace;
 
-final class TextDocumentHandler implements Handler
+final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 {
-    /**
-     * @var SessionManager
-     */
-    private $manager;
-
     /**
      * @var EventEmitter
      */
     private $emitter;
 
-    public function __construct(EventEmitter $emitter, SessionManager $manager)
+    /**
+     * @var Workspace
+     */
+    private $workspace;
+
+    public function __construct(EventEmitter $emitter, Workspace $workspace)
     {
-        $this->manager = $manager;
         $this->emitter = $emitter;
+        $this->workspace = $workspace;
     }
 
     public function methods(): array
@@ -43,7 +46,7 @@ final class TextDocumentHandler implements Handler
 
     public function didOpen(TextDocumentItem $textDocument)
     {
-        $this->manager->current()->workspace()->open($textDocument);
+        $this->workspace->open($textDocument);
         $this->emitter->emit(
             LanguageServerEvents::TEXT_DOCUMENT_OPENED,
             [ $textDocument ]
@@ -53,7 +56,7 @@ final class TextDocumentHandler implements Handler
     public function didChange(VersionedTextDocumentIdentifier $textDocument, array $contentChanges)
     {
         foreach ($contentChanges as $contentChange) {
-            $this->manager->current()->workspace()->update(
+            $this->workspace->update(
                 $textDocument,
                 $contentChange['text']
             );
@@ -67,7 +70,7 @@ final class TextDocumentHandler implements Handler
 
     public function didClose(TextDocumentIdentifier $textDocument)
     {
-        $this->manager->current()->workspace()->remove(
+        $this->workspace->remove(
             $textDocument
         );
 
@@ -80,7 +83,7 @@ final class TextDocumentHandler implements Handler
     public function didSave(TextDocumentIdentifier $textDocument, string $text = null)
     {
         if ($text !== null) {
-            $this->manager->current()->workspace()->get($textDocument->uri)->text = $text;
+            $this->workspace->get($textDocument->uri)->text = $text;
         }
 
         $this->emitter->emit(
@@ -102,5 +105,13 @@ final class TextDocumentHandler implements Handler
 
     public function willSaveWaitUntil(TextDocumentIdentifier $identifier, int $reason)
     {
+    }
+
+    public function registerCapabiltiies(ServerCapabilities $capabilities)
+    {
+        $options = new TextDocumentSyncOptions();
+        $options->change = TextDocumentSyncKind::FULL;
+
+        $capabilities->textDocumentSync = $options;
     }
 }

@@ -1,12 +1,16 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Dispatcher;
+namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 use Generator;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 
 class MethodDispatcher implements Dispatcher
 {
@@ -20,7 +24,7 @@ class MethodDispatcher implements Dispatcher
         $this->argumentResolver = $argumentResolver;
     }
 
-    public function dispatch(HandlerRegistry $handlers, RequestMessage $request): Generator
+    public function dispatch(HandlerCollection $handlers, RequestMessage $request): Generator
     {
         $handler = $handlers->get($request->method);
 

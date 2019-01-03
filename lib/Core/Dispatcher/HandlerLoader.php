@@ -2,9 +2,10 @@
 
 namespace Phpactor\LanguageServer\Core\Dispatcher;
 
-use LanguageServerProtocol\InitializedParams;
+use LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
 
 interface HandlerLoader
 {
-    public function load(InitializedParams $params): HandlerRegistry;
+    public function load(InitializeParams $params): Handlers;
 }

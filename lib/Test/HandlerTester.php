@@ -4,8 +4,8 @@ namespace Phpactor\LanguageServer\Test;
 
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
-use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 class HandlerTester

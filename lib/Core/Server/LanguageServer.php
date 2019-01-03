@@ -6,8 +6,9 @@ use Amp\Coroutine;
 use Amp\Loop;
 use Amp\Promise;
 use Generator;
-use Phpactor\LanguageServer\Core\Dispatcher\CallbackHandlerLoader;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
+use Phpactor\LanguageServer\Core\Handler\DefaultHanderLoader;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
@@ -15,9 +16,7 @@ use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
-use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
 use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
-use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
@@ -63,13 +62,13 @@ class LanguageServer
     private $connections = [];
 
     /**
-     * @var HandlerRegistry
+     * @var HandlerCollection
      */
     private $handlers;
 
     public function __construct(
         Dispatcher $dispatcher,
-        HandlerRegistry $handlers,
+        Handlers $handlers,
         LoggerInterface $logger,
         StreamProvider $streamProvider,
         bool $enableEventLoop = true
@@ -139,14 +138,10 @@ class LanguageServer
             // a connection, with a STDIO stream this just returns the stream
             // immediately.)
             while ($connection = yield $this->streamProvider->accept()) {
-
                 \Amp\asyncCall(function () use ($connection) {
                     try {
-
                         yield from $this->handle($connection);
-
                     } catch (ExitSession $exception) {
-
                         $connection->stream()->end();
 
                         if ($this->streamProvider instanceof ResourceStreamProvider) {
@@ -154,7 +149,6 @@ class LanguageServer
                                 'Exit called on STDIO connection, exiting the server'
                             );
                         }
-
                     }
                 });
             }
@@ -168,14 +162,12 @@ class LanguageServer
         $container = new ApplicationContainer(
             $this->dispatcher,
             $this->handlers,
-            new CallbackHandlerLoader()
+            new DefaultHanderLoader()
         );
 
         while (null !== ($chunk = yield $connection->stream()->read())) {
-
             while ($request = $parser->send($chunk)) {
                 try {
-
                     $this->logger->info('REQUEST', $request->body());
 
                     $responses = $container->dispatch(
@@ -183,7 +175,6 @@ class LanguageServer
                     );
 
                     foreach ($responses as $response) {
-
                         $this->logger->info('RESPONSE', (array) $response);
 
                         $responseBody = $this->writer->write($response);
@@ -192,13 +183,10 @@ class LanguageServer
                             $connection->stream()->write($chunk);
                         }
                     }
-
                 } catch (ShutdownServer $exception) {
-
                     $this->logger->info($exception->getMessage());
 
                     yield $this->shutdown();
-
                 }
 
                 $chunk = null;

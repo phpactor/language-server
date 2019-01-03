@@ -7,19 +7,15 @@ use Amp\ByteStream\ResourceOutputStream;
 use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
-use Phpactor\LanguageServer\Core\Dispatcher\ChainHandlerRegistry;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
-use Phpactor\LanguageServer\Core\Dispatcher\LazyContainerHandlerRegistry;
-use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\EventSubscriber;
 use Phpactor\LanguageServer\Core\Handler\ExitHandler;
-use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
 use Phpactor\LanguageServer\Core\Handler\SystemHandler;
-use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
@@ -206,13 +202,6 @@ class LanguageServerBuilder
 
     private function addDefaultHandlers(): void
     {
-        $this->addHandler(new InitializeHandler(
-            $this->eventEmitter,
-            $this->sessionManager
-        ));
-        $this->addHandler(
-            new TextDocumentHandler($this->eventEmitter, $this->sessionManager)
-        );
         $this->addHandler(new ExitHandler());
         $this->addHandler(new SystemHandler($this->sessionManager));
     }

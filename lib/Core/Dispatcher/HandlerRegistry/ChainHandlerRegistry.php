@@ -1,30 +1,35 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Dispatcher;
+namespace Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry;
 
-class ChainHandlerRegistry implements HandlerRegistry
+use Generator;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerNotFound;
+
+class ChainHandlerRegistry implements HandlerCollection
 {
     /**
-     * @var HandlerRegistry[]
+     * @var HandlerCollection[]
      */
-    private $registries;
+    private $handlerCollections;
 
     /**
-     * @param HandlerRegistry[] $registries
+     * @param HandlerCollection[] $handlerCollections
      */
-    public function __construct(array $registries)
+    public function __construct(array $handlerCollections)
     {
-        foreach ($registries as $registry) {
-            $this->add($registry);
+        foreach ($handlerCollections as $collection) {
+            $this->add($collection);
         }
     }
 
     public function get(string $name): Handler
     {
         $exceptions = [];
-        foreach ($this->registries as $registry) {
+        foreach ($this->handlerCollections as $collection) {
             try {
-                return $registry->get($name);
+                return $collection->get($name);
             } catch (HandlerNotFound $e) {
                 $exceptions[] = $e->getMessage();
             }
@@ -36,8 +41,18 @@ class ChainHandlerRegistry implements HandlerRegistry
         ));
     }
 
-    private function add(HandlerRegistry $registry)
+    private function add(HandlerCollection $collection)
     {
-        $this->registries[] = $registry;
+        $this->handlerCollections[] = $collection;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIterator(): Generator
+    {
+        foreach ($this->handlerCollections as $collection) {
+            yield from $collection;
+        }
     }
 }
