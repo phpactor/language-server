@@ -196,7 +196,7 @@ class LanguageServer
 
         $proimises = [];
         foreach ($this->connections as $connection) {
-            $promises[] = $connection->close();
+            $promises[] = $connection->stream()->end();
         }
 
         \Amp\Promise\wait(\Amp\Promise\any($proimises));

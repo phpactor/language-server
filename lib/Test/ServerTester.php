@@ -18,17 +18,26 @@ class ServerTester
      */
     private $server;
 
-    public function __construct(LanguageServerBuilder $builder = null)
+    public function __construct(LanguageServerBuilder $builder)
     {
         $builder->eventLoop(false);
+        $builder->tcpServer();
         $this->server = $builder->build();
         $this->server->start();
     }
 
     public function dispatch(string $method, array $params = []): array
     {
+        $address = $this->server->address();
+
+        if (null === $address) {
+            throw new RuntimeException(
+                'Only TCP server can be used for testing currently'
+            );
+        }
+
         /** @var ClientSocket $client */
-        $client = \Amp\Promise\wait(\Amp\Socket\connect($this->server->address()));
+        $client = \Amp\Promise\wait(\Amp\Socket\connect($address));
         $request = new RequestMessage(1, $method, $params);
         $writer = new LanguageServerProtocolWriter();
 
