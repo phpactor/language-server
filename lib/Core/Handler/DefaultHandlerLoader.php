@@ -13,11 +13,9 @@ class DefaultHandlerLoader implements HandlerLoader
     public function load(InitializeParams $params): Handlers
     {
         $workspace = new Workspace();
-        $emitter = new EvenementEmitter();
 
         return new Handlers([
             new TextDocumentHandler(
-                $emitter,
                 $workspace
             )
         ]);

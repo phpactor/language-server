@@ -14,11 +14,6 @@ use Phpactor\LanguageServer\Core\Session\Workspace;
 class TextDocumentHandlerTest extends HandlerTestCase
 {
     /**
-     * @var EventEmitter
-     */
-    private $emitter;
-
-    /**
      * @var Workspace
      */
     private $workspace;
@@ -26,13 +21,11 @@ class TextDocumentHandlerTest extends HandlerTestCase
     public function setUp()
     {
         $this->workspace = new Workspace();
-        $this->emitter = $this->emitter();
     }
 
     public function handler(): Handler
     {
         return new TextDocumentHandler(
-            $this->emitter,
             $this->workspace
         );
     }
@@ -71,16 +64,11 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testWillSave()
     {
-        $called = false;
-        $this->emitter->on(LanguageServerEvents::TEXT_DOCUMENT_WILL_SAVE, function () use (&$called) {
-            $called = true;
-        });
-        $this->dispatch('textDocument/willSave', [
+        $result  =$this->dispatch('textDocument/willSave', [
             'identifier' => new TextDocumentIdentifier('foobar'),
             'reason' => 1
         ]);
-
-        $this->assertTrue($called);
+        $this->assertEmpty($result, 'This method does nothing currently');
     }
 
     public function testClosesDocument()

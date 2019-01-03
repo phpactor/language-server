@@ -43,11 +43,6 @@ final class ApplicationContainer implements Handler
      */
     private $defaultHandlers;
 
-    /**
-     * @var EventEmitter
-     */
-    private $emitter;
-
     public function __construct(
         Dispatcher $dispatcher,
         HandlerCollection $serverHandlers,

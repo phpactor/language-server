@@ -17,18 +17,12 @@ use Phpactor\LanguageServer\Core\Session\Workspace;
 final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 {
     /**
-     * @var EventEmitter
-     */
-    private $emitter;
-
-    /**
      * @var Workspace
      */
     private $workspace;
 
-    public function __construct(EventEmitter $emitter, Workspace $workspace)
+    public function __construct(Workspace $workspace)
     {
-        $this->emitter = $emitter;
         $this->workspace = $workspace;
     }
 
@@ -47,10 +41,6 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
     public function didOpen(TextDocumentItem $textDocument)
     {
         $this->workspace->open($textDocument);
-        $this->emitter->emit(
-            LanguageServerEvents::TEXT_DOCUMENT_OPENED,
-            [ $textDocument ]
-        );
     }
 
     public function didChange(VersionedTextDocumentIdentifier $textDocument, array $contentChanges)
@@ -61,22 +51,12 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
                 $contentChange['text']
             );
         }
-
-        $this->emitter->emit(
-            LanguageServerEvents::TEXT_DOCUMENT_UPDATED,
-            [ $textDocument, $contentChanges ]
-        );
     }
 
     public function didClose(TextDocumentIdentifier $textDocument)
-    {
+     {
         $this->workspace->remove(
             $textDocument
-        );
-
-        $this->emitter->emit(
-            LanguageServerEvents::TEXT_DOCUMENT_CLOSED,
-            [ $textDocument ]
         );
     }
 
@@ -85,22 +65,10 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
         if ($text !== null) {
             $this->workspace->get($textDocument->uri)->text = $text;
         }
-
-        $this->emitter->emit(
-            LanguageServerEvents::TEXT_DOCUMENT_SAVED,
-            [ new DidSaveTextDocumentParams($textDocument, $text) ]
-        );
     }
 
     public function willSave(TextDocumentIdentifier $identifier, int $reason)
     {
-        $this->emitter->emit(
-            LanguageServerEvents::TEXT_DOCUMENT_WILL_SAVE,
-            [
-                $identifier,
-                $reason
-            ]
-        );
     }
 
     public function willSaveWaitUntil(TextDocumentIdentifier $identifier, int $reason)

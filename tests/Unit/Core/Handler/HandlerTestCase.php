@@ -13,11 +13,6 @@ abstract class HandlerTestCase extends TestCase
 {
     abstract public function handler(): Handler;
 
-    protected function emitter(): EventEmitter
-    {
-        return new EvenementEmitter();
-    }
-
     public function dispatch(string $method, array $params)
     {
         $tester = new HandlerTester($this->handler());
