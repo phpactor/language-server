@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerNotFound;
-use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
 
 class HandlersTest extends TestCase
 {

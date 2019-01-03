@@ -11,31 +11,31 @@ use Phpactor\LanguageServer\Core\Event\LanguageServerEvents;
 use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Session\Session;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
+use Phpactor\LanguageServer\Core\Session\Workspace;
 
 class TextDocumentHandlerTest extends HandlerTestCase
 {
-    /**
-     * @var SessionManager
-     */
-    private $manager;
-
     /**
      * @var EventEmitter
      */
     private $emitter;
 
+    /**
+     * @var Workspace
+     */
+    private $workspace;
+
     public function setUp()
     {
-        $this->manager = $this->sessionManager();
+        $this->workspace = new Workspace();
         $this->emitter = $this->emitter();
-        $this->manager->load(new Session('path/to'));
     }
 
     public function handler(): Handler
     {
         return new TextDocumentHandler(
             $this->emitter,
-            $this->manager
+            $this->workspace
         );
     }
 
@@ -49,7 +49,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
         ]);
 
         $this->assertSame(
-            $this->manager->current()->workspace()->get($textDocument->uri),
+            $this->workspace->get($textDocument->uri),
             $textDocument
         );
     }
@@ -58,7 +58,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
     {
         $document = new TextDocumentItem();
         $document->uri = 'foobar';
-        $this->manager->current()->workspace()->open($document);
+        $this->workspace->open($document);
         $this->dispatch('textDocument/didChange', [
             'textDocument' => new VersionedTextDocumentIdentifier('foobar'),
             'contentChanges' => [
@@ -89,7 +89,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
     {
         $document = new TextDocumentItem();
         $document->uri = 'foobar';
-        $this->manager->current()->workspace()->open($document);
+        $this->workspace->open($document);
         $this->dispatch('textDocument/didClose', [
             'textDocument' => new TextDocumentIdentifier('foobar'),
             'contentChanges' => [
@@ -99,14 +99,14 @@ class TextDocumentHandlerTest extends HandlerTestCase
             ],
         ]);
 
-        $this->assertFalse($this->manager->current()->workspace()->has('foobar'));
+        $this->assertFalse($this->workspace->has('foobar'));
     }
 
     public function testSavesDocument()
     {
         $document = new TextDocumentItem();
         $document->uri = 'foobar';
-        $workspace = $this->manager->current()->workspace();
+        $workspace = $this->workspace;
         $workspace->open($document);
         $this->dispatch('textDocument/didSave', [
             'textDocument' => new TextDocumentIdentifier('foobar'),
