@@ -18,11 +18,6 @@ abstract class HandlerTestCase extends TestCase
         return new EvenementEmitter();
     }
 
-    protected function sessionManager(): SessionManager
-    {
-        return new SessionManager();
-    }
-
     public function dispatch(string $method, array $params)
     {
         $tester = new HandlerTester($this->handler());

@@ -6,13 +6,11 @@ use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
 use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Event\EventEmitter;
 use Phpactor\LanguageServer\Core\Event\EventSubscriber;
 use Phpactor\LanguageServer\Core\Handler\ExitHandler;
 use Phpactor\LanguageServer\Core\Handler\SystemHandler;
@@ -35,16 +33,6 @@ class LanguageServerBuilder
      * @var Handler[]
      */
     private $handlers = [];
-
-    /**
-     * @var EventEmitter
-     */
-    private $eventEmitter;
-
-    /**
-     * @var SessionManager
-     */
-    private $sessionManager;
 
     /**
      * @var bool
@@ -72,24 +60,16 @@ class LanguageServerBuilder
     private $factories = [];
 
     private function __construct(
-        LoggerInterface $logger,
-        EventEmitter $eventEmitter,
-        SessionManager $sessionManager
+        LoggerInterface $logger
     ) {
         $this->logger = $logger;
-        $this->eventEmitter = $eventEmitter;
-        $this->sessionManager = $sessionManager;
     }
 
     public static function create(
-        LoggerInterface $logger = null,
-        SessionManager $sessionManager = null,
-        EventEmitter $eventEmitter = null
+        LoggerInterface $logger = null
     ): self {
         return new self(
-            $logger ?: new NullLogger(),
-            $eventEmitter ?: new EvenementEmitter(),
-            $sessionManager ?: new SessionManager()
+            $logger ?: new NullLogger()
         );
     }
 
@@ -123,12 +103,6 @@ class LanguageServerBuilder
 
     public function addHandler(Handler $handler): self
     {
-        if ($handler instanceof EventSubscriber) {
-            foreach ($handler->events() as $eventName => $method) {
-                $this->eventEmitter->on($eventName, Closure::fromCallable([ $handler, $method ]));
-            }
-        }
-
         $this->handlers[] = $handler;
 
         return $this;
@@ -203,6 +177,5 @@ class LanguageServerBuilder
     private function addDefaultHandlers(): void
     {
         $this->addHandler(new ExitHandler());
-        $this->addHandler(new SystemHandler($this->sessionManager));
     }
 }

@@ -4,19 +4,21 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Server\LanguageServer;
+use Phpactor\LanguageServer\Core\Server\StatProvider;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 
 class SystemHandler implements Handler
 {
     /**
-     * @var SessionManager
+     * @var StatProvider
      */
-    private $sessionManager;
+    private $statProvider;
 
-    public function __construct(SessionManager $sessionManager)
+    public function __construct(StatProvider $statProvider)
     {
-        $this->sessionManager = $sessionManager;
+        $this->statProvider = $statProvider;
     }
 
     public function methods(): array
@@ -28,15 +30,14 @@ class SystemHandler implements Handler
 
     public function status()
     {
-        $session = $this->sessionManager->current();
-
         yield null;
         yield new NotificationMessage('window/showMessage', [
             'type' => MessageType::INFO,
             'message' => implode(', ', [
-                'up: ' . $session->uptime()->format('%ad %hh %im %ss'),
+                'up: ' . $this->statProvider->stats()->uptime->format('%ad %hh %im %ss'),
+                'connections: ' . $this->statProvider->stats()->connectionCount,
+                'requests: ' . $this->statProvider->stats()->requestCount,
                 'mem: ' . number_format(memory_get_peak_usage()) . 'b',
-                'files: ' . $session->workspace()->openFiles()
             ]),
         ]);
     }

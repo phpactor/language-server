@@ -5,10 +5,13 @@ namespace Phpactor\LanguageServer\Core\Server;
 use Amp\Coroutine;
 use Amp\Loop;
 use Amp\Promise;
+use DateTimeImmutable;
 use Generator;
+use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
 use Phpactor\LanguageServer\Core\Handler\DefaultHanderLoader;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
+use Phpactor\LanguageServer\Core\Handler\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
@@ -22,7 +25,7 @@ use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use RuntimeException;
 
-class LanguageServer
+final class LanguageServer implements StatProvider
 {
     private const WRITE_CHUNK_SIZE = 256;
 
@@ -66,6 +69,16 @@ class LanguageServer
      */
     private $handlers;
 
+    /**
+     * @var DateTimeImmutable
+     */
+    private $created;
+
+    /**
+     * @var int
+     */
+    private $requestCount = 0;
+
     public function __construct(
         Dispatcher $dispatcher,
         Handlers $handlers,
@@ -76,22 +89,13 @@ class LanguageServer
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
 
-        $this->writer = new LanguageServerProtocolWriter();
         $this->streamProvider = $streamProvider;
         $this->enableEventLoop = $enableEventLoop;
-        $this->handlers = $handlers;
-    }
 
-    public function address(): ?string
-    {
-        if (!$this->streamProvider instanceof SocketStreamProvider) {
-            throw new RuntimeException(sprintf(
-                'Cannot get address on non-socket stream provider, using "%s"',
-                get_class($this->streamProvider)
-            ));
-        }
+        $this->writer = new LanguageServerProtocolWriter();
+        $this->created = new DateTimeImmutable();
 
-        return $this->streamProvider->address();
+        $this->handlers = $this->addSystemStatusHandler($handlers);
     }
 
     /**
@@ -105,6 +109,36 @@ class LanguageServer
         }
     }
 
+    /**
+     * Returns the address of the server if the server is running
+     * as a socket server, otherwise throws an exception.
+     *
+     * @throws RuntimeException
+     */
+    public function address(): ?string
+    {
+        if (!$this->streamProvider instanceof SocketStreamProvider) {
+            throw new RuntimeException(sprintf(
+                'Cannot get address on non-socket stream provider, using "%s"',
+                get_class($this->streamProvider)
+            ));
+        }
+
+        return $this->streamProvider->address();
+    }
+
+    public function stats(): ServerStats
+    {
+        return new ServerStats(
+            $this->created->diff(new DateTimeImmutable()),
+            count($this->connections),
+            $this->requestCount
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     private function doStart()
     {
         $this->logger->info(sprintf('Process ID: %s', getmypid()));
@@ -114,7 +148,7 @@ class LanguageServer
             yield $this->shutdown();
         });
         
-        if (!$this->enableEventLoop) {
+        if (false === $this->enableEventLoop) {
             $this->listenForConnections();
             return;
         }
@@ -134,14 +168,26 @@ class LanguageServer
         }
 
         \Amp\asyncCall(function () {
+
             // accept incoming connections (in the case of a TCP server this is
             // a connection, with a STDIO stream this just returns the stream
             // immediately.)
             while ($connection = yield $this->streamProvider->accept()) {
+
+                // create a reference to the connection so that we can later
+                // terminate it if necessary 
+                $this->connections[$connection->id()] = $connection;
+
+                // handle the request as a co-routine. If the handler throws an
+                // ExitSession and this is a TCP server then end then continue,
+                // otherewise this is a STDIO session so re-throw a Shutdown
+                // exception and exit the process.
                 \Amp\asyncCall(function () use ($connection) {
                     try {
+
                         yield from $this->handle($connection);
                     } catch (ExitSession $exception) {
+
                         $connection->stream()->end();
 
                         if ($this->streamProvider instanceof ResourceStreamProvider) {
@@ -169,6 +215,7 @@ class LanguageServer
             while ($request = $parser->send($chunk)) {
                 try {
                     $this->logger->info('REQUEST', $request->body());
+                    $this->requestCount++;
 
                     $responses = $container->dispatch(
                         RequestMessageFactory::fromRequest($request)
@@ -213,5 +260,12 @@ class LanguageServer
         $this->streamProvider->close();
 
         throw new ShutdownServer('shutdown server invoked');
+    }
+
+    private function addSystemStatusHandler(Handlers $handlers): Handlers
+    {
+        $handlers->add(new SystemHandler($this));
+
+        return $handlers;
     }
 }
