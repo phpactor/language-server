@@ -37,11 +37,6 @@ class LanguageServerBuilder
     /**
      * @var bool
      */
-    private $defaultHandlers = true;
-
-    /**
-     * @var bool
-     */
     private $catchExceptions = true;
 
     /**
@@ -71,13 +66,6 @@ class LanguageServerBuilder
         return new self(
             $logger ?: new NullLogger()
         );
-    }
-
-    public function useDefaultHandlers(bool $useDefaultHandlers = true): self
-    {
-        $this->defaultHandlers = $useDefaultHandlers;
-
-        return $this;
     }
 
     public function catchExceptions(bool $enabled = true): self
@@ -156,10 +144,6 @@ class LanguageServerBuilder
      */
     public function buildDispatcher(): Dispatcher
     {
-        if ($this->defaultHandlers) {
-            $this->addDefaultHandlers();
-        }
-
         $dispatcher = new MethodDispatcher(
             new DTLArgumentResolver()
         );
@@ -172,10 +156,5 @@ class LanguageServerBuilder
         }
 
         return $dispatcher;
-    }
-
-    private function addDefaultHandlers(): void
-    {
-        $this->addHandler(new ExitHandler());
     }
 }

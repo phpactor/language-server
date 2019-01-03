@@ -20,7 +20,6 @@ class LanguageServerBuilderTest extends TestCase
                 }
             })
             ->catchExceptions(true)
-            ->useDefaultHandlers(true)
             ->tcpServer('127.0.0.1:8888')
             ->build();
 

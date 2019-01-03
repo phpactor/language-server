@@ -11,6 +11,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
 use Phpactor\LanguageServer\Core\Handler\DefaultHanderLoader;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
+use Phpactor\LanguageServer\Core\Handler\ExitHandler;
 use Phpactor\LanguageServer\Core\Handler\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
@@ -95,7 +96,7 @@ final class LanguageServer implements StatProvider
         $this->writer = new LanguageServerProtocolWriter();
         $this->created = new DateTimeImmutable();
 
-        $this->handlers = $this->addSystemStatusHandler($handlers);
+        $this->handlers = $this->addSystemHandlers($handlers);
     }
 
     /**
@@ -262,9 +263,10 @@ final class LanguageServer implements StatProvider
         throw new ShutdownServer('shutdown server invoked');
     }
 
-    private function addSystemStatusHandler(Handlers $handlers): Handlers
+    private function addSystemHandlers(Handlers $handlers): Handlers
     {
         $handlers->add(new SystemHandler($this));
+        $handlers->add(new ExitHandler());
 
         return $handlers;
     }
