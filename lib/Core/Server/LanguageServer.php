@@ -9,7 +9,7 @@ use DateTimeImmutable;
 use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\Handler;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
-use Phpactor\LanguageServer\Core\Handler\DefaultHanderLoader;
+use Phpactor\LanguageServer\Core\Handler\DefaultHandlerLoader;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
 use Phpactor\LanguageServer\Core\Handler\ExitHandler;
 use Phpactor\LanguageServer\Core\Handler\SystemHandler;
@@ -209,7 +209,7 @@ final class LanguageServer implements StatProvider
         $container = new ApplicationContainer(
             $this->dispatcher,
             $this->handlers,
-            new DefaultHanderLoader()
+            new DefaultHandlerLoader()
         );
 
         while (null !== ($chunk = yield $connection->stream()->read())) {

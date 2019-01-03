@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerLoader;
 use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
 
-class DefaultHanderLoader implements HandlerLoader
+class DefaultHandlerLoader implements HandlerLoader
 {
     public function load(InitializeParams $params): Handlers
     {
