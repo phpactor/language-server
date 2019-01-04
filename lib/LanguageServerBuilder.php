@@ -9,6 +9,7 @@ use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
@@ -48,7 +49,7 @@ class LanguageServerBuilder
     /**
      * @var array
      */
-    private $factories = [];
+    private $handlerLoaders = [];
 
     private function __construct(
         LoggerInterface $logger
@@ -56,6 +57,9 @@ class LanguageServerBuilder
         $this->logger = $logger;
     }
 
+    /**
+     * Create a new instance of the builder \o/
+     */
     public static function create(
         LoggerInterface $logger = null
     ): self {
@@ -64,6 +68,9 @@ class LanguageServerBuilder
         );
     }
 
+    /**
+     * Log any exceptions are thrown when handling requests and continue.
+     */
     public function catchExceptions(bool $enabled = true): self
     {
         $this->catchExceptions = $enabled;
@@ -71,6 +78,9 @@ class LanguageServerBuilder
         return $this;
     }
 
+    /**
+     * Start the event loop when the server starts.
+     */
     public function eventLoop(bool $enabled = true): self
     {
         $this->eventLoop = $enabled;
@@ -78,20 +88,47 @@ class LanguageServerBuilder
         return $this;
     }
 
-    public function addHandlerFactory(string $method, Closure $closure): self
-    {
-        $this->factories[$method] = $closure;
-
-        return $this;
-    }
-
-    public function addHandler(Handler $handler): self
+    /**
+     * Add a handler that will be registered at the system (server) level.
+     * Such handlers will bem general to all connections made to the server and
+     * is not connection (session) specific.
+     *
+     * For sessiaon specific handlers. See LanguageBuilder#addHandlerLoader.
+     */
+    public function addSystemHandler(Handler $handler): self
     {
         $this->handlers[] = $handler;
 
         return $this;
     }
 
+    /**
+     * Handler loaders are used to instantiate handlers for a new
+     * connection/session.
+     *
+     * Such handlers include the TextDocumentHandler which requires a clean
+     * workspace when a new connection/session is started. Another example
+     * might be the CompletionHandler which has dependencies which in turn
+     * depend on the initialized project root directory.
+     */
+    public function addHandlerLoader(HandlerLoader $loader): self
+    {
+        $this->handlerLoaders[] = $loader;
+
+        return $this;
+    }
+
+    /** 
+     * Start a TCP server on the given address.
+     *
+     * The TCP server can handle multiple connections/sessions, but must be
+     * started manually before clients can connect to it.
+     *
+     * The TCP server is valuable for development and for debugging as it echos
+     * the debug information to STDERR.
+     *
+     * Note that the default behavior is to start a STDIO server.
+     */
     public function tcpServer(?string $address = '0.0.0.0:0'): self
     {
         $this->tcpAddress = $address;
@@ -101,8 +138,9 @@ class LanguageServerBuilder
 
     /**
      * Build the language server.
-     * The returned language server can then be started
-     * by calling `start()`.
+     *
+     * The returned language server instance can then be started by calling
+     * start().
      */
     public function build(): LanguageServer
     {

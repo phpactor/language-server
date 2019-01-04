@@ -14,10 +14,7 @@
 
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory>.</directory>
-            <exclude>
-                <directory>vendor/</directory>
-            </exclude>
+            <directory>lib</directory>
         </whitelist>
     </filter>
 

@@ -12,7 +12,7 @@ class LanguageServerBuilderTest extends TestCase
     public function testBuild()
     {
         $server = LanguageServerBuilder::create()
-            ->addHandler(new class implements Handler {
+            ->addSystemHandler(new class implements Handler {
                 public function methods(): array
                 {
                     return [];
