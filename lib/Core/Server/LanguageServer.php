@@ -65,7 +65,7 @@ final class LanguageServer implements StatProvider
     private $connections = [];
 
     /**
-     * @var HandlerCollection
+     * @var Handlers
      */
     private $handlers;
 
