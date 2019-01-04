@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Exception;
 
-class ExitSession extends ServerControlException
+use Phpactor\LanguageServer\Core\Server\Exception\ServerControl;
+
+class ExitSession extends ServerControl
 {
 }

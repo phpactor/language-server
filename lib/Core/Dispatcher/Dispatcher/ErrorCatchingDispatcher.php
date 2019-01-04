@@ -9,7 +9,7 @@ use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Phpactor\LanguageServer\Core\Server\Exception\ServerControlException;
+use Phpactor\LanguageServer\Core\Server\Exception\ServerControl;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -35,7 +35,7 @@ class ErrorCatchingDispatcher implements Dispatcher
     {
         try {
             yield from $this->innerDispatcher->dispatch($handlers, $request);
-        } catch (ServerControlException $exception) {
+        } catch (ServerControl $exception) {
             throw $exception;
         } catch (Throwable $throwable) {
             $this->logger->error($throwable->getMessage(), [

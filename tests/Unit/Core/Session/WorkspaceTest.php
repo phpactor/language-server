@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 
+use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +18,7 @@ class WorkspaceTest extends TestCase
 
     public function setUp()
     {
-        $this->workspace = new Workspace('/path/to');
+        $this->workspace = new Workspace();
     }
 
     public function testThrowsExceptionGetUnknown()
@@ -58,4 +59,28 @@ class WorkspaceTest extends TestCase
         $this->assertEquals($expectedDocument->uri, $document->uri);
         $this->assertEquals('my new text', $document->text);
     }
+
+    public function testReturnsNumberOfOpenFiles()
+    {
+        $originalDocument = new TextDocumentItem();
+        $originalDocument->uri = 'foobar';
+        $this->workspace->open($originalDocument);
+        $this->assertEquals(1, $this->workspace->openFiles());
+        $this->assertCount(1, $this->workspace);
+    }
+
+    public function testRemoveDocument()
+    {
+        $originalDocument = new TextDocumentItem();
+        $originalDocument->uri = 'foobar';
+
+        $this->workspace->open($originalDocument);
+        $this->assertCount(1, $this->workspace);
+
+        $identifier = new TextDocumentIdentifier('foobar');
+        $this->workspace->remove($identifier);
+
+        $this->assertCount(0, $this->workspace);
+    }
+
 }
