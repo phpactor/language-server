@@ -1,8 +1,8 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Handler;
+namespace Phpactor\LanguageServer\Handler\System;
 
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 
 class ExitHandler implements Handler

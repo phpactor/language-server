@@ -1,13 +1,14 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
+namespace Phpactor\LanguageServer\Tests\Unit\Handler\TextDocument;
 
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
+use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 
 class TextDocumentHandlerTest extends HandlerTestCase
 {

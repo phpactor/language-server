@@ -1,13 +1,15 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry;
+namespace Phpactor\LanguageServer\Core\Handler;
 
 use ArrayIterator;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerNotFound;
+use Countable;
+use IteratorAggregate;
+use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 
-class Handlers implements HandlerCollection
+final class Handlers implements Countable, IteratorAggregate
 {
     private $handlers = [];
 
@@ -44,5 +46,25 @@ class Handlers implements HandlerCollection
     public function getIterator()
     {
         return new ArrayIterator($this->handlers);
+    }
+
+    public function merge(Handlers $handlers)
+    {
+        foreach ($handlers as $handler) {
+            $this->add($handler);
+        }
+    }
+
+    public function methods(): array
+    {
+        return array_keys($this->handlers);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function count()
+    {
+        return count($this->handlers);
     }
 }

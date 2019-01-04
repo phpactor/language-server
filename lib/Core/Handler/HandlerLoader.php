@@ -1,9 +1,9 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Dispatcher;
+namespace Phpactor\LanguageServer\Core\Handler;
 
 use LanguageServerProtocol\InitializeParams;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
+use Phpactor\LanguageServer\Core\Handler\Handlers;
 
 interface HandlerLoader
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
+namespace Phpactor\LanguageServer\Tests\Unit\Handler;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Test\HandlerTester;
 
 abstract class HandlerTestCase extends TestCase

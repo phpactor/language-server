@@ -1,9 +1,9 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Handler;
+namespace Phpactor\LanguageServer\Handler\System;
 
 use LanguageServerProtocol\MessageType;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 

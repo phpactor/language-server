@@ -7,12 +7,11 @@ use Amp\Loop;
 use Amp\Promise;
 use DateTimeImmutable;
 use Generator;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
-use Phpactor\LanguageServer\Core\Handler\DefaultHandlerLoader;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
-use Phpactor\LanguageServer\Core\Handler\ExitHandler;
-use Phpactor\LanguageServer\Core\Handler\SystemHandler;
+use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandlerLoader;
+use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Handler\System\ExitHandler;
+use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
@@ -207,7 +206,7 @@ final class LanguageServer implements StatProvider
         $container = new ApplicationContainer(
             $this->dispatcher,
             $this->handlers,
-            new DefaultHandlerLoader()
+            new TextDocumentHandlerLoader()
         );
 
         while (null !== ($chunk = yield $connection->stream()->read())) {

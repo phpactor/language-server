@@ -15,8 +15,8 @@ class RequestMessageFactory
         if ($diff = array_diff(array_keys($array), $keys)) {
             throw new RuntimeException(sprintf(
                 'Request has invalid keys: "%s", valid keys: "%s"',
-                implode(', ', $diff),
-                implode(', ', $keys)
+                implode('", "', $diff),
+                implode('", "', $keys)
             ));
         }
 

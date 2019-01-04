@@ -6,24 +6,28 @@ use Generator;
 use LanguageServerProtocol\InitializeParams;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerCollection;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\ChainHandlerRegistry;
+use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Handler\Handlers\AggregateHandlerCollection;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerLoader;
-use Phpactor\LanguageServer\Core\Dispatcher\HandlerRegistry\Handlers;
+use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 final class ApplicationContainer implements Handler
 {
     /**
-     * @var HandlerCollection
+     * @var Handlers
+     */
+    private $defaultHandlers;
+
+    /**
+     * @var Handlers
      */
     private $serverHandlers;
 
     /**
-     * @var HandlerCollection
+     * @var Handlers
      */
     private $applicationHandlers;
 
@@ -37,23 +41,15 @@ final class ApplicationContainer implements Handler
      */
     private $dispatcher;
 
-    /**
-     * @var HandlerCollection
-     */
-    private $defaultHandlers;
-
     public function __construct(
         Dispatcher $dispatcher,
-        HandlerCollection $serverHandlers,
+        Handlers $serverHandlers,
         HandlerLoader $applicationHandlerLoader
     ) {
         $this->serverHandlers = $serverHandlers;
         $this->applicationHandlerLoader = $applicationHandlerLoader;
         $this->dispatcher = $dispatcher;
-        $this->defaultHandlers = new Handlers([
-            'initialize' => $this,
-            'initialized' => $this,
-        ]);
+        $this->defaultHandlers = new Handlers([$this]);
     }
 
     public function dispatch(RequestMessage $message): Generator
@@ -110,19 +106,18 @@ final class ApplicationContainer implements Handler
     }
 
     /**
-     * @return HandlerCollection
+     * @return Handlers
      */
-    private function handlers(): HandlerCollection
+    private function handlers(): Handlers
     {
-        $handlers = [
-            $this->defaultHandlers,
-            $this->serverHandlers
-        ];
+        $handlers = new Handlers();
+        $handlers->merge($this->defaultHandlers);
+        $handlers->merge($this->serverHandlers);
 
         if ($this->applicationHandlers !== null) {
-            $handlers[] = $this->applicationHandlers;
+            $handlers->merge($this->applicationHandlers);
         }
 
-        return new ChainHandlerRegistry($handlers);
+        return $handlers;
     }
 }

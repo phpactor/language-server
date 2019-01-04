@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
+use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 
