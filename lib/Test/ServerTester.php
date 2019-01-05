@@ -17,6 +17,8 @@ class ServerTester
      * @var LanguageServer
      */
     private $server;
+    private $client;
+
 
     public function __construct(LanguageServerBuilder $builder)
     {
@@ -24,26 +26,18 @@ class ServerTester
         $builder->tcpServer();
         $this->server = $builder->build();
         $this->server->start();
+
+        $this->client = $this->createClient();
     }
 
     public function dispatch(string $method, array $params = []): array
     {
-        $address = $this->server->address();
-
-        if (null === $address) {
-            throw new RuntimeException(
-                'Only TCP server can be used for testing currently'
-            );
-        }
-
-        /** @var ClientSocket $client */
-        $client = \Amp\Promise\wait(\Amp\Socket\connect($address));
         $request = new RequestMessage(1, $method, $params);
         $writer = new LanguageServerProtocolWriter();
 
-        \Amp\Promise\wait($client->write($writer->write($request)));
+        \Amp\Promise\wait($this->client->write($writer->write($request)));
 
-        $rawResponse = \Amp\Promise\wait($client->read());
+        $rawResponse = \Amp\Promise\wait($this->client->read());
         $parser = (new LanguageServerProtocolParser())->__invoke();
 
         $responses = [];
@@ -78,5 +72,20 @@ class ServerTester
         }
 
         return true;
+    }
+
+    private function createClient()
+    {
+        /** @var ClientSocket $client */
+        $address = $this->server->address();
+        $client = \Amp\Promise\wait(\Amp\Socket\connect($address));
+        
+        if (null === $address) {
+            throw new RuntimeException(
+                'Only TCP server can be used for testing currently'
+            );
+        }
+
+        return $client;
     }
 }
