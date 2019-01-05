@@ -54,7 +54,7 @@ class ServerTester
         $responses = (array) $responses;
 
         foreach ($responses as $response) {
-            if  (!$response instanceof ResponseMessage) {
+            if (!$response instanceof ResponseMessage) {
                 continue;
             }
 
