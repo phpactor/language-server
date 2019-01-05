@@ -121,6 +121,12 @@ class LanguageServerBuilder
         return $this;
     }
 
+    /**
+     * Enable the built-in text document handler.
+     *
+     * The text document handler takes care of syncronizing text documents from
+     * the client with the server.
+     */
     public function enableTextDocumentHandler(): self
     {
         $this->addHandlerLoader(new TextDocumentHandlerLoader());
