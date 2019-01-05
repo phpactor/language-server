@@ -8,6 +8,7 @@ use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -16,6 +17,8 @@ use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
+use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
+use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandlerLoader;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -118,6 +121,13 @@ class LanguageServerBuilder
         return $this;
     }
 
+    public function enableTextDocumentHandler(): self
+    {
+        $this->addHandlerLoader(new TextDocumentHandlerLoader());
+
+        return $this;
+    }
+
     /** 
      * Start a TCP server on the given address.
      *
@@ -166,6 +176,7 @@ class LanguageServerBuilder
         return new LanguageServer(
             $dispatcher,
             $handlers,
+            new AggregateHandlerLoader($this->handlerLoaders),
             $this->logger,
             $provider,
             $this->eventLoop

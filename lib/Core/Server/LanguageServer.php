@@ -8,6 +8,7 @@ use Amp\Promise;
 use DateTimeImmutable;
 use Generator;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
@@ -67,7 +68,7 @@ final class LanguageServer implements StatProvider
     /**
      * @var Handlers
      */
-    private $handlers;
+    private $systemHandlers;
 
     /**
      * @var DateTimeImmutable
@@ -79,15 +80,22 @@ final class LanguageServer implements StatProvider
      */
     private $requestCount = 0;
 
+    /**
+     * @var HandlerLoader
+     */
+    private $handlerLoader;
+
     public function __construct(
         Dispatcher $dispatcher,
-        Handlers $handlers,
+        Handlers $systemHandlers,
+        HandlerLoader $handlerLoader,
         LoggerInterface $logger,
         StreamProvider $streamProvider,
         bool $enableEventLoop = true
     ) {
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
+        $this->handlerLoader = $handlerLoader;
 
         $this->streamProvider = $streamProvider;
         $this->enableEventLoop = $enableEventLoop;
@@ -95,7 +103,7 @@ final class LanguageServer implements StatProvider
         $this->writer = new LanguageServerProtocolWriter();
         $this->created = new DateTimeImmutable();
 
-        $this->handlers = $this->addSystemHandlers($handlers);
+        $this->systemHandlers = $this->addSystemHandlers($systemHandlers);
     }
 
     /**
@@ -205,8 +213,8 @@ final class LanguageServer implements StatProvider
 
         $container = new ApplicationContainer(
             $this->dispatcher,
-            $this->handlers,
-            new TextDocumentHandlerLoader()
+            $this->systemHandlers,
+            $this->handlerLoader
         );
 
         while (null !== ($chunk = yield $connection->stream()->read())) {

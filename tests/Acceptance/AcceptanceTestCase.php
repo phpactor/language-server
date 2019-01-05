@@ -36,6 +36,7 @@ class AcceptanceTestCase extends TestCase
     protected function client(): TestClient
     {
         $server = LanguageServerBuilder::create()
+            ->enableTextDocumentHandler()
             ->tcpServer()
             ->eventLoop(false)
             ->build();
