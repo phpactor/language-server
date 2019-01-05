@@ -13,6 +13,5 @@ class ServerTesterTest extends TestCase
         $builder = LanguageServerBuilder::create();
         $tester = new ServerTester($builder);
         $tester->initialize();
-
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Test;
 
-use Amp\Promise;
 use Amp\Socket\ClientSocket;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
