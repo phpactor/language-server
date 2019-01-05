@@ -50,12 +50,14 @@ class ServerTester
         return $responses;
     }
 
-    public function initialize()
+    public function initialize(): array
     {
         $responses = $this->dispatch('initialize', [
             'rootUri' => __DIR__,
         ]);
         $this->assertSuccess($responses);
+
+        return $responses;
     }
 
     public function assertSuccess($responses): bool
@@ -75,7 +77,7 @@ class ServerTester
         return true;
     }
 
-    private function createClient(): Promise
+    private function createClient(): ClientSocket
     {
         /** @var ClientSocket $client */
         $address = $this->server->address();
