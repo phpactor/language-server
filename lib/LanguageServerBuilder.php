@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer;
 
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
-use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
@@ -134,7 +133,7 @@ class LanguageServerBuilder
         return $this;
     }
 
-    /** 
+    /**
      * Start a TCP server on the given address.
      *
      * The TCP server can handle multiple connections/sessions, but must be

@@ -5,9 +5,6 @@ namespace Phpactor\LanguageServer\Core\Handler;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Handler\Handlers;
-use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 
 final class Handlers implements Countable, IteratorAggregate
 {

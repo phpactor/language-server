@@ -82,5 +82,4 @@ class WorkspaceTest extends TestCase
 
         $this->assertCount(0, $this->workspace);
     }
-
 }

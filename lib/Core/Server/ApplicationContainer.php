@@ -7,7 +7,6 @@ use LanguageServerProtocol\InitializeParams;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
-use Phpactor\LanguageServer\Core\Handler\Handlers\AggregateHandlerCollection;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;

@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 
-use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
