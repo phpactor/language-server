@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Test;
 
+use Amp\Promise;
 use Amp\Socket\ClientSocket;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
@@ -74,17 +75,18 @@ class ServerTester
         return true;
     }
 
-    private function createClient()
+    private function createClient(): Promise
     {
         /** @var ClientSocket $client */
         $address = $this->server->address();
-        $client = \Amp\Promise\wait(\Amp\Socket\connect($address));
-        
+
         if (null === $address) {
             throw new RuntimeException(
                 'Only TCP server can be used for testing currently'
             );
         }
+
+        $client = \Amp\Promise\wait(\Amp\Socket\connect($address));
 
         return $client;
     }
