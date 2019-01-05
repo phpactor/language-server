@@ -53,8 +53,11 @@ class ServerTester
     {
         $responses = (array) $responses;
 
-        /** @var ResponseMessage $response */
         foreach ($responses as $response) {
+            if  (!$response instanceof ResponseMessage) {
+                continue;
+            }
+
             if ($response->responseError) {
                 throw new RuntimeException(sprintf(
                     'Response contains error: %s',
