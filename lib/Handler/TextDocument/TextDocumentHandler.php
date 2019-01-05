@@ -75,9 +75,6 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 
     public function registerCapabiltiies(ServerCapabilities $capabilities)
     {
-        $options = new TextDocumentSyncOptions();
-        $options->change = TextDocumentSyncKind::FULL;
-
-        $capabilities->textDocumentSync = $options;
+        $capabilities->textDocumentSync = TextDocumentSyncKind::FULL;
     }
 }
