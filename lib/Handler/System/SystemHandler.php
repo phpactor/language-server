@@ -9,6 +9,8 @@ use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 
 class SystemHandler implements Handler
 {
+    const METHOD_STATUS = 'system/status';
+
     /**
      * @var StatProvider
      */
@@ -22,7 +24,7 @@ class SystemHandler implements Handler
     public function methods(): array
     {
         return [
-            'system/status' => 'status',
+            self::METHOD_STATUS => 'status',
         ];
     }
 

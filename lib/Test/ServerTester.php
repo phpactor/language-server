@@ -2,51 +2,31 @@
 
 namespace Phpactor\LanguageServer\Test;
 
-use Amp\Socket\ClientSocket;
-use Phpactor\LanguageServer\Core\Rpc\Request;
+use LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
-use Phpactor\LanguageServer\Core\Server\LanguageServer;
-use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
-use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
-use Phpactor\LanguageServer\LanguageServerBuilder;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
 use RuntimeException;
 
 class ServerTester
 {
     /**
-     * @var LanguageServer
+     * @var ApplicationContainer
      */
-    private $server;
-    private $client;
+    private $container;
 
-
-    public function __construct(LanguageServerBuilder $builder)
+    public function __construct(ApplicationContainer $container)
     {
-        $builder->eventLoop(false);
-        $builder->tcpServer();
-        $this->server = $builder->build();
-        $this->server->start();
-
-        $this->client = $this->createClient();
+        $this->container = $container;
     }
 
     public function dispatch(string $method, array $params = []): array
     {
-        $request = new RequestMessage(1, $method, $params);
-        $writer = new LanguageServerProtocolWriter();
+        static $id = 0;
+        $request = new RequestMessage((int) ++$id, $method, $params);
+        $results = iterator_to_array($this->container->dispatch($request));
 
-        \Amp\Promise\wait($this->client->write($writer->write($request)));
-
-        $rawResponse = \Amp\Promise\wait($this->client->read());
-        $parser = (new LanguageServerProtocolParser())->__invoke();
-
-        $responses = [];
-        while ($response = $parser->send($rawResponse)) {
-            $responses[] = $response;
-            $rawResponse = null;
-        }
-
-        return $responses;
+        return $results;
     }
 
     public function initialize(): array
@@ -59,36 +39,30 @@ class ServerTester
         return $responses;
     }
 
+    public function openDocument(TextDocumentItem $item)
+    {
+        $responses = $this->dispatch('textDocument/didOpen', [
+            'textDocument' => $item
+        ]);
+        $this->assertSuccess($responses);
+
+        return $responses;
+    }
+
     public function assertSuccess($responses): bool
     {
         $responses = (array) $responses;
 
-        /** @var Request $response */
+        /** @var ResponseMessage $response */
         foreach ($responses as $response) {
-            if ($response->body()['responseError']) {
+            if ($response->responseError) {
                 throw new RuntimeException(sprintf(
                     'Response contains error: %s',
-                    json_encode($response->body()['responseError'], JSON_PRETTY_PRINT)
+                    json_encode($response->responseError, JSON_PRETTY_PRINT)
                 ));
             }
         }
 
         return true;
-    }
-
-    private function createClient(): ClientSocket
-    {
-        /** @var ClientSocket $client */
-        $address = $this->server->address();
-
-        if (null === $address) {
-            throw new RuntimeException(
-                'Only TCP server can be used for testing currently'
-            );
-        }
-
-        $client = \Amp\Promise\wait(\Amp\Socket\connect($address));
-
-        return $client;
     }
 }

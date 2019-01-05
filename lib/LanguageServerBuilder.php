@@ -10,14 +10,15 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
-use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
-use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandlerLoader;
+use Phpactor\LanguageServer\Test\ServerTester;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -121,19 +122,6 @@ class LanguageServerBuilder
     }
 
     /**
-     * Enable the built-in text document handler.
-     *
-     * The text document handler takes care of syncronizing text documents from
-     * the client with the server.
-     */
-    public function enableTextDocumentHandler(): self
-    {
-        $this->addHandlerLoader(new TextDocumentHandlerLoader());
-
-        return $this;
-    }
-
-    /**
      * Start a TCP server on the given address.
      *
      * The TCP server can handle multiple connections/sessions, but must be
@@ -176,23 +164,28 @@ class LanguageServerBuilder
             );
         }
 
-        $handlers = new Handlers($this->handlers);
+        $handlers = $this->buildHandlers();
 
         return new LanguageServer(
             $dispatcher,
             $handlers,
-            new AggregateHandlerLoader($this->handlerLoaders),
+            $this->buildHandlerLoader(),
             $this->logger,
             $provider,
             $this->eventLoop
         );
     }
 
-    /**
-     * Return the RPC dispatcher used by the server.
-     * Useful for testing.
-     */
-    public function buildDispatcher(): Dispatcher
+    public function buildServerTester(): ServerTester
+    {
+        return new ServerTester(new ApplicationContainer(
+            $this->buildDispatcher(),
+            $this->buildHandlers(),
+            $this->buildHandlerLoader()
+        ));
+    }
+
+    private function buildDispatcher(): Dispatcher
     {
         $dispatcher = new MethodDispatcher(
             new DTLArgumentResolver()
@@ -206,5 +199,15 @@ class LanguageServerBuilder
         }
 
         return $dispatcher;
+    }
+
+    private function buildHandlerLoader(): AggregateHandlerLoader
+    {
+        return new AggregateHandlerLoader($this->handlerLoaders);
+    }
+
+    private function buildHandlers(): Handlers
+    {
+        return new Handlers($this->handlers);
     }
 }
