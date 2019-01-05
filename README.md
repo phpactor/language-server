@@ -3,22 +3,24 @@ Phpactor Language Server
 
 [![Build Status](https://travis-ci.org/phpactor/language-server.svg?branch=master)](https://travis-ci.org/phpactor/language-server)
 
-This package provides a language server infrastructure without any language
-server functionality:
+This package provides a language server platform:
 
-- Asynchronous TCP server.
-- Manages text document synchronization.
-- Allows you to define server capabilities and supply handlers.
+- Language server platform upon which you can implement language server
+  features.
+- Can run as either a TCP server (accepting many connections) or a STDIO
+  server (invoked by the client).
+- Can handle multiple sessions.
+- Can manage text document synchronization.
 
 Example
 -------
 
-Create a dumb language server with no functionality:
+Create a dumb language server which can synchronize text documents:
 
 ```php
 $server = LanguageServerBuilder::create()
     ->tcpServer()
-    ->useDefaultHandlers()
+    ->enableTextDocumentHandler()
     ->build();
 
 $server->start();
@@ -75,7 +77,7 @@ Which can then be registered with the server, for example with the builder:
 $sessionManager = new SessionManager();
 $server = LanguageServerBuilder::create($sessionManager)
     ->tcpServer()
-    ->useDefaultHandlers()
+    ->enableTextDocumentHandler()
     ->addHandler(new MyCompletionHandler($sessionManager))
     ->build();
 

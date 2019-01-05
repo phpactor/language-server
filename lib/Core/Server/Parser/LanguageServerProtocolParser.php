@@ -5,6 +5,8 @@ namespace Phpactor\LanguageServer\Core\Server\Parser;
 use Generator;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 use function json_encode;
+use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotDecodeBody;
+use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotParseHeader;
 
 final class LanguageServerProtocolParser
 {

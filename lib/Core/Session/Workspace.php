@@ -2,12 +2,13 @@
 
 namespace Phpactor\LanguageServer\Core\Session;
 
+use Countable;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 
-class Workspace
+class Workspace implements Countable
 {
     /**
      * @var TextDocumentItem[]
@@ -56,5 +57,13 @@ class Workspace
         }
 
         unset($this->documents[$textDocument->uri]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function count(): int
+    {
+        return $this->openFiles();
     }
 }

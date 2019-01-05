@@ -4,27 +4,20 @@ namespace Phpactor\LanguageServer;
 
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
-use Closure;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Adapter\Evenement\EvenementEmitter;
-use Phpactor\LanguageServer\Core\Dispatcher\ChainHandlerRegistry;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\ErrorCatchingDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
-use Phpactor\LanguageServer\Core\Dispatcher\LazyContainerHandlerRegistry;
-use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Event\EventEmitter;
-use Phpactor\LanguageServer\Core\Event\EventSubscriber;
-use Phpactor\LanguageServer\Core\Handler\ExitHandler;
-use Phpactor\LanguageServer\Core\Handler\InitializeHandler;
-use Phpactor\LanguageServer\Core\Handler\SystemHandler;
-use Phpactor\LanguageServer\Core\Handler\TextDocumentHandler;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
+use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
+use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
-use Phpactor\LanguageServer\Core\Session\SessionManager;
+use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
+use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandlerLoader;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -39,21 +32,6 @@ class LanguageServerBuilder
      * @var Handler[]
      */
     private $handlers = [];
-
-    /**
-     * @var EventEmitter
-     */
-    private $eventEmitter;
-
-    /**
-     * @var SessionManager
-     */
-    private $sessionManager;
-
-    /**
-     * @var bool
-     */
-    private $defaultHandlers = true;
 
     /**
      * @var bool
@@ -73,37 +51,28 @@ class LanguageServerBuilder
     /**
      * @var array
      */
-    private $factories = [];
+    private $handlerLoaders = [];
 
     private function __construct(
-        LoggerInterface $logger,
-        EventEmitter $eventEmitter,
-        SessionManager $sessionManager
+        LoggerInterface $logger
     ) {
         $this->logger = $logger;
-        $this->eventEmitter = $eventEmitter;
-        $this->sessionManager = $sessionManager;
     }
 
+    /**
+     * Create a new instance of the builder \o/
+     */
     public static function create(
-        LoggerInterface $logger = null,
-        SessionManager $sessionManager = null,
-        EventEmitter $eventEmitter = null
+        LoggerInterface $logger = null
     ): self {
         return new self(
-            $logger ?: new NullLogger(),
-            $eventEmitter ?: new EvenementEmitter(),
-            $sessionManager ?: new SessionManager()
+            $logger ?: new NullLogger()
         );
     }
 
-    public function useDefaultHandlers(bool $useDefaultHandlers = true): self
-    {
-        $this->defaultHandlers = $useDefaultHandlers;
-
-        return $this;
-    }
-
+    /**
+     * Log any exceptions are thrown when handling requests and continue.
+     */
     public function catchExceptions(bool $enabled = true): self
     {
         $this->catchExceptions = $enabled;
@@ -111,6 +80,9 @@ class LanguageServerBuilder
         return $this;
     }
 
+    /**
+     * Start the event loop when the server starts.
+     */
     public function eventLoop(bool $enabled = true): self
     {
         $this->eventLoop = $enabled;
@@ -118,26 +90,60 @@ class LanguageServerBuilder
         return $this;
     }
 
-    public function addHandlerFactory(string $method, Closure $closure): self
+    /**
+     * Add a handler that will be registered at the system (server) level.
+     * Such handlers will bem general to all connections made to the server and
+     * is not connection (session) specific.
+     *
+     * For sessiaon specific handlers. See LanguageBuilder#addHandlerLoader.
+     */
+    public function addSystemHandler(Handler $handler): self
     {
-        $this->factories[$method] = $closure;
-
-        return $this;
-    }
-
-    public function addHandler(Handler $handler): self
-    {
-        if ($handler instanceof EventSubscriber) {
-            foreach ($handler->events() as $eventName => $method) {
-                $this->eventEmitter->on($eventName, Closure::fromCallable([ $handler, $method ]));
-            }
-        }
-
         $this->handlers[] = $handler;
 
         return $this;
     }
 
+    /**
+     * Handler loaders are used to instantiate handlers for a new
+     * connection/session.
+     *
+     * Such handlers include the TextDocumentHandler which requires a clean
+     * workspace when a new connection/session is started. Another example
+     * might be the CompletionHandler which has dependencies which in turn
+     * depend on the initialized project root directory.
+     */
+    public function addHandlerLoader(HandlerLoader $loader): self
+    {
+        $this->handlerLoaders[] = $loader;
+
+        return $this;
+    }
+
+    /**
+     * Enable the built-in text document handler.
+     *
+     * The text document handler takes care of syncronizing text documents from
+     * the client with the server.
+     */
+    public function enableTextDocumentHandler(): self
+    {
+        $this->addHandlerLoader(new TextDocumentHandlerLoader());
+
+        return $this;
+    }
+
+    /**
+     * Start a TCP server on the given address.
+     *
+     * The TCP server can handle multiple connections/sessions, but must be
+     * started manually before clients can connect to it.
+     *
+     * The TCP server is valuable for development and for debugging as it echos
+     * the debug information to STDERR.
+     *
+     * Note that the default behavior is to start a STDIO server.
+     */
     public function tcpServer(?string $address = '0.0.0.0:0'): self
     {
         $this->tcpAddress = $address;
@@ -147,8 +153,9 @@ class LanguageServerBuilder
 
     /**
      * Build the language server.
-     * The returned language server can then be started
-     * by calling `start()`.
+     *
+     * The returned language server instance can then be started by calling
+     * start().
      */
     public function build(): LanguageServer
     {
@@ -169,8 +176,12 @@ class LanguageServerBuilder
             );
         }
 
+        $handlers = new Handlers($this->handlers);
+
         return new LanguageServer(
             $dispatcher,
+            $handlers,
+            new AggregateHandlerLoader($this->handlerLoaders),
             $this->logger,
             $provider,
             $this->eventLoop
@@ -183,22 +194,8 @@ class LanguageServerBuilder
      */
     public function buildDispatcher(): Dispatcher
     {
-        if ($this->defaultHandlers) {
-            $this->addDefaultHandlers();
-        }
-
-        $handlers = new Handlers($this->handlers);
-
-        if ($this->factories) {
-            $handlers= new ChainHandlerRegistry([
-                $handlers,
-                new LazyContainerHandlerRegistry($this->sessionManager, $this->factories),
-            ]);
-        }
-
         $dispatcher = new MethodDispatcher(
-            new DTLArgumentResolver(),
-            $handlers
+            new DTLArgumentResolver()
         );
 
         if ($this->catchExceptions) {
@@ -209,18 +206,5 @@ class LanguageServerBuilder
         }
 
         return $dispatcher;
-    }
-
-    private function addDefaultHandlers(): void
-    {
-        $this->addHandler(new InitializeHandler(
-            $this->eventEmitter,
-            $this->sessionManager
-        ));
-        $this->addHandler(
-            new TextDocumentHandler($this->eventEmitter, $this->sessionManager)
-        );
-        $this->addHandler(new ExitHandler());
-        $this->addHandler(new SystemHandler($this->sessionManager));
     }
 }

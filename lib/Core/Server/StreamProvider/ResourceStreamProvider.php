@@ -27,7 +27,7 @@ class ResourceStreamProvider implements StreamProvider
         $this->logger = $logger;
     }
 
-    public function provide(): Promise
+    public function accept(): Promise
     {
         // resource connections are valid only for
         // the length of the client connnection
@@ -38,6 +38,11 @@ class ResourceStreamProvider implements StreamProvider
         $this->provided = true;
 
         $this->logger->info('Listening on STDIO');
-        return new Success($this->duplexStream);
+
+        return new Success(new Connection('stdio', $this->duplexStream));
+    }
+
+    public function close(): void
+    {
     }
 }

@@ -3,9 +3,9 @@
 namespace Phpactor\LanguageServer\Test;
 
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Core\Dispatcher\Handler;
-use Phpactor\LanguageServer\Core\Dispatcher\Handlers;
-use Phpactor\LanguageServer\Core\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 class HandlerTester
@@ -23,12 +23,12 @@ class HandlerTester
     public function dispatch(string $methodName, array $params): array
     {
         $dispatcher = new MethodDispatcher(
-            new DTLArgumentResolver(),
-            new Handlers([$this->handler])
+            new DTLArgumentResolver()
         );
+        $handlers = new Handlers([$this->handler]);
 
         $request = new RequestMessage(1, $methodName, $params);
 
-        return iterator_to_array($dispatcher->dispatch($request));
+        return iterator_to_array($dispatcher->dispatch($handlers, $request));
     }
 }
