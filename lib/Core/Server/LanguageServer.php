@@ -215,7 +215,12 @@ final class LanguageServer implements StatProvider
             $this->handlerLoader
         );
 
-        $parser = (new LanguageServerProtocolParser(function (Request $request) use ($container, $connection){
+        $parser = new LanguageServerProtocolParser(function (
+            Request $request
+        ) use (
+            $container,
+            $connection
+        ){
             $this->logger->info('REQUEST', $request->body());
             $this->requestCount++;
 
@@ -232,15 +237,10 @@ final class LanguageServer implements StatProvider
                     $connection->stream()->write($chunk);
                 }
             }
-        }));
+        });
 
-        try {
-            while (null !== ($chunk = yield $connection->stream()->read())) {
-                $parser->feed($chunk);
-            }
-        } catch (ShutdownServer $exception) {
-            $this->logger->info($exception->getMessage());
-            yield $this->shutdown();
+        while (null !== ($chunk = yield $connection->stream()->read())) {
+            $parser->feed($chunk);
         }
     }
 

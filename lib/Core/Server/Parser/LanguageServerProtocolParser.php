@@ -9,7 +9,7 @@ use function json_encode;
 use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotDecodeBody;
 use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotParseHeader;
 
-final class LanguageServerProtocolParser
+final class LanguageServerProtocolParser implements StreamParser
 {
     const EVENT_REQUEST_READY = 'request.ready';
     const HEADER_CONTENT_LENGTH = 'Content-Length';
