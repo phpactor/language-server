@@ -10,6 +10,7 @@ use Generator;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
@@ -208,41 +209,38 @@ final class LanguageServer implements StatProvider
 
     private function handle(Connection $connection): Generator
     {
-        $parser = (new LanguageServerProtocolParser())->__invoke();
-
         $container = new ApplicationContainer(
             $this->dispatcher,
             $this->systemHandlers,
             $this->handlerLoader
         );
 
-        while (null !== ($chunk = yield $connection->stream()->read())) {
-            while ($request = $parser->send($chunk)) {
-                try {
-                    $this->logger->info('REQUEST', $request->body());
-                    $this->requestCount++;
+        $parser = (new LanguageServerProtocolParser(function (Request $request) use ($container, $connection){
+            $this->logger->info('REQUEST', $request->body());
+            $this->requestCount++;
 
-                    $responses = $container->dispatch(
-                        RequestMessageFactory::fromRequest($request)
-                    );
+            $responses = $container->dispatch(
+                RequestMessageFactory::fromRequest($request)
+            );
 
-                    foreach ($responses as $response) {
-                        $this->logger->info('RESPONSE', (array) $response);
+            foreach ($responses as $response) {
+                $this->logger->info('RESPONSE', (array) $response);
 
-                        $responseBody = $this->writer->write($response);
+                $responseBody = $this->writer->write($response);
 
-                        foreach (str_split($responseBody, self::WRITE_CHUNK_SIZE) as $chunk) {
-                            $connection->stream()->write($chunk);
-                        }
-                    }
-                } catch (ShutdownServer $exception) {
-                    $this->logger->info($exception->getMessage());
-
-                    yield $this->shutdown();
+                foreach (str_split($responseBody, self::WRITE_CHUNK_SIZE) as $chunk) {
+                    $connection->stream()->write($chunk);
                 }
-
-                $chunk = null;
             }
+        }));
+
+        try {
+            while (null !== ($chunk = yield $connection->stream()->read())) {
+                $parser->feed($chunk);
+            }
+        } catch (ShutdownServer $exception) {
+            $this->logger->info($exception->getMessage());
+            yield $this->shutdown();
         }
     }
 

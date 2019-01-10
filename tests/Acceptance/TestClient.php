@@ -23,15 +23,15 @@ class TestClient
      */
     public function send(string $request): array
     {
-        $parser = (new LanguageServerProtocolParser())->__invoke();
-        $this->socket->write($request);
-        $rawResponse = \Amp\Promise\Wait($this->socket->read());
-
         $responses = [];
-        while ($response = $parser->send($rawResponse)) {
-            $responses[] = $response;
-            $rawResponse = '';
-        }
+        $this->socket->write($request);
+
+        $parser = new LanguageServerProtocolParser(function (Request $request) use (&$responses) {
+            $responses[] = $request;
+        });
+
+        $rawResponse = \Amp\Promise\Wait($this->socket->read());
+        $parser->feed($rawResponse);
 
         return $responses;
     }

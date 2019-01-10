@@ -17,7 +17,7 @@ class LanguageServerProtocolParserTest extends TestCase
     {
     }
 
-    public function testYieldsRequestOnCompleteData()
+    public function testCallsbackOnCompletedData()
     {
         $payload = <<<EOT
 Content-Length: 74\r\n
@@ -29,15 +29,16 @@ Content-Type: foo\r\n\r\n
    "params": {}
 }
 EOT;
-        $parser = (new LanguageServerProtocolParser())->__invoke();
-        $request = $parser->send($payload);
-        $this->assertInstanceOf(Request::class, $request);
+        $request = null;
+        $parser = new LanguageServerProtocolParser(function (Request $request) use (&$result) {
+            $result = $request;
+        });
+        $parser->feed($payload);
+        $this->assertInstanceOf(Request::class, $result);
     }
 
-    public function testYieldsRequestWhenDataIsComplete()
+    public function testCallsbackWhenDataIsComplete()
     {
-        $parser = (new LanguageServerProtocolParser())->__invoke();
-
         $payload = <<<EOT
 Content-Length: 74\r\n
 Content-Type: foo\r\n\r\n
@@ -46,9 +47,12 @@ Content-Type: foo\r\n\r\n
 
 EOT
         ;
+        $result = null;
+        $parser = new LanguageServerProtocolParser(function (Request $request) use (&$result) {
+            $result = $request;
+        });
 
-        $request = $parser->send($payload);
-        $this->assertNull($request);
+        $parser->feed($payload);
 
         $payload = <<<'EOT'
    "id": 1,
@@ -56,13 +60,17 @@ EOT
    "params": {}
 }
 EOT;
-        $request = $parser->send($payload);
-        $this->assertInstanceOf(Request::class, $request);
+        $parser->feed($payload);
+
+        $this->assertInstanceOf(Request::class, $result);
     }
 
-    public function testYieldsMultipleRequests()
+    public function testCallsBackMultipleTimes()
     {
-        $parser = (new LanguageServerProtocolParser())->__invoke();
+        $results = [];
+        $parser = new LanguageServerProtocolParser(function (Request $request) use (&$results) {
+            $results[] = $request;
+        });
 
         $payload = <<<EOT
 Content-Length: 74\r\n
@@ -81,12 +89,9 @@ Content-Type: foo\r\n\r\n
    "params": {}
 }
 EOT;
-        $requests = [ $parser->send($payload) ];
 
-        while ($request = $parser->send(null)) {
-            $requests[] = $request;
-        }
+        $parser->feed($payload);
 
-        $this->assertCount(2, $requests);
+        $this->assertCount(2, $results);
     }
 }
