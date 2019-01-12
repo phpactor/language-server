@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
 use Generator;
 use PHPUnit\Framework\TestCase;
