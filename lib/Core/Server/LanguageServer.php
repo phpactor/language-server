@@ -220,7 +220,7 @@ final class LanguageServer implements StatProvider
         ) use (
             $container,
             $connection
-        ){
+        ) {
             $this->logger->info('REQUEST', $request->body());
             $this->requestCount++;
 

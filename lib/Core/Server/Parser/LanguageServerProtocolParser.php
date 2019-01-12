@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Core\Server\Parser;
 
 use Closure;
-use Generator;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 use function json_encode;
 use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotDecodeBody;
