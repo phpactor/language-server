@@ -7,7 +7,7 @@ use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
-use RuntimeException;
+use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
 
 class RecordingDispatcher implements Dispatcher
 {
@@ -21,25 +21,22 @@ class RecordingDispatcher implements Dispatcher
      */
     private $innerDispatcher;
 
-    public function __construct(Dispatcher $innerDispatcher, OutputStream $output)
+    /**
+     * @var LanguageServerProtocolWriter
+     */
+    private $writer;
+
+    public function __construct(Dispatcher $innerDispatcher, OutputStream $output, LanguageServerProtocolWriter $writer = null)
     {
         $this->output = $output;
         $this->innerDispatcher = $innerDispatcher;
+        $this->writer = $writer ?: new LanguageServerProtocolWriter();
     }
 
     public function dispatch(Handlers $handlers, RequestMessage $request): Generator
     {
-        $json = json_encode($request);
-
-        if (false === $json) {
-            throw new RuntimeException(sprintf(
-                'Could not serialize message: "%s"',
-                json_last_error_msg()
-            ));
-        }
-
-        \Amp\asyncCall(function () use ($json) {
-            yield $this->output->write($json);
+        \Amp\asyncCall(function () use ($request) {
+            yield $this->output->write($this->writer->write($request));
         });
 
         yield from $this->innerDispatcher->dispatch($handlers, $request);

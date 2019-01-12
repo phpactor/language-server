@@ -217,7 +217,8 @@ class LanguageServerBuilder
 
             if (false === $recordResource) {
                 throw new RuntimeException(sprintf(
-                    'Could not open recording file "%s"', $this->recordTo
+                    'Could not open recording file "%s"',
+                    $this->recordTo
                 ));
             }
 
