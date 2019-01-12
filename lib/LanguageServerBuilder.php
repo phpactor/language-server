@@ -7,6 +7,7 @@ use Amp\ByteStream\ResourceOutputStream;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\RecordingDispatcher;
 use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
@@ -21,6 +22,7 @@ use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Test\ServerTester;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 
 class LanguageServerBuilder
 {
@@ -53,6 +55,11 @@ class LanguageServerBuilder
      * @var array
      */
     private $handlerLoaders = [];
+
+    /**
+     * @var string
+     */
+    private $recordTo;
 
     private function __construct(
         LoggerInterface $logger
@@ -139,6 +146,13 @@ class LanguageServerBuilder
         return $this;
     }
 
+    public function recordTo(string $filename): self
+    {
+        $this->recordTo = $filename;
+
+        return $this;
+    }
+
     /**
      * Build the language server.
      *
@@ -195,6 +209,21 @@ class LanguageServerBuilder
             $dispatcher = new ErrorCatchingDispatcher(
                 $dispatcher,
                 $this->logger
+            );
+        }
+
+        if ($this->recordTo) {
+            $recordResource = fopen($this->recordTo, 'w');
+
+            if (false === $recordResource) {
+                throw new RuntimeException(sprintf(
+                    'Could not open recording file "%s"', $this->recordTo
+                ));
+            }
+
+            $dispatcher = new RecordingDispatcher(
+                $dispatcher,
+                new ResourceOutputStream($recordResource)
             );
         }
 
