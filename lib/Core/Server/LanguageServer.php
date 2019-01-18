@@ -253,12 +253,12 @@ final class LanguageServer implements StatProvider
     {
         $this->logger->info('Shutting down');
 
-        $proimises = [];
+        $promises = [];
         foreach ($this->connections as $connection) {
             $promises[] = $connection->stream()->end();
         }
 
-        \Amp\Promise\wait(\Amp\Promise\any($proimises));
+        \Amp\Promise\wait(\Amp\Promise\any($promises));
 
         $this->streamProvider->close();
 
