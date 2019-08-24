@@ -2,8 +2,10 @@
 
 $finder = PhpCsFixer\Finder::create()
     ->in('lib')
-    ->in('protocol')
     ->in('tests')
+    ->exclude([
+        'tests/Workspace'
+    ])
 ;
 
 return PhpCsFixer\Config::create()
@@ -14,3 +16,4 @@ return PhpCsFixer\Config::create()
     ])
     ->setFinder($finder)
 ;
+
