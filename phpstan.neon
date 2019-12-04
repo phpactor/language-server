@@ -1,3 +1,10 @@
+includes:
+    - vendor/phpstan/phpstan/conf/config.level7.neon
+
 parameters:
-    paths: [ lib ]
+    inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
+        
+    paths:
+        - lib
+
