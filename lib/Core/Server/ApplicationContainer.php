@@ -11,7 +11,9 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
+use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
 final class ApplicationContainer implements Handler
 {
@@ -40,15 +42,22 @@ final class ApplicationContainer implements Handler
      */
     private $dispatcher;
 
+    /**
+     * @var ServiceManager
+     */
+    private $serviceManager;
+
     public function __construct(
         Dispatcher $dispatcher,
         Handlers $serverHandlers,
-        HandlerLoader $applicationHandlerLoader
+        HandlerLoader $applicationHandlerLoader,
+        ?ServiceManager $serviceManager = null
     ) {
         $this->serverHandlers = $serverHandlers;
         $this->applicationHandlerLoader = $applicationHandlerLoader;
         $this->dispatcher = $dispatcher;
         $this->defaultHandlers = new Handlers([$this]);
+        $this->serviceManager = $serviceManager ?: new ServiceManager();
     }
 
     public function dispatch(RequestMessage $message): Generator
@@ -101,7 +110,16 @@ final class ApplicationContainer implements Handler
 
     public function initialized(): void
     {
-        // nothing to see here
+        foreach ($this->handlers() as $handler) {
+            if (!$handler instanceof ServiceProvider) {
+                continue;
+            }
+
+            $this->serviceManager->register(
+                $handler,
+                $handler->services()
+            );
+        }
     }
 
     /**

@@ -13,6 +13,7 @@ use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
+use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
@@ -186,7 +187,7 @@ final class LanguageServer implements StatProvider
                 // exception and exit the process.
                 \Amp\asyncCall(function () use ($connection) {
                     try {
-                        yield from $this->handle($connection);
+                        yield $this->handle($connection);
                     } catch (ExitSession $exception) {
                         $connection->stream()->end();
 
@@ -201,39 +202,38 @@ final class LanguageServer implements StatProvider
         });
     }
 
-    private function handle(Connection $connection): Generator
+    private function handle(Connection $connection): Promise
     {
-        $transmitter = new MessageTransmitter($connection, $this->logger);
-        $container = new ApplicationContainer(
-            $this->dispatcher,
-            $this->systemHandlers,
-            $this->handlerLoader
-            // $this->messagePublisher
-        );
-
-        // TODO: Refactor to use a response publisher with which services can
-        //       send messages to (e.g. an indexing service)
-        $parser = new LanguageServerProtocolParser(function (
-            Request $request
-        ) use (
-            $container,
-            $transmitter
-        ) {
-            $this->logger->info('REQUEST', $request->body());
-            $this->requestCount++;
-
-            $responses = $container->dispatch(
-                RequestMessageFactory::fromRequest($request)
+        return \Amp\call(function () use ($connection) {
+            $transmitter = new MessageTransmitter($connection, $this->logger);
+            $container = new ApplicationContainer(
+                $this->dispatcher,
+                $this->systemHandlers,
+                $this->handlerLoader
             );
 
-            foreach ($responses as $response) {
-                $transmitter->transmit($response);
+            $parser = new LanguageServerProtocolParser(function (
+                Request $request
+            ) use (
+                $transmitter,
+                $container
+            ) {
+                $this->logger->info('REQUEST', $request->body());
+                $this->requestCount++;
+
+                $responses = $container->dispatch(
+                    RequestMessageFactory::fromRequest($request)
+                );
+
+                foreach ($responses as $response) {
+                    $transmitter->transmit($response);
+                }
+            });
+
+            while (null !== ($chunk = yield $connection->stream()->read())) {
+                $parser->feed($chunk);
             }
         });
-
-        while (null !== ($chunk = yield $connection->stream()->read())) {
-            $parser->feed($chunk);
-        }
     }
 
     private function shutdown(): Promise
