@@ -3,10 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Event;
 
 use LanguageServerProtocol\TextDocumentItem;
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use League\Event\EmitterInterface;
 use League\Event\Event;
-use League\Event\EventInterface;
 
 class DocumentOpened extends Event
 {

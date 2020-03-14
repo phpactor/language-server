@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Session\Workspace;
 
-use Countable;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;

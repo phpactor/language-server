@@ -13,7 +13,8 @@
         "felixfbecker/language-server-protocol": "^1.0",
         "psr/log": "^1.0",
         "dantleech/argument-resolver": "^1.0",
-        "amphp/socket": "^0.10"
+        "amphp/socket": "^0.10",
+        "league/event": "^2.2"
     },
     "require-dev": {
         "phpstan/phpstan": "~0.11.0",
@@ -34,7 +35,7 @@
     "scripts": {
         "integrate": [
             "./vendor/bin/phpunit",
-            "./vendor/bin/phpstan analyze --level=7",
+            "./vendor/bin/phpstan analyze",
             "./vendor/bin/php-cs-fixer fix"
         ]
     },

@@ -3,9 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Event;
 
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use League\Event\EmitterInterface;
 use League\Event\Event;
-use League\Event\EventInterface;
 
 class DocumentUpdated extends Event
 {

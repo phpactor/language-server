@@ -2,12 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Event;
 
-use LanguageServerProtocol\IdentifierItem;
 use LanguageServerProtocol\TextDocumentIdentifier;
-use LanguageServerProtocol\VersionedIdentifierIdentifier;
-use League\Event\EmitterInterface;
 use League\Event\Event;
-use League\Event\EventInterface;
 
 class DocumentRemoved extends Event
 {

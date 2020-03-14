@@ -5,13 +5,11 @@ namespace Phpactor\LanguageServer\Core\Session\Workspace;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use League\Event\Emitter;
 use League\Event\EmitterInterface;
 use Phpactor\LanguageServer\Core\Event\DocumentOpened;
 use Phpactor\LanguageServer\Core\Event\DocumentRemoved;
 use Phpactor\LanguageServer\Core\Event\DocumentUpdated;
 use Phpactor\LanguageServer\Core\Session\Workspace;
-use Phpactor\LanguageServer\Core\Session\WorkspaceEvents;
 
 class EventEmittingWorkspace implements Workspace
 {
@@ -56,7 +54,6 @@ class EventEmittingWorkspace implements Workspace
     {
         $this->workspace->update($textDocument, $updatedText);
         $this->emitter->emit(new DocumentUpdated($textDocument, $updatedText));
-
     }
 
     public function openFiles(): int

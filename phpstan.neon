@@ -3,7 +3,6 @@ includes:
 
 parameters:
     inferPrivatePropertyTypeFromConstructor: true
-    ignoreErrors:
         
     paths:
         - lib

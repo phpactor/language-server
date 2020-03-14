@@ -10,7 +10,6 @@ use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Session\Workspace;
-use Phpactor\LanguageServer\Core\Session\Workspace\RealWorkspace;
 
 final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 {
