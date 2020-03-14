@@ -28,11 +28,12 @@ class HandlerMethodResolverTest extends TestCase
             public function methods():array
             {
                 return [
+                    'foo',
                 ];
             }
         };
 
-        $this->resolver->resolveHandlerMethod($handler, ['bar'], 'foo');
+        $this->resolver->resolveHandlerMethod($handler, 'foo');
     }
 
     public function testThrowsExceptionIfHandlerDoesNotHaveMethod()
@@ -44,6 +45,7 @@ class HandlerMethodResolverTest extends TestCase
             public function methods():array
             {
                 return [
+                    'foo' => 'boo'
                 ];
             }
 
@@ -52,7 +54,7 @@ class HandlerMethodResolverTest extends TestCase
             }
         };
 
-        $this->resolver->resolveHandlerMethod($handler, ['foo' => 'boo'], 'foo');
+        $this->resolver->resolveHandlerMethod($handler, 'foo');
     }
 
     public function testResolvesMethodName()
@@ -61,6 +63,7 @@ class HandlerMethodResolverTest extends TestCase
             public function methods():array
             {
                 return [
+                    'bar' => 'foo',
                 ];
             }
 
@@ -69,6 +72,6 @@ class HandlerMethodResolverTest extends TestCase
             }
         };
 
-        self::assertEquals('foo', $this->resolver->resolveHandlerMethod($handler, ['foo' => 'foo'], 'foo'));
+        self::assertEquals('foo', $this->resolver->resolveHandlerMethod($handler, 'bar'));
     }
 }

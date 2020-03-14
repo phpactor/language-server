@@ -25,7 +25,7 @@ class PingHandler implements ServiceProvider
     public function services(): array
     {
         return [
-            'ping' => 'ping'
+            'ping'
         ];
     }
 

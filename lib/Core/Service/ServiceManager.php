@@ -34,10 +34,8 @@ class ServiceManager
 
     public function __construct(
         MessageTransmitter $transmitter,
-        LoggerInterface $logger,
-        ?HandlerMethodResolver $methodResolver = null
+        LoggerInterface $logger
     ) {
-        $this->methodResolver = $methodResolver ?: new HandlerMethodResolver();
         $this->transmitter = $transmitter;
         $this->logger = $logger;
     }
@@ -53,14 +51,22 @@ class ServiceManager
     {
         foreach ($this->services as $serviceMethodName => $service) {
             $this->logger->info(sprintf('Starting service: %s::%s', get_class($service), $serviceMethodName));
-            $method = $this->methodResolver->resolveHandlerMethod($service, $service->services(), $serviceMethodName);
-            \Amp\asyncCall(function () use ($service, $method) {
-                $promise = $service->$method($this->transmitter);
+
+            if (!method_exists($service, $serviceMethodName)) {
+                throw new RuntimeException(sprintf(
+                    'Handler "%s" has no service method "%s"',
+                    get_class($service),
+                    $serviceMethodName
+                ));
+            }
+
+            \Amp\asyncCall(function () use ($service, $serviceMethodName) {
+                $promise = $service->$serviceMethodName($this->transmitter);
 
                 if (!$promise instanceof Promise) {
                     throw new RuntimeException(sprintf(
                         'Service method "%s" must return a Promise, got "%s"',
-                        get_class($service) . '::' . $method,
+                        get_class($service) . '::' . $serviceMethodName,
                         is_object($promise) ? get_class($promise) : gettype($promise)
                     ));
                 }

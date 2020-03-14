@@ -121,7 +121,7 @@ class MyCompletionHandler implements ServiceProvider
     public function services(): array
     {
         return [
-            'ping' => 'pingService',
+            'pingService',
         ];
     }
 

@@ -24,12 +24,23 @@ class ServiceManagerTest extends TestCase
         self::assertTrue($service->called);
     }
 
-    public function testThrowExceptionIfServiceNotReturnPromise()
+    public function testThrowExceptionIfServiceDoesNotHaveMethod()
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Service method');
         $serviceManager = new ServiceManager(new NullMessageTransmitter(), new NullLogger());
         $service = new PingServiceNoPromise();
+        $serviceManager->register($service);
+        $serviceManager->start();
+        Loop::run();
+    }
+
+    public function testThrowExceptionIfServiceNotReturnPromise()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('has no service method');
+        $serviceManager = new ServiceManager(new NullMessageTransmitter(), new NullLogger());
+        $service = new PingServiceMissingMethod();
         $serviceManager->register($service);
         $serviceManager->start();
         Loop::run();
@@ -53,7 +64,7 @@ class PingService implements ServiceProvider
     public function services(): array
     {
         return [
-            'pingService' => 'pingService',
+            'pingService',
         ];
     }
 
@@ -80,12 +91,34 @@ class PingServiceNoPromise implements ServiceProvider
     public function services(): array
     {
         return [
-            'pingService' => 'pingService',
+            'pingService',
         ];
     }
 
     public function pingService()
     {
         return 'asd';
+    }
+}
+
+class PingServiceMissingMethod implements ServiceProvider
+{
+    public $called = false;
+    /**
+     * {@inheritDoc}
+     */
+    public function methods(): array
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function services(): array
+    {
+        return [
+            'pingService',
+        ];
     }
 }
