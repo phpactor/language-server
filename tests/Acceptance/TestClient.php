@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
-use Amp\Socket\ClientSocket;
+use Amp\Socket\ResourceSocket;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 
@@ -13,7 +13,7 @@ class TestClient
      */
     private $socket;
 
-    public function __construct(ClientSocket $socket)
+    public function __construct(ResourceSocket $socket)
     {
         $this->socket = $socket;
     }

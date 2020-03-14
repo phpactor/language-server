@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Acceptance;
 
 use Amp\Loop;
 use Amp\Loop\DriverFactory;
-use Amp\Socket\ClientSocket;
+use Amp\Socket\ResourceSocket;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Core\Session\Workspace;
@@ -47,7 +47,7 @@ class AcceptanceTestCase extends TestCase
 
         $socket = \Amp\Socket\connect($server->address());
         $socket = \Amp\Promise\wait($socket);
-        assert($socket instanceof ClientSocket);
+        assert($socket instanceof ResourceSocket);
 
         return new TestClient($socket);
     }
