@@ -25,7 +25,8 @@ class HandlerMethodResolverTest extends TestCase
         $this->expectExceptionMessage('has not declared');
 
         $handler = new class implements Handler {
-            public function methods():array {
+            public function methods():array
+            {
                 return [
                 ];
             }
@@ -40,12 +41,15 @@ class HandlerMethodResolverTest extends TestCase
         $this->expectExceptionMessage('does not have');
 
         $handler = new class implements Handler {
-            public function methods():array {
+            public function methods():array
+            {
                 return [
                 ];
             }
 
-            public function foo(): void {}
+            public function foo(): void
+            {
+            }
         };
 
         $this->resolver->resolveHandlerMethod($handler, ['foo' => 'boo'], 'foo');
@@ -54,12 +58,15 @@ class HandlerMethodResolverTest extends TestCase
     public function testResolvesMethodName()
     {
         $handler = new class implements Handler {
-            public function methods():array {
+            public function methods():array
+            {
                 return [
                 ];
             }
 
-            public function foo(): void {}
+            public function foo(): void
+            {
+            }
         };
 
         self::assertEquals('foo', $this->resolver->resolveHandlerMethod($handler, ['foo' => 'foo'], 'foo'));

@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use RuntimeException;
 
-
 final class HandlerMethodResolver
 {
     public function resolveHandlerMethod(Handler $handler, array $handlerMap, $targetMethodName): string
