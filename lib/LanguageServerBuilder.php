@@ -198,7 +198,10 @@ class LanguageServerBuilder
             $this->buildDispatcher(),
             $this->buildHandlers(),
             $this->buildHandlerLoader(),
-            new ServiceManager(new NullMessageTransmitter())
+            new ServiceManager(
+                new NullMessageTransmitter(),
+                $this->logger
+            )
         ));
     }
 

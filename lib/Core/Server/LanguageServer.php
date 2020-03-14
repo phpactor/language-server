@@ -208,7 +208,7 @@ final class LanguageServer implements StatProvider
                 $this->dispatcher,
                 $this->systemHandlers,
                 $this->handlerLoader,
-                new ServiceManager($transmitter)
+                new ServiceManager($transmitter, $this->logger)
             );
 
             $parser = new LanguageServerProtocolParser(function (

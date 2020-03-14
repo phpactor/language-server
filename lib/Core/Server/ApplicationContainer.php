@@ -130,7 +130,7 @@ final class ApplicationContainer implements Handler
         return $handlers;
     }
 
-    private function startServices()
+    private function startServices(): void
     {
         foreach ($this->handlers()->services() as $handler) {
             if (!$handler instanceof ServiceProvider) {

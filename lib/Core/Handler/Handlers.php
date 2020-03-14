@@ -78,7 +78,7 @@ final class Handlers implements Countable
      */
     public function count()
     {
-        return count($this->methods);
+        return count($this->methods) + count($this->services);
     }
 
     /**
