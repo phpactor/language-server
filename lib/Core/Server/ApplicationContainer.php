@@ -105,23 +105,13 @@ final class ApplicationContainer implements Handler
         $result = new InitializeResult();
         $result->capabilities = $capabilities;
 
+        $this->startServices();
+
         yield $result;
     }
 
     public function initialized(): void
     {
-        foreach ($this->handlers() as $handler) {
-            if (!$handler instanceof ServiceProvider) {
-                continue;
-            }
-
-            $this->serviceManager->register(
-                $handler,
-                $handler->services()
-            );
-        }
-
-        $this->serviceManager->start();
     }
 
     /**
@@ -138,5 +128,21 @@ final class ApplicationContainer implements Handler
         }
 
         return $handlers;
+    }
+
+    private function startServices()
+    {
+        foreach ($this->handlers()->services() as $handler) {
+            if (!$handler instanceof ServiceProvider) {
+                continue;
+            }
+        
+            $this->serviceManager->register(
+                $handler,
+                $handler->services()
+            );
+        }
+        
+        $this->serviceManager->start();
     }
 }

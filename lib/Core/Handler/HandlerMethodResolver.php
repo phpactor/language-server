@@ -8,25 +8,24 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 class HandlerMethodResolver
 {
-    public function resolveHandlerMethod(Handler $handler, RequestMessage $request): string
+    public function resolveHandlerMethod(Handler $handler, array $handlerMethods, $targetMethodName): string
     {
-        $handlerMethods = $handler->methods();
-
-        if (!array_key_exists($request->method, $handlerMethods)) {
+        if (!array_key_exists($targetMethodName, $handlerMethods)) {
             throw new RuntimeException(sprintf(
-                'Resolved handler "%s" has not declared the method "%s"',
+                'Resolved handler "%s" has not declared the method "%s", it declared "%s"',
                 get_class($handler),
-                $request->method
+                $targetMethodName,
+                implode('", "', $handlerMethods)
             ));
         }
 
-        $method = $handlerMethods[$request->method];
+        $method = $handlerMethods[$targetMethodName];
 
         if (!method_exists($handler, $method)) {
             throw new RuntimeException(sprintf(
                 'Handler "%s" for method "%s" does not have the "%s" method defined, it has "%s"',
                 get_class($handler),
-                $request->method,
+                $targetMethodName,
                 $method,
                 implode('", "', get_class_methods($handler))
             ));

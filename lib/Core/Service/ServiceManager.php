@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Service;
 
-use Generator;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
@@ -28,8 +27,7 @@ class ServiceManager
     public function __construct(
         MessageTransmitter $transmitter,
         ?HandlerMethodResolver $methodResolver = null
-    )
-    {
+    ) {
         $this->methodResolver = $methodResolver ?: new HandlerMethodResolver();
         $this->transmitter = $transmitter;
     }
@@ -44,9 +42,9 @@ class ServiceManager
     public function start(): void
     {
         foreach ($this->services as $serviceMethodName => $service) {
-            $method = $this->methodResolver->resolveHandlerMethod($service, $serviceMethodName);
+            $method = $this->methodResolver->resolveHandlerMethod($service, $service->services(), $serviceMethodName);
             \Amp\asyncCall(function () use ($service, $method) {
-                yield $service->$method($this->transmitter);
+                yield from $service->$method($this->transmitter);
             });
         }
     }

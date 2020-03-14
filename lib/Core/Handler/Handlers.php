@@ -6,9 +6,17 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 
-final class Handlers implements Countable, IteratorAggregate
+final class Handlers implements Countable
 {
-    private $handlers = [];
+    /**
+     * @var array
+     */
+    private $methods = [];
+
+    /**
+     * @var array
+     */
+    private $services = [];
 
     public function __construct(array $handlers = [])
     {
@@ -19,21 +27,27 @@ final class Handlers implements Countable, IteratorAggregate
 
     public function get(string $handler): Handler
     {
-        if (!isset($this->handlers[$handler])) {
+        if (!isset($this->methods[$handler])) {
             throw new HandlerNotFound(sprintf(
                 'Handler "%s" not found, available handlers: "%s"',
                 $handler,
-                implode('", "', array_keys($this->handlers))
+                implode('", "', array_keys($this->methods))
             ));
         }
 
-        return $this->handlers[$handler];
+        return $this->methods[$handler];
     }
 
-    public function add(Handler $handler)
+    public function add(Handler $handler): void
     {
         foreach (array_keys($handler->methods()) as $languageServerMethod) {
-            $this->handlers[$languageServerMethod] = $handler;
+            $this->methods[$languageServerMethod] = $handler;
+        }
+
+        if ($handler instanceof ServiceProvider) {
+            foreach (array_keys($handler->services()) as $serviceName) {
+                $this->services[$serviceName] = $handler;
+            }
         }
     }
 
@@ -42,19 +56,19 @@ final class Handlers implements Countable, IteratorAggregate
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->handlers);
+        return new ArrayIterator($this->methods);
     }
 
     public function merge(Handlers $handlers)
     {
-        foreach ($handlers as $handler) {
+        foreach (array_merge($handlers->methods, $handlers->services) as $handler) {
             $this->add($handler);
         }
     }
 
     public function methods(): array
     {
-        return array_keys($this->handlers);
+        return array_keys($this->methods);
     }
 
     /**
@@ -62,6 +76,11 @@ final class Handlers implements Countable, IteratorAggregate
      */
     public function count()
     {
-        return count($this->handlers);
+        return count($this->methods);
+    }
+
+    public function services(): array
+    {
+        return $this->services;
     }
 }

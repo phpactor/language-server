@@ -36,7 +36,7 @@ class MethodDispatcher implements Dispatcher
     {
         $handler = $handlers->get($request->method);
 
-        $method = $this->methodResolver->resolveHandlerMethod($handler, $request);
+        $method = $this->methodResolver->resolveHandlerMethod($handler, $handler->methods(), $request->method);
 
         $arguments = $this->argumentResolver->resolveArguments(
             $handler,
