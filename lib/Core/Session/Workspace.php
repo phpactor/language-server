@@ -15,7 +15,7 @@ interface Workspace extends Countable
 
     public function open(TextDocumentItem $textDocument): void;
 
-    public function update(VersionedTextDocumentIdentifier $textDocument, $updatedText): void;
+    public function update(VersionedTextDocumentIdentifier $textDocument, string $updatedText): void;
 
     public function openFiles(): int;
 

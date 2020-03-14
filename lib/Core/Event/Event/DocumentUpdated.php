@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Session\Event;
+namespace Phpactor\LanguageServer\Core\Event;
 
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use League\Event\EmitterInterface;

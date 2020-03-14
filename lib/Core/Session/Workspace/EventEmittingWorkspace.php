@@ -7,9 +7,9 @@ use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use League\Event\Emitter;
 use League\Event\EmitterInterface;
-use Phpactor\LanguageServer\Core\Session\Event\DocumentOpened;
-use Phpactor\LanguageServer\Core\Session\Event\DocumentRemoved;
-use Phpactor\LanguageServer\Core\Session\Event\DocumentUpdated;
+use Phpactor\LanguageServer\Core\Event\DocumentOpened;
+use Phpactor\LanguageServer\Core\Event\DocumentRemoved;
+use Phpactor\LanguageServer\Core\Event\DocumentUpdated;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Core\Session\WorkspaceEvents;
 
