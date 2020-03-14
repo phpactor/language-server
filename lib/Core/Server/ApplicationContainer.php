@@ -120,6 +120,8 @@ final class ApplicationContainer implements Handler
                 $handler->services()
             );
         }
+
+        $this->serviceManager->start();
     }
 
     /**
