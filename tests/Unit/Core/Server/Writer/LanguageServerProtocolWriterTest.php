@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Writer;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
+use Phpactor\LanguageServer\Core\Server\Response\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
 

@@ -10,7 +10,9 @@ use Generator;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Server\Response\ResponseTransmitter;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
@@ -20,7 +22,7 @@ use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
-use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
+use Phpactor\LanguageServer\Core\Server\Response\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
@@ -28,8 +30,6 @@ use RuntimeException;
 
 final class LanguageServer implements StatProvider
 {
-    private const WRITE_CHUNK_SIZE = 256;
-
     /**
      * @var LanguageServerProtocolParser
      */
@@ -44,11 +44,6 @@ final class LanguageServer implements StatProvider
      * @var Dispatcher
      */
     private $dispatcher;
-
-    /**
-     * @var LanguageServerProtocolWriter
-     */
-    private $writer;
 
     /**
      * @var StreamProvider
@@ -100,7 +95,6 @@ final class LanguageServer implements StatProvider
         $this->streamProvider = $streamProvider;
         $this->enableEventLoop = $enableEventLoop;
 
-        $this->writer = new LanguageServerProtocolWriter();
         $this->created = new DateTimeImmutable();
 
         $this->systemHandlers = $this->addSystemHandlers($systemHandlers);
@@ -209,17 +203,21 @@ final class LanguageServer implements StatProvider
 
     private function handle(Connection $connection): Generator
     {
+        $transmitter = new ResponseTransmitter($connection, $this->logger);
         $container = new ApplicationContainer(
             $this->dispatcher,
             $this->systemHandlers,
             $this->handlerLoader
+            // $this->messagePublisher
         );
 
+        // TODO: Refactor to use a response publisher with which services can
+        //       send messages to (e.g. an indexing service)
         $parser = new LanguageServerProtocolParser(function (
             Request $request
         ) use (
             $container,
-            $connection
+            $transmitter
         ) {
             $this->logger->info('REQUEST', $request->body());
             $this->requestCount++;
@@ -229,13 +227,7 @@ final class LanguageServer implements StatProvider
             );
 
             foreach ($responses as $response) {
-                $this->logger->info('RESPONSE', (array) $response);
-
-                $responseBody = $this->writer->write($response);
-
-                foreach (str_split($responseBody, self::WRITE_CHUNK_SIZE) as $chunk) {
-                    $connection->stream()->write($chunk);
-                }
+                $transmitter->transmit($response);
             }
         });
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Server\Writer;
+namespace Phpactor\LanguageServer\Core\Server\Response;
 
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use RuntimeException;
