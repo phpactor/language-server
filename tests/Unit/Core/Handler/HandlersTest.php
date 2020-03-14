@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 
 class HandlersTest extends TestCase
 {
@@ -23,22 +24,32 @@ class HandlersTest extends TestCase
     {
         $this->handler1 = $this->prophesize(Handler::class);
         $this->handler2 = $this->prophesize(Handler::class);
+        $this->service1 = $this->prophesize(ServiceProvider::class);
     }
 
     public function testThrowsExceptionNotFound()
     {
         $this->expectException(HandlerNotFound::class);
         $this->handler1->methods()->willReturn(['barbra']);
-        $registry = $this->create([ $this->handler1->reveal() ]);
-        $registry->get('foobar');
+        $handlers = $this->create([ $this->handler1->reveal() ]);
+        $handlers->get('foobar');
     }
 
     public function testReturnsHandler()
     {
         $this->handler1->methods()->willReturn(['foobar' => 'foobar']);
-        $registry = $this->create([ $this->handler1->reveal() ]);
-        $handler = $registry->get('foobar');
+        $handlers = $this->create([ $this->handler1->reveal() ]);
+        $handler = $handlers->get('foobar');
         $this->assertSame($this->handler1->reveal(), $handler);
+    }
+
+    public function testReturnsServices()
+    {
+        $this->service1->services()->willReturn(['foobar' => 'foobar']);
+        $this->service1->methods()->willReturn([]);
+        $handlers = $this->create([ $this->service1->reveal() ]);
+        $services = $handlers->services();
+        self::assertCount(1, $services);
     }
 
     public function testMerge()
@@ -50,7 +61,7 @@ class HandlersTest extends TestCase
         $handlers->merge($this->create([ $this->handler2->reveal() ]));
 
         $this->assertCount(2, $handlers);
-        $this->assertEquals(['foobar', 'barfoo'], $handlers->methods());
+        $this->assertEquals(['foobar', 'barfoo'], array_keys($handlers->methods()));
     }
 
     private function create(array $handlers): Handlers

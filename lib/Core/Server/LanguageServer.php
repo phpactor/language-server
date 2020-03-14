@@ -11,6 +11,8 @@ use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
+use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
@@ -20,7 +22,6 @@ use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
-use Phpactor\LanguageServer\Core\Server\Writer\LanguageServerProtocolWriter;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
@@ -28,8 +29,6 @@ use RuntimeException;
 
 final class LanguageServer implements StatProvider
 {
-    private const WRITE_CHUNK_SIZE = 256;
-
     /**
      * @var LanguageServerProtocolParser
      */
@@ -44,11 +43,6 @@ final class LanguageServer implements StatProvider
      * @var Dispatcher
      */
     private $dispatcher;
-
-    /**
-     * @var LanguageServerProtocolWriter
-     */
-    private $writer;
 
     /**
      * @var StreamProvider
@@ -100,7 +94,6 @@ final class LanguageServer implements StatProvider
         $this->streamProvider = $streamProvider;
         $this->enableEventLoop = $enableEventLoop;
 
-        $this->writer = new LanguageServerProtocolWriter();
         $this->created = new DateTimeImmutable();
 
         $this->systemHandlers = $this->addSystemHandlers($systemHandlers);
@@ -192,7 +185,7 @@ final class LanguageServer implements StatProvider
                 // exception and exit the process.
                 \Amp\asyncCall(function () use ($connection) {
                     try {
-                        yield from $this->handle($connection);
+                        yield $this->handle($connection);
                     } catch (ExitSession $exception) {
                         $connection->stream()->end();
 
@@ -207,41 +200,39 @@ final class LanguageServer implements StatProvider
         });
     }
 
-    private function handle(Connection $connection): Generator
+    private function handle(Connection $connection): Promise
     {
-        $container = new ApplicationContainer(
-            $this->dispatcher,
-            $this->systemHandlers,
-            $this->handlerLoader
-        );
-
-        $parser = new LanguageServerProtocolParser(function (
-            Request $request
-        ) use (
-            $container,
-            $connection
-        ) {
-            $this->logger->info('REQUEST', $request->body());
-            $this->requestCount++;
-
-            $responses = $container->dispatch(
-                RequestMessageFactory::fromRequest($request)
+        return \Amp\call(function () use ($connection) {
+            $transmitter = new ConnectionMessageTransmitter($connection, $this->logger);
+            $container = new ApplicationContainer(
+                $this->dispatcher,
+                $this->systemHandlers,
+                $this->handlerLoader,
+                new ServiceManager($transmitter, $this->logger)
             );
 
-            foreach ($responses as $response) {
-                $this->logger->info('RESPONSE', (array) $response);
+            $parser = new LanguageServerProtocolParser(function (
+                Request $request
+            ) use (
+                $transmitter,
+                $container
+            ) {
+                $this->logger->info('REQUEST', $request->body());
+                $this->requestCount++;
 
-                $responseBody = $this->writer->write($response);
+                $responses = $container->dispatch(
+                    RequestMessageFactory::fromRequest($request)
+                );
 
-                foreach (str_split($responseBody, self::WRITE_CHUNK_SIZE) as $chunk) {
-                    $connection->stream()->write($chunk);
+                foreach ($responses as $response) {
+                    $transmitter->transmit($response);
                 }
+            });
+
+            while (null !== ($chunk = yield $connection->stream()->read())) {
+                $parser->feed($chunk);
             }
         });
-
-        while (null !== ($chunk = yield $connection->stream()->read())) {
-            $parser->feed($chunk);
-        }
     }
 
     private function shutdown(): Promise
