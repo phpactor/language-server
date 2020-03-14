@@ -1,20 +1,20 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Writer;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Transmitter;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Server\Response\LanguageServerProtocolWriter;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
 
-class LanguageServerProtocolWriterTest extends TestCase
+class MessageFormatterTest extends TestCase
 {
     public function testExceptionCouldNotEncodeJson()
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Could not encode JSON');
 
-        $writer = new LanguageServerProtocolWriter();
+        $writer = new MessageFormatter();
         $message = new ResponseMessage(1, [
             'hello' => \fopen('php://stdin', 'r')
         ]);
@@ -24,7 +24,7 @@ class LanguageServerProtocolWriterTest extends TestCase
 
     public function testWrite()
     {
-        $writer = new LanguageServerProtocolWriter();
+        $writer = new MessageFormatter();
         $message = new ResponseMessage(1, [
             'hello' => 'goodbye'
         ]);

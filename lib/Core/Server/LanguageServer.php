@@ -12,7 +12,7 @@ use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\Request;
-use Phpactor\LanguageServer\Core\Server\Response\ResponseTransmitter;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
@@ -22,7 +22,7 @@ use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\StreamProvider;
-use Phpactor\LanguageServer\Core\Server\Response\LanguageServerProtocolWriter;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
@@ -203,7 +203,7 @@ final class LanguageServer implements StatProvider
 
     private function handle(Connection $connection): Generator
     {
-        $transmitter = new ResponseTransmitter($connection, $this->logger);
+        $transmitter = new MessageTransmitter($connection, $this->logger);
         $container = new ApplicationContainer(
             $this->dispatcher,
             $this->systemHandlers,

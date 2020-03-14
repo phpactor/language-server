@@ -1,11 +1,11 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Server\Response;
+namespace Phpactor\LanguageServer\Core\Server\Transmitter;
 
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use RuntimeException;
 
-final class LanguageServerProtocolWriter
+final class MessageFormatter
 {
     public function write(Message $message): string
     {

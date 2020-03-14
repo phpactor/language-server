@@ -1,12 +1,13 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Server\Response;
+namespace Phpactor\LanguageServer\Core\Server\Transmitter;
 
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Psr\Log\LoggerInterface;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
 
-class ResponseTransmitter
+class MessageTransmitter
 {
     private const WRITE_CHUNK_SIZE = 256;
 
@@ -25,10 +26,10 @@ class ResponseTransmitter
      */
     private $logger;
 
-    public function __construct(Connection $connection, LoggerInterface $logger, LanguageServerProtocolWriter $formatter = null)
+    public function __construct(Connection $connection, LoggerInterface $logger, MessageFormatter $formatter = null)
     {
         $this->connection = $connection;
-        $this->formatter = $formatter ?: new LanguageServerProtocolWriter();
+        $this->formatter = $formatter ?: new MessageFormatter();
         $this->logger = $logger;
     }
 
