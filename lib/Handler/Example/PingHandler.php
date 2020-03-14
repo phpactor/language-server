@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Handler\Example;
 
 use Amp\Delayed;
 use Amp\Promise;
-use Generator;
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
