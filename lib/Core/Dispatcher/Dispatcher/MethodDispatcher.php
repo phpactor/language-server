@@ -11,7 +11,6 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
-use Phpactor\LanguageServer\Core\Handler\Handler;
 
 class MethodDispatcher implements Dispatcher
 {
@@ -67,5 +66,4 @@ class MethodDispatcher implements Dispatcher
             yield new ResponseMessage($request->id, $message);
         }
     }
-
 }

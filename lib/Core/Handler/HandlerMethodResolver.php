@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use RuntimeException;
 
-use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 class HandlerMethodResolver
 {

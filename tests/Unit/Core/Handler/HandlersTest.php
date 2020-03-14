@@ -50,7 +50,7 @@ class HandlersTest extends TestCase
         $handlers->merge($this->create([ $this->handler2->reveal() ]));
 
         $this->assertCount(2, $handlers);
-        $this->assertEquals(['foobar', 'barfoo'], $handlers->methods());
+        $this->assertEquals(['foobar', 'barfoo'], $handlers->methodNames());
     }
 
     private function create(array $handlers): Handlers

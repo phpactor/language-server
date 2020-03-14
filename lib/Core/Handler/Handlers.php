@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use ArrayIterator;
 use Countable;
-use IteratorAggregate;
 
 final class Handlers implements Countable
 {
@@ -66,7 +65,18 @@ final class Handlers implements Countable
         }
     }
 
+    /**
+     * @return Handler[]
+     */
     public function methods(): array
+    {
+        return $this->methods;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function methodNames(): array
     {
         return array_keys($this->methods);
     }
@@ -79,6 +89,9 @@ final class Handlers implements Countable
         return count($this->methods);
     }
 
+    /**
+     * @return Handler[]
+     */
     public function services(): array
     {
         return $this->services;

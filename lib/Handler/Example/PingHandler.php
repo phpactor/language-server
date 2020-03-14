@@ -2,9 +2,7 @@
 
 namespace Phpactor\LanguageServer\Handler\Example;
 
-use Amp\Deferred;
 use Amp\Delayed;
-use Amp\Success;
 use Generator;
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;

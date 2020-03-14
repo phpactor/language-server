@@ -94,7 +94,7 @@ final class ApplicationContainer implements Handler
 
         $capabilities = new ServerCapabilities();
 
-        foreach ($this->handlers() as $handler) {
+        foreach ($this->handlers()->methods() as $handler) {
             if (!$handler instanceof CanRegisterCapabilities) {
                 continue;
             }

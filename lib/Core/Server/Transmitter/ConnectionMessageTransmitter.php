@@ -16,7 +16,7 @@ class ConnectionMessageTransmitter implements MessageTransmitter
     private $connection;
 
     /**
-     * @var LanguageServerProtocolWriter
+     * @var MessageFormatter
      */
     private $formatter;
 

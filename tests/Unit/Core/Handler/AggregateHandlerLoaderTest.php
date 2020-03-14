@@ -74,6 +74,6 @@ class AggregateHandlerLoaderTest extends TestCase
         $this->assertInstanceOf(Handlers::class, $handlers);
         $this->assertCount(2, $handlers);
 
-        $this->assertEquals(['one', 'two'], $handlers->methods());
+        $this->assertEquals(['one', 'two'], $handlers->methodNames());
     }
 }
