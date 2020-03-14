@@ -5,20 +5,20 @@ namespace Phpactor\LanguageServer\Core\Handler;
 use RuntimeException;
 
 
-class HandlerMethodResolver
+final class HandlerMethodResolver
 {
-    public function resolveHandlerMethod(Handler $handler, array $handlerMethods, $targetMethodName): string
+    public function resolveHandlerMethod(Handler $handler, array $handlerMap, $targetMethodName): string
     {
-        if (!array_key_exists($targetMethodName, $handlerMethods)) {
+        if (!array_key_exists($targetMethodName, $handlerMap)) {
             throw new RuntimeException(sprintf(
                 'Resolved handler "%s" has not declared the method "%s", it declared "%s"',
                 get_class($handler),
                 $targetMethodName,
-                implode('", "', $handlerMethods)
+                implode('", "', $handlerMap)
             ));
         }
 
-        $method = $handlerMethods[$targetMethodName];
+        $method = $handlerMap[$targetMethodName];
 
         if (!method_exists($handler, $method)) {
             throw new RuntimeException(sprintf(
