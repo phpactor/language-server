@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Handler\Example;
 
 use Amp\Delayed;
+use Amp\Promise;
 use Generator;
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
@@ -29,14 +30,16 @@ class PingHandler implements ServiceProvider
         ];
     }
 
-    public function ping(MessageTransmitter $transmitter): Generator
+    public function ping(MessageTransmitter $transmitter): Promise
     {
-        while (true) {
-            yield new Delayed(1000);
-            $transmitter->transmit(new NotificationMessage('window/logMessage', [
-                'type' => MessageType::INFO,
-                'message' => 'ping',
-            ]));
-        }
+        return \Amp\call(function () use ($transmitter) {
+            while (true) {
+                yield new Delayed(1000);
+                $transmitter->transmit(new NotificationMessage('window/logMessage', [
+                    'type' => MessageType::INFO,
+                    'message' => 'ping',
+                ]));
+            }
+        });
     }
 }
