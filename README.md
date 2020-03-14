@@ -53,7 +53,7 @@ Creating Custom Handlers
 Handlers simply declare a map of Language Server RPC metods to instance
 methods:
 
-```
+```php
 class MyCompletionHandler implements Handler
 {
     public function methods(): array
@@ -85,7 +85,7 @@ time a client connects to the server. It is passed the initialization
 parmeters supplied by the client (which includes the root path of the clients
 project):
 
-```
+```php
 class MyHandlerLoader
 {
     public function load(InitializeParams $params): Handlers
@@ -100,4 +100,42 @@ class MyHandlerLoader
 }
 ```
 
+Creating Services
+-----------------
 
+```php
+use Amp\Promise;
+use Amp\Delayed;
+use LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
+
+class MyCompletionHandler implements ServiceProvider
+{
+    public function methods(): array
+    {
+        return [
+        ];
+    }
+
+    public function services(): array
+    {
+        return [
+            'ping' => 'pingService',
+        ];
+    }
+
+    public function pingService(MessageTransmitter $transmitter): Promise
+    {
+        return \Amp\call(function () use ($transmitter) {
+            while (true) {
+                yield new Delayed(1000);
+                $transmitter->transmit(new NotificationMessage('window/logMessage', [
+                    'type' => MessageType::INFO,
+                    'message' => 'ping',
+                ]));
+            }
+        });
+    }
+}
+```
