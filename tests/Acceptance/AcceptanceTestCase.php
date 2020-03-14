@@ -7,7 +7,7 @@ use Amp\Loop\DriverFactory;
 use Amp\Socket\ClientSocket;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Rpc\Request;
-use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Core\Session\Workspace\RealWorkspace;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Symfony\Component\Process\InputStream;
@@ -38,7 +38,7 @@ class AcceptanceTestCase extends TestCase
     protected function client(): TestClient
     {
         $server = LanguageServerBuilder::create()
-            ->addSystemHandler(new TextDocumentHandler(new Workspace()))
+            ->addSystemHandler(new TextDocumentHandler(new RealWorkspace()))
             ->tcpServer()
             ->eventLoop(false)
             ->build();

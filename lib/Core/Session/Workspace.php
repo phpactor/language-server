@@ -3,67 +3,23 @@
 namespace Phpactor\LanguageServer\Core\Session;
 
 use Countable;
-use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
+use LanguageServerProtocol\TextDocumentIdentifier;
 
-class Workspace implements Countable
+interface Workspace extends Countable
 {
-    /**
-     * @var TextDocumentItem[]
-     */
-    private $documents = [];
+    public function has(string $uri): bool;
 
-    private $processId;
+    public function get(string $uri): TextDocumentItem;
 
-    public function has(string $uri): bool
-    {
-        return isset($this->documents[$uri]);
-    }
+    public function open(TextDocumentItem $textDocument): void;
 
-    public function get(string $uri): TextDocumentItem
-    {
-        if (!isset($this->documents[$uri])) {
-            throw new UnknownDocument($uri);
-        }
+    public function update(VersionedTextDocumentIdentifier $textDocument, $updatedText): void;
 
-        return $this->documents[$uri];
-    }
+    public function openFiles(): int;
 
-    public function open(TextDocumentItem $textDocument)
-    {
-        $this->documents[$textDocument->uri] = $textDocument;
-    }
+    public function remove(TextDocumentIdentifier $textDocument): void;
 
-    public function update(VersionedTextDocumentIdentifier $textDocument, $updatedText)
-    {
-        if (!isset($this->documents[$textDocument->uri])) {
-            throw new UnknownDocument($textDocument->uri);
-        }
-
-        $this->documents[$textDocument->uri]->text = $updatedText;
-    }
-
-    public function openFiles(): int
-    {
-        return count($this->documents);
-    }
-
-    public function remove(TextDocumentIdentifier $textDocument)
-    {
-        if (!isset($this->documents[$textDocument->uri])) {
-            return;
-        }
-
-        unset($this->documents[$textDocument->uri]);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function count(): int
-    {
-        return $this->openFiles();
-    }
+    public function count(): int;
 }

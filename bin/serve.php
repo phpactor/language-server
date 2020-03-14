@@ -5,7 +5,7 @@ use Amp\Loop;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
-use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Core\Session\Workspace\RealWorkspace;
 use Phpactor\LanguageServer\Extension\Core\Initialize;
 use Phpactor\LanguageServer\Core\IO\StreamIO;
 use Phpactor\LanguageServer\Core\ChunkIO\TcpIO;
@@ -58,7 +58,7 @@ $logger->info('test language server starting');
 $logger->info('i am a demonstration server and provide no functionality');
 
 $builder = LanguageServerBuilder::create($logger);
-$builder->addSystemHandler(new TextDocumentHandler(new Workspace()));
+$builder->addSystemHandler(new TextDocumentHandler(new RealWorkspace()));
 $builder->addSystemHandler(new PingHandler());
 $builder->tcpServer($options['address']);
 

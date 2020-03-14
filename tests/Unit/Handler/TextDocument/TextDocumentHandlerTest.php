@@ -7,7 +7,7 @@ use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
-use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Core\Session\Workspace\RealWorkspace;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 
 class TextDocumentHandlerTest extends HandlerTestCase
@@ -19,7 +19,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function setUp()
     {
-        $this->workspace = new Workspace();
+        $this->workspace = new RealWorkspace();
     }
 
     public function handler(): Handler

@@ -1,15 +1,15 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Session\Workspace;
 
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
-use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Core\Session\Workspace\RealWorkspace;
 
-class WorkspaceTest extends TestCase
+class RealWorkspaceTest extends TestCase
 {
     /**
      * @var Workspace
@@ -18,7 +18,7 @@ class WorkspaceTest extends TestCase
 
     public function setUp()
     {
-        $this->workspace = new Workspace();
+        $this->workspace = new RealWorkspace();
     }
 
     public function testThrowsExceptionGetUnknown()

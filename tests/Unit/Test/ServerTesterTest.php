@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Test;
 
 use LanguageServerProtocol\TextDocumentItem;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Core\Session\Workspace\RealWorkspace;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 
@@ -21,7 +21,7 @@ class ServerTesterTest extends TestCase
     public function testOpensDocument()
     {
         $builder = LanguageServerBuilder::create();
-        $workspace = new Workspace();
+        $workspace = new RealWorkspace();
         $builder->addSystemHandler(new TextDocumentHandler($workspace));
         $tester = $builder->buildServerTester();
         $tester->initialize();
