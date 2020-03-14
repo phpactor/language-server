@@ -74,14 +74,6 @@ final class Handlers implements Countable
     }
 
     /**
-     * @return string[]
-     */
-    public function methodNames(): array
-    {
-        return array_keys($this->methods);
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function count()
