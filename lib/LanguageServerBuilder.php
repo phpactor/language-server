@@ -18,6 +18,7 @@ use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
+use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Test\ServerTester;
@@ -197,7 +198,7 @@ class LanguageServerBuilder
             $this->buildDispatcher(),
             $this->buildHandlers(),
             $this->buildHandlerLoader(),
-            new ServiceManager()
+            new ServiceManager(new NullMessageTransmitter())
         ));
     }
 

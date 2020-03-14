@@ -51,13 +51,13 @@ final class ApplicationContainer implements Handler
         Dispatcher $dispatcher,
         Handlers $serverHandlers,
         HandlerLoader $applicationHandlerLoader,
-        ?ServiceManager $serviceManager = null
+        ServiceManager $serviceManager
     ) {
         $this->serverHandlers = $serverHandlers;
         $this->applicationHandlerLoader = $applicationHandlerLoader;
         $this->dispatcher = $dispatcher;
         $this->defaultHandlers = new Handlers([$this]);
-        $this->serviceManager = $serviceManager ?: new ServiceManager();
+        $this->serviceManager = $serviceManager;
     }
 
     public function dispatch(RequestMessage $message): Generator

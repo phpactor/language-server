@@ -12,7 +12,7 @@ use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\Request;
-use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
+use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
@@ -205,11 +205,12 @@ final class LanguageServer implements StatProvider
     private function handle(Connection $connection): Promise
     {
         return \Amp\call(function () use ($connection) {
-            $transmitter = new MessageTransmitter($connection, $this->logger);
+            $transmitter = new ConnectionMessageTransmitter($connection, $this->logger);
             $container = new ApplicationContainer(
                 $this->dispatcher,
                 $this->systemHandlers,
-                $this->handlerLoader
+                $this->handlerLoader,
+                new ServiceManager($transmitter)
             );
 
             $parser = new LanguageServerProtocolParser(function (
