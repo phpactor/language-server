@@ -2,11 +2,13 @@
 
 namespace Phpactor\LanguageServer\Core\Service;
 
+use Amp\Promise;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class ServiceManager
 {
@@ -40,9 +42,9 @@ class ServiceManager
         $this->logger = $logger;
     }
 
-    public function register(ServiceProvider $provider, array $services): void
+    public function register(ServiceProvider $provider): void
     {
-        foreach ($services as $serviceMethodName) {
+        foreach ($provider->services() as $serviceMethodName) {
             $this->add($serviceMethodName, $provider);
         }
     }
@@ -53,7 +55,17 @@ class ServiceManager
             $this->logger->info(sprintf('Starting service: %s::%s', get_class($service), $serviceMethodName));
             $method = $this->methodResolver->resolveHandlerMethod($service, $service->services(), $serviceMethodName);
             \Amp\asyncCall(function () use ($service, $method) {
-                yield from $service->$method($this->transmitter);
+                $promise = $service->$method($this->transmitter);
+
+                if (!$promise instanceof Promise) {
+                    throw new RuntimeException(sprintf(
+                        'Service method "%s" must return a Promise, got "%s"',
+                        get_class($service) . '::' . $method,
+                        is_object($promise) ? get_class($promise) : gettype($promise)
+                    ));
+                }
+
+                yield $promise;
             });
         }
     }

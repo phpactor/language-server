@@ -12,6 +12,22 @@ interface ServiceProvider extends Handler
      *
      * The public method will be passed the MessageTransmitter to send
      * messages to the server.
+     *
+     * For example:
+     *
+     * ```
+     *     public function services(): array
+     *     {
+     *         return [
+     *             'ping' => 'pingService'
+     *         ];
+     *     }
+     *
+     *     public function pingService(): Promise
+     *     {
+     *         // exit immediately
+     *         return new Success();
+     *     }
      */
     public function services(): array;
 }
