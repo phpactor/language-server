@@ -138,8 +138,7 @@ final class ApplicationContainer implements Handler
             }
         
             $this->serviceManager->register(
-                $handler,
-                $handler->services()
+                $handler
             );
         }
         
