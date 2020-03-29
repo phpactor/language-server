@@ -105,13 +105,12 @@ final class ApplicationContainer implements Handler
         $result = new InitializeResult();
         $result->capabilities = $capabilities;
 
-        $this->startServices();
-
         yield $result;
     }
 
     public function initialized(): void
     {
+        $this->startServices();
     }
 
     /**
