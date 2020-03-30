@@ -70,7 +70,7 @@ final class ApplicationContainer implements Handler
         return [
             'initialize' => 'initialize',
             'initialized' => 'initialized',
-            'cancelRequest' => 'cancelRequest',
+            '$/cancelRequest' => 'cancelRequest',
         ];
     }
 
