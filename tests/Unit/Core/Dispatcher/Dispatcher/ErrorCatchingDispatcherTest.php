@@ -6,7 +6,9 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
+use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
@@ -54,6 +56,23 @@ class ErrorCatchingDispatcherTest extends TestCase
         $response = $responses->current();
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertInstanceOf(ResponseError::class, $response->responseError);
+        $this->assertEquals('Hello', $response->responseError->message);
+    }
+
+    public function testCatchesHandlerNotFound()
+    {
+        $message = new RequestMessage(1, 'hello', []);
+        $handlers = new Handlers([]);
+        $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new HandlerNotFound('Hello'));
+
+        $this->logger->error('Hello', Argument::cetera())->shouldBeCalled();
+
+        $responses = $this->dispatcher->dispatch($handlers, $message);
+
+        $response = $responses->current();
+        $this->assertInstanceOf(ResponseMessage::class, $response);
+        $this->assertInstanceOf(ResponseError::class, $response->responseError);
+        $this->assertEquals(ErrorCodes::MethodNotFound, $response->responseError->code);
         $this->assertEquals('Hello', $response->responseError->message);
     }
 

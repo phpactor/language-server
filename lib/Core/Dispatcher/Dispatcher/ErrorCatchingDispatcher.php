@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
+use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
@@ -37,17 +38,26 @@ class ErrorCatchingDispatcher implements Dispatcher
             yield from $this->innerDispatcher->dispatch($handlers, $request);
         } catch (ServerControl $exception) {
             throw $exception;
-        } catch (Throwable $throwable) {
-            $this->logger->error($throwable->getMessage(), [
-                'class' => get_class($throwable),
-                'trace' => $throwable->getTraceAsString(),
+        } catch (Throwable $error) {
+            $this->logger->error($error->getMessage(), [
+                'class' => get_class($error),
+                'trace' => $error->getTraceAsString(),
             ]);
 
             yield new ResponseMessage($request->id, null, new ResponseError(
-                ErrorCodes::InternalError,
-                $throwable->getMessage(),
-                $throwable->getTraceAsString()
+                $this->resolveErrorCode($error),
+                $error->getMessage(),
+                $error->getTraceAsString()
             ));
         }
+    }
+
+    private function resolveErrorCode(Throwable $error): int
+    {
+        if ($error instanceof HandlerNotFound) {
+            return ErrorCodes::MethodNotFound;
+        }
+
+        return ErrorCodes::InternalError;
     }
 }
