@@ -19,4 +19,9 @@ class ExitHandlerTest extends HandlerTestCase
         $this->expectException(ExitSession::class);
         $this->dispatch('exit', []);
     }
+
+    public function testShutdownDoesNothing()
+    {
+        $this->dispatch('shutdown', []);
+    }
 }

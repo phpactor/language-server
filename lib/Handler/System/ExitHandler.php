@@ -10,8 +10,13 @@ class ExitHandler implements Handler
     public function methods(): array
     {
         return [
+            'shutdown' => 'shutdown',
             'exit' => 'exit',
         ];
+    }
+
+    public function shutdown(): void
+    {
     }
 
     public function exit(): void
