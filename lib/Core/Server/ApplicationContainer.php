@@ -70,6 +70,7 @@ final class ApplicationContainer implements Handler
         return [
             'initialize' => 'initialize',
             'initialized' => 'initialized',
+            'cancelRequest' => 'cancelRequest',
         ];
     }
 
@@ -111,6 +112,11 @@ final class ApplicationContainer implements Handler
     public function initialized(): void
     {
         $this->startServices();
+    }
+
+    public function cancelRequest(): void
+    {
+        // not supported
     }
 
     /**
