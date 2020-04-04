@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -20,7 +20,7 @@ class HandlersTest extends TestCase
      */
     private $handler2;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->handler1 = $this->prophesize(Handler::class);
         $this->handler2 = $this->prophesize(Handler::class);

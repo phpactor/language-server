@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
 use Exception;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
@@ -33,7 +33,7 @@ class ErrorCatchingDispatcherTest extends TestCase
      */
     private $dispatcher;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->innerDispatcher = $this->prophesize(Dispatcher::class);
         $this->logger = $this->prophesize(LoggerInterface::class);

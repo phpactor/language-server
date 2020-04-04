@@ -18,7 +18,7 @@ class SystemHandlerTest extends HandlerTestCase
      */
     private $provider;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->provider = $this->prophesize(StatProvider::class);
         $stats = new ServerStats(

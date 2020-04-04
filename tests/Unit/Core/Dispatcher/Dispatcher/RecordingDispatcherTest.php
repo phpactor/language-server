@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
 use Amp\ByteStream\OutputBuffer;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\RecordingDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -26,7 +26,7 @@ class RecordingDispatcherTest extends TestCase
      */
     private $output;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->innerDispatcher = $this->prophesize(Dispatcher::class);
         $this->output = new OutputBuffer();
@@ -49,6 +49,6 @@ class RecordingDispatcherTest extends TestCase
         iterator_to_array($this->dispatcher->dispatch($handlers, $message));
         $this->output->end();
 
-        $this->assertContains('{"id":1,"method":"hello","params":[],"jsonrpc":"2.0"}', \Amp\Promise\wait($this->output));
+        $this->assertStringContainsString('{"id":1,"method":"hello","params":[],"jsonrpc":"2.0"}', \Amp\Promise\wait($this->output));
     }
 }

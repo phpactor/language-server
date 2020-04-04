@@ -17,7 +17,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
      */
     private $workspace;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->workspace = new Workspace();
     }

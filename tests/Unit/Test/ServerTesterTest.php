@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Test;
 
 use LanguageServerProtocol\TextDocumentItem;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;

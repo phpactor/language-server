@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
 use Generator;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handler;
@@ -28,7 +28,7 @@ class MethodDispatcherTest extends TestCase
      */
     private $handlers;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->argumentResolver = $this->prophesize(ArgumentResolver::class);
         $this->handler = new class implements Handler {

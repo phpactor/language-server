@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use RuntimeException;

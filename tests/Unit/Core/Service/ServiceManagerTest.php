@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Service;
 use Amp\Loop;
 use Amp\Promise;
 use Amp\Success;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;

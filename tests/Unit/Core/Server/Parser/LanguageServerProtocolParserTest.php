@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Parser;
 
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 
@@ -13,7 +13,7 @@ class LanguageServerProtocolParserTest extends TestCase
      */
     private $parser;
 
-    public function setUp()
+    protected function setUp(): void
     {
     }
 

@@ -3,6 +3,7 @@
     "description": "Phpactor Language Server",
     "license": "MIT",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "Daniel Leech",
@@ -21,7 +22,7 @@
         "phpunit/phpunit": "^9.0",
         "friendsofphp/php-cs-fixer": "^2.15.0",
 
-        "phpactor/container": "~1.3",
+        "phpactor/container": "^1.3",
         "phpactor/console-extension": "~0.1",
         "phpactor/logging-extension": "~0.3",
         "phpactor/file-path-resolver-extension": "~0.2",
@@ -30,7 +31,6 @@
     "autoload": {
         "psr-4": {
             "Phpactor\\LanguageServer\\": "lib/",
-            "LanguageServerProtocol\\": "protocol/",
             "LanguageServerProtocol\\": "protocol/",
             "Phpactor\\Extension\\LanguageServer\\": "language-server-extension/lib/"
         }

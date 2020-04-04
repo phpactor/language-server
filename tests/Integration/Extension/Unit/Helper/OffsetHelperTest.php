@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Integration\Extension\Unit\Helper;
 
 use LanguageServerProtocol\Position;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Extension\Helper\OffsetHelper;
 use Phpactor\TestUtils\ExtractOffset;
 

@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\LanguageServerBuilder;
@@ -39,7 +39,7 @@ class LanguageServerBuilderTest extends TestCase
             ->buildServerTester();
 
         $server->dispatch('foo', ['foo' => 'bar']);
-        $this->assertContains('{"id":7,"method":"foo","params":{"foo":"bar"},"jsonrpc":"2.0"}', file_get_contents($name));
+        $this->assertStringContainsString('{"id":7,"method":"foo","params":{"foo":"bar"},"jsonrpc":"2.0"}', file_get_contents($name));
         unlink($name);
     }
 }

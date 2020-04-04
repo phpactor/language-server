@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Integration\Extension\Unit;
 
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\Container\Container;
 use Phpactor\Container\PhpactorContainer;
 use Phpactor\Extension\Console\ConsoleExtension;

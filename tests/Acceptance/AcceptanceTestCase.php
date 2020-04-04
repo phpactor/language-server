@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Acceptance;
 use Amp\Loop;
 use Amp\Loop\DriverFactory;
 use Amp\Socket\ResourceSocket;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
@@ -30,7 +30,7 @@ class AcceptanceTestCase extends TestCase
      */
     private $stream;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         Loop::set((new DriverFactory())->create());
     }

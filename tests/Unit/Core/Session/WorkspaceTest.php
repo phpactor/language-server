@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 
@@ -16,7 +16,7 @@ class WorkspaceTest extends TestCase
      */
     private $workspace;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->workspace = new Workspace();
     }

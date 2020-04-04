@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use LanguageServerProtocol\InitializeParams;
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
@@ -37,7 +37,7 @@ class AggregateHandlerLoaderTest extends TestCase
     private $handler2;
 
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->params = new InitializeParams();
 

@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Transmitter;
 
-use PHPUnit\Framework\TestCase;
+use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
