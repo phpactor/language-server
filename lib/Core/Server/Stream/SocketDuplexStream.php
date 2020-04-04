@@ -18,7 +18,7 @@ class SocketDuplexStream implements DuplexStream
     }
 
     /**
-     * {@inheritDoc}
+     * @return Promise<string|null>
      */
     public function read(): Promise
     {
@@ -26,7 +26,7 @@ class SocketDuplexStream implements DuplexStream
     }
 
     /**
-     * {@inheritDoc}
+     * @return Promise<void>
      */
     public function write(string $data): Promise
     {
@@ -34,7 +34,7 @@ class SocketDuplexStream implements DuplexStream
     }
 
     /**
-     * {@inheritDoc}
+     * @return Promise<void>
      */
     public function end(string $finalData = ''): Promise
     {

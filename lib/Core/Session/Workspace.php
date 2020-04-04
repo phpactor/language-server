@@ -15,6 +15,9 @@ class Workspace implements Countable
      */
     private $documents = [];
 
+    /**
+     * @var int
+     */
     private $processId;
 
     public function has(string $uri): bool
@@ -31,12 +34,12 @@ class Workspace implements Countable
         return $this->documents[$uri];
     }
 
-    public function open(TextDocumentItem $textDocument)
+    public function open(TextDocumentItem $textDocument): void
     {
         $this->documents[$textDocument->uri] = $textDocument;
     }
 
-    public function update(VersionedTextDocumentIdentifier $textDocument, $updatedText)
+    public function update(VersionedTextDocumentIdentifier $textDocument, string $updatedText): void
     {
         if (!isset($this->documents[$textDocument->uri])) {
             throw new UnknownDocument($textDocument->uri);
@@ -50,7 +53,7 @@ class Workspace implements Countable
         return count($this->documents);
     }
 
-    public function remove(TextDocumentIdentifier $textDocument)
+    public function remove(TextDocumentIdentifier $textDocument): void
     {
         if (!isset($this->documents[$textDocument->uri])) {
             return;

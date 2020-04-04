@@ -45,7 +45,7 @@ class LanguageServerExtension implements Extension
         $this->registerSession($container);
     }
 
-    private function registerServer(ContainerBuilder $container)
+    private function registerServer(ContainerBuilder $container): void
     {
         $container->register(self::SERVICE_LANGUAGE_SERVER_BUILDER, function (Container $container) {
             $builder = LanguageServerBuilder::create(
@@ -63,14 +63,14 @@ class LanguageServerExtension implements Extension
         });
     }
 
-    private function registerCommand(ContainerBuilder $container)
+    private function registerCommand(ContainerBuilder $container): void
     {
         $container->register('language_server.command.lsp_start', function (Container $container) {
             return new StartCommand($container->get(self::SERVICE_LANGUAGE_SERVER_BUILDER));
         }, [ ConsoleExtension::TAG_COMMAND => [ 'name' => StartCommand::NAME ]]);
     }
 
-    private function registerSession(ContainerBuilder $container)
+    private function registerSession(ContainerBuilder $container): void
     {
         $container->register(self::SERVICE_SESSION_WORKSPACE, function (Container $container) {
             return new Workspace();

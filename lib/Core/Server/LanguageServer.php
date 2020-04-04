@@ -140,7 +140,7 @@ final class LanguageServer implements StatProvider
     /**
      * {@inheritDoc}
      */
-    private function doStart()
+    private function doStart(): void
     {
         $this->logger->info(sprintf('Process ID: %s', getmypid()));
         
@@ -200,6 +200,9 @@ final class LanguageServer implements StatProvider
         });
     }
 
+    /**
+     * @return Promise<void>
+     */
     private function handle(Connection $connection): Promise
     {
         return \Amp\call(function () use ($connection) {
@@ -235,6 +238,9 @@ final class LanguageServer implements StatProvider
         });
     }
 
+    /**
+     * @return Promise<void>
+     */
     private function shutdown(): Promise
     {
         return new Coroutine($this->doShutdown());

@@ -18,11 +18,6 @@ class AggregateHandlerLoader implements HandlerLoader
         }
     }
 
-    private function add(HandlerLoader $loader)
-    {
-        $this->loaders[] = $loader;
-    }
-
     public function load(InitializeParams $params): Handlers
     {
         $handlers = new Handlers([]);
@@ -31,5 +26,10 @@ class AggregateHandlerLoader implements HandlerLoader
         }
 
         return $handlers;
+    }
+
+    private function add(HandlerLoader $loader): void
+    {
+        $this->loaders[] = $loader;
     }
 }

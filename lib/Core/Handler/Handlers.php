@@ -51,14 +51,14 @@ final class Handlers implements Countable
     }
 
     /**
-     * {@inheritDoc}
+     * @return ArrayIterator<string, Handler>
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->methods);
     }
 
-    public function merge(Handlers $handlers)
+    public function merge(Handlers $handlers): void
     {
         foreach (array_merge($handlers->methods, $handlers->services) as $handler) {
             $this->add($handler);
@@ -73,10 +73,7 @@ final class Handlers implements Countable
         return $this->methods;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function count()
+    public function count(): int
     {
         return count($this->methods) + count($this->services);
     }

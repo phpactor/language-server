@@ -39,7 +39,10 @@ class ServerTester
         return $responses;
     }
 
-    public function openDocument(TextDocumentItem $item)
+    /**
+     * @return array<ResponseMessage>
+     */
+    public function openDocument(TextDocumentItem $item): array
     {
         $responses = $this->dispatch('textDocument/didOpen', [
             'textDocument' => $item
@@ -49,7 +52,7 @@ class ServerTester
         return $responses;
     }
 
-    public function assertSuccess($responses): bool
+    public function assertSuccess(array $responses): bool
     {
         $responses = (array) $responses;
 

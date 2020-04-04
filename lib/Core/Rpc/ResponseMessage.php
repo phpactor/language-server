@@ -10,7 +10,7 @@ class ResponseMessage extends Message
     public $id;
 
     /**
-     * @var object
+     * @var mixed
      */
     public $result;
 
@@ -19,6 +19,9 @@ class ResponseMessage extends Message
      */
     public $responseError;
 
+    /**
+     * @param mixed $result
+     */
     public function __construct(int $id, $result, ?ResponseError $responseError = null)
     {
         $this->id = $id;

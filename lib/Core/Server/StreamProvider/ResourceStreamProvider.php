@@ -19,6 +19,9 @@ class ResourceStreamProvider implements StreamProvider
      */
     private $logger;
 
+    /**
+     * @var bool
+     */
     private $provided = false;
 
     public function __construct(ResourceDuplexStream $duplexStream, LoggerInterface $logger)

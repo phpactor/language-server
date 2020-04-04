@@ -81,7 +81,7 @@ final class ApplicationContainer implements Handler
         ?string $rootPath = null,
         ?string $rootUri = null,
         ?string $trace = null
-    ) {
+    ): Generator {
         $this->applicationHandlers = $this->applicationHandlerLoader->load(
             new InitializeParams(
                 $capabilities,

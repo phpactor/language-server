@@ -25,7 +25,7 @@ class StartCommand extends Command
         $this->languageServerBuilder = $languageServerBuilder;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Start Language Server');
         $this->addOption('address', null, InputOption::VALUE_REQUIRED, 'Start a TCP server at this address (e.g. 127.0.0.1:0)');
@@ -38,14 +38,16 @@ class StartCommand extends Command
 
         $this->logMessage($output, '<info>Starting language server, use -vvv for verbose output</>');
 
-        if ($input->hasParameterOption('--record')) {
-            $filename = $this->assertIsWritable($input->getOption('record'));
+        $record = $input->getOption('record');
+        if ($record && is_string($record)) {
+            $filename = $this->assertIsWritable($record);
             $this->logMessage($output, sprintf('<info>Recording output to:</> %s', $filename));
             $builder->recordTo($filename);
         }
 
-        if ($input->getOption('address')) {
-            $this->configureTcpServer($input->getOption('address'), $builder);
+        $address = $input->getOption('address');
+        if ($address && is_string($address)) {
+            $this->configureTcpServer($address, $builder);
         }
 
         $server = $builder->build();
@@ -54,13 +56,13 @@ class StartCommand extends Command
         return 0;
     }
 
-    private function configureTcpServer($address, LanguageServerBuilder $builder)
+    private function configureTcpServer(string $address, LanguageServerBuilder $builder): void
     {
         assert(is_string($address));
         $builder->tcpServer($address);
     }
 
-    private function assertIsWritable($filename = null): string
+    private function assertIsWritable(?string $filename = null): string
     {
         if (null === $filename) {
             $filename = 'language-server-request.log';
@@ -77,7 +79,7 @@ class StartCommand extends Command
         return $filename;
     }
 
-    private function logMessage(OutputInterface $output, string $message)
+    private function logMessage(OutputInterface $output, string $message): void
     {
         if ($output instanceof ConsoleOutput) {
             $output->getErrorOutput()->writeln(

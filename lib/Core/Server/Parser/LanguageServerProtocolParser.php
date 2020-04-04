@@ -13,8 +13,14 @@ final class LanguageServerProtocolParser implements StreamParser
     const EVENT_REQUEST_READY = 'request.ready';
     const HEADER_CONTENT_LENGTH = 'Content-Length';
 
+    /**
+     * @var string[]
+     */
     private $buffer = [];
 
+    /**
+     * @var null|array<string>
+     */
     private $headers = null;
 
     /**
@@ -71,7 +77,7 @@ final class LanguageServerProtocolParser implements StreamParser
         }
     }
 
-    private function parseHeaders(string $rawHeaders)
+    private function parseHeaders(string $rawHeaders): array
     {
         $lines = explode("\r\n", $rawHeaders);
         $headers = [];

@@ -76,7 +76,7 @@ class ServiceManager
         }
     }
 
-    private function add($name, ServiceProvider $service)
+    private function add(string $name, ServiceProvider $service): void
     {
         $this->services[$name] = $service;
     }

@@ -29,6 +29,9 @@ class PingHandler implements ServiceProvider
         ];
     }
 
+    /**
+     * @return Promise<null>
+     */
     public function ping(MessageTransmitter $transmitter): Promise
     {
         return \Amp\call(function () use ($transmitter) {
