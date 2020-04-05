@@ -13,7 +13,6 @@ use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 
 class ErrorCatchingDispatcherTest extends TestCase
@@ -49,8 +48,6 @@ class ErrorCatchingDispatcherTest extends TestCase
         $handlers = new Handlers([]);
         $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new Exception('Hello'));
 
-        $this->logger->error('Hello', Argument::cetera())->shouldBeCalled();
-
         $responses = $this->dispatcher->dispatch($handlers, $message);
 
         $response = $responses->current();
@@ -64,8 +61,6 @@ class ErrorCatchingDispatcherTest extends TestCase
         $message = new RequestMessage(1, 'hello', []);
         $handlers = new Handlers([]);
         $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new HandlerNotFound('Hello'));
-
-        $this->logger->error('Hello', Argument::cetera())->shouldBeCalled();
 
         $responses = $this->dispatcher->dispatch($handlers, $message);
 

@@ -11,7 +11,6 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Exception\ServerControl;
-use Psr\Log\LoggerInterface;
 use Throwable;
 
 class ErrorCatchingDispatcher implements Dispatcher
@@ -21,15 +20,9 @@ class ErrorCatchingDispatcher implements Dispatcher
      */
     private $innerDispatcher;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(Dispatcher $innerDispatcher, LoggerInterface $logger)
+    public function __construct(Dispatcher $innerDispatcher)
     {
         $this->innerDispatcher = $innerDispatcher;
-        $this->logger = $logger;
     }
 
     public function dispatch(Handlers $handlers, RequestMessage $request): Generator
@@ -39,11 +32,6 @@ class ErrorCatchingDispatcher implements Dispatcher
         } catch (ServerControl $exception) {
             throw $exception;
         } catch (Throwable $error) {
-            $this->logger->error($error->getMessage(), [
-                'class' => get_class($error),
-                'trace' => $error->getTraceAsString(),
-            ]);
-
             yield new ResponseMessage($request->id, null, new ResponseError(
                 $this->resolveErrorCode($error),
                 $error->getMessage(),
