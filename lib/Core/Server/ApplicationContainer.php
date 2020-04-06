@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
+use Amp\Promise;
+use Amp\Success;
 use Generator;
 use LanguageServerProtocol\InitializeParams;
 use LanguageServerProtocol\InitializeResult;
@@ -12,7 +14,9 @@ use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
 final class ApplicationContainer implements Handler
@@ -60,9 +64,12 @@ final class ApplicationContainer implements Handler
         $this->serviceManager = $serviceManager;
     }
 
-    public function dispatch(RequestMessage $message): Generator
+    /**
+     * @return Promise<Message>
+     */
+    public function dispatch(RequestMessage $message): Promise
     {
-        yield from $this->dispatcher->dispatch($this->handlers(), $message);
+        return $this->dispatcher->dispatch($this->handlers(), $message);
     }
 
     public function methods(): array
@@ -70,7 +77,6 @@ final class ApplicationContainer implements Handler
         return [
             'initialize' => 'initialize',
             'initialized' => 'initialized',
-            '$/cancelRequest' => 'cancelRequest',
         ];
     }
 
@@ -81,7 +87,7 @@ final class ApplicationContainer implements Handler
         ?string $rootPath = null,
         ?string $rootUri = null,
         ?string $trace = null
-    ): Generator {
+    ): Promise {
         $this->applicationHandlers = $this->applicationHandlerLoader->load(
             new InitializeParams(
                 $capabilities,
@@ -106,17 +112,13 @@ final class ApplicationContainer implements Handler
         $result = new InitializeResult();
         $result->capabilities = $capabilities;
 
-        yield $result;
+        return new Success($result);
     }
 
-    public function initialized(): void
+    public function initialized(): Promise
     {
         $this->startServices();
-    }
-
-    public function cancelRequest(): void
-    {
-        // not supported
+        return new Success(null);
     }
 
     /**

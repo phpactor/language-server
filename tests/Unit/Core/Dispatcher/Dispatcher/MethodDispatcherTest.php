@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
+use Amp\Success;
 use Generator;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
@@ -41,7 +42,7 @@ class MethodDispatcherTest extends TestCase
 
             public function foobar(string $one, string $two)
             {
-                yield new stdClass();
+                return new Success(new stdClass());
             }
         };
     }
@@ -59,10 +60,8 @@ class MethodDispatcherTest extends TestCase
 
         $expectedResult = new stdClass();
 
-        $messages = $dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
+        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ])));
 
-        $this->assertInstanceOf(Generator::class, $messages);
-        $response = $messages->current();
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertEquals($expectedResult, $response->result);
         $this->assertEquals(5, $response->id);

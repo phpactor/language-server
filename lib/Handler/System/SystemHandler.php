@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Handler\System;
 
+use Amp\Promise;
+use Amp\Success;
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
@@ -28,10 +30,9 @@ class SystemHandler implements Handler
         ];
     }
 
-    public function status()
+    public function status(): Promise
     {
-        yield null;
-        yield new NotificationMessage('window/showMessage', [
+        return new Success(new NotificationMessage('window/showMessage', [
             'type' => MessageType::INFO,
             'message' => implode(', ', [
                 'up: ' . $this->statProvider->stats()->uptime->format('%ad %hh %im %ss'),
@@ -39,6 +40,6 @@ class SystemHandler implements Handler
                 'requests: ' . $this->statProvider->stats()->requestCount,
                 'mem: ' . number_format(memory_get_peak_usage()) . 'b',
             ]),
-        ]);
+        ]));
     }
 }

@@ -2,10 +2,12 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
+use Amp\CancellationTokenSource;
 use Amp\Coroutine;
 use Amp\Loop;
 use Amp\Promise;
 use DateTimeImmutable;
+use Exception;
 use Generator;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
@@ -29,6 +31,8 @@ use RuntimeException;
 
 final class LanguageServer implements StatProvider
 {
+    const METHOD_CANCEL_REQUEST = '$/cancelRequest';
+
     /**
      * @var LanguageServerProtocolParser
      */
@@ -69,10 +73,7 @@ final class LanguageServer implements StatProvider
      */
     private $created;
 
-    /**
-     * @var int
-     */
-    private $requestCount = 0;
+    private $requests = [];
 
     /**
      * @var HandlerLoader
@@ -133,7 +134,7 @@ final class LanguageServer implements StatProvider
         return new ServerStats(
             $this->created->diff(new DateTimeImmutable()),
             count($this->connections),
-            $this->requestCount
+            count($this->requests)
         );
     }
 
@@ -184,17 +185,7 @@ final class LanguageServer implements StatProvider
                 // otherewise this is a STDIO session so re-throw a Shutdown
                 // exception and exit the process.
                 \Amp\asyncCall(function () use ($connection) {
-                    try {
-                        yield $this->handle($connection);
-                    } catch (ExitSession $exception) {
-                        $connection->stream()->end();
-
-                        if ($this->streamProvider instanceof ResourceStreamProvider) {
-                            throw new ShutdownServer(
-                                'Exit called on STDIO connection, exiting the server'
-                            );
-                        }
-                    }
+                    yield $this->handle($connection);
                 });
             }
         });
@@ -218,18 +209,41 @@ final class LanguageServer implements StatProvider
                 Request $request
             ) use (
                 $transmitter,
-                $container
+                $container,
+                $connection
             ) {
                 $this->logger->info('REQUEST', $request->body());
-                $this->requestCount++;
 
-                $responses = $container->dispatch(
-                    RequestMessageFactory::fromRequest($request)
-                );
+                $request = RequestMessageFactory::fromRequest($request);
+                $cancellationTokenSource = new CancellationTokenSource();
+                $this->requests[$request->id] = $cancellationTokenSource;
 
-                foreach ($responses as $response) {
-                    $transmitter->transmit($response);
+                if ($request->method === self::METHOD_CANCEL_REQUEST) {
+                    $cancellationTokenSource->cancel();
+                    return;
                 }
+
+                \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection) {
+                    try {
+                        $response = yield $container->dispatch($request);
+                    } catch (Exception $e) {
+                        $connection->stream()->end();
+
+                        if ($this->streamProvider instanceof ResourceStreamProvider) {
+                            throw new ShutdownServer(
+                                'Exit called on STDIO connection, exiting the server'
+                            );
+                        }
+                        return;
+                    }
+                    unset($this->requests[$request->id]);
+
+                    if (null === $response) {
+                        return;
+                    }
+
+                    $transmitter->transmit($response);
+                }, $cancellationTokenSource->getToken());
             });
 
             while (null !== ($chunk = yield $connection->stream()->read())) {

@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
 use Amp\ByteStream\OutputBuffer;
+use Amp\Success;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\RecordingDispatcher;
@@ -43,10 +44,10 @@ class RecordingDispatcherTest extends TestCase
         $handlers = new Handlers([]);
 
         $this->innerDispatcher->dispatch($handlers, $message)->will(function () {
-            yield null;
+            return new Success(null);
         });
 
-        iterator_to_array($this->dispatcher->dispatch($handlers, $message));
+        \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message));
         $this->output->end();
 
         $this->assertStringContainsString('{"id":1,"method":"hello","params":[],"jsonrpc":"2.0"}', \Amp\Promise\wait($this->output));

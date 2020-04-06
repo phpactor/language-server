@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
+use Amp\Success;
 use Exception;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
@@ -48,9 +49,8 @@ class ErrorCatchingDispatcherTest extends TestCase
         $handlers = new Handlers([]);
         $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new Exception('Hello'));
 
-        $responses = $this->dispatcher->dispatch($handlers, $message);
+        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message));
 
-        $response = $responses->current();
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertInstanceOf(ResponseError::class, $response->responseError);
         $this->assertEquals('Hello', $response->responseError->message);
@@ -62,9 +62,8 @@ class ErrorCatchingDispatcherTest extends TestCase
         $handlers = new Handlers([]);
         $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new HandlerNotFound('Hello'));
 
-        $responses = $this->dispatcher->dispatch($handlers, $message);
+        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message));
 
-        $response = $responses->current();
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertInstanceOf(ResponseError::class, $response->responseError);
         $this->assertEquals(ErrorCodes::MethodNotFound, $response->responseError->code);
@@ -77,11 +76,11 @@ class ErrorCatchingDispatcherTest extends TestCase
         $handlers = new Handlers([]);
 
         $this->innerDispatcher->dispatch($handlers, $message)->will(function () {
-            yield new NotificationMessage('hello', []);
+            return new Success(new NotificationMessage('hello', []));
         });
 
-        $responses = $this->dispatcher->dispatch($handlers, $message);
-        $response = $responses->current();
+        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message));
+
         $this->assertInstanceOf(NotificationMessage::class, $response);
     }
 }

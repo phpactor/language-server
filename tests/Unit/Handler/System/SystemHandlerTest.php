@@ -36,8 +36,7 @@ class SystemHandlerTest extends HandlerTestCase
 
     public function testItReturnsTheCurrentSessionStatus()
     {
-        $responses = $this->dispatch('system/status', []);
-        $this->assertInstanceOf(ResponseMessage::class, $responses[0], 'Returns dummy response to request');
-        $this->assertInstanceOf(NotificationMessage::class, $responses[1], 'Issues notification with status');
+        $response = $this->dispatch('system/status', []);
+        $this->assertInstanceOf(NotificationMessage::class, $response, 'Issues notification with status');
     }
 }

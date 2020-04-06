@@ -58,6 +58,7 @@ $logger->info('test language server starting');
 $logger->info('i am a demonstration server and provide no functionality');
 
 $builder = LanguageServerBuilder::create($logger);
+$builder->catchExceptions(true);
 $builder->addSystemHandler(new TextDocumentHandler(new Workspace()));
 $builder->addSystemHandler(new PingHandler());
 $builder->tcpServer($options['address']);

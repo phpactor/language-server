@@ -32,7 +32,10 @@ class LanguageServerBuilderTest extends TestCase
             ->addSystemHandler(new class implements Handler {
                 public function methods(): array
                 {
-                    return [];
+                    return ['foo'=>'foo'];
+                }
+                public function foo()
+                {
                 }
             })
             ->recordTo($name)

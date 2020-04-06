@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 use Amp\ByteStream\OutputStream;
+use Amp\Promise;
 use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -33,12 +34,12 @@ class RecordingDispatcher implements Dispatcher
         $this->formatter = $formatter ?: new MessageFormatter();
     }
 
-    public function dispatch(Handlers $handlers, RequestMessage $request): Generator
+    public function dispatch(Handlers $handlers, RequestMessage $request): Promise
     {
         \Amp\asyncCall(function () use ($request) {
             yield $this->output->write($this->formatter->write($request));
         });
 
-        yield from $this->innerDispatcher->dispatch($handlers, $request);
+        return $this->innerDispatcher->dispatch($handlers, $request);
     }
 }

@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Test;
 
 use LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
@@ -20,53 +21,46 @@ class ServerTester
         $this->container = $container;
     }
 
-    public function dispatch(string $method, array $params = []): array
+    public function dispatch(string $method, array $params = [])
     {
         static $id = 0;
         $request = new RequestMessage((int) ++$id, $method, $params);
-        $results = iterator_to_array($this->container->dispatch($request));
-
-        return $results;
+        return \Amp\Promise\wait($this->container->dispatch($request));
     }
 
-    public function initialize(): array
+    public function initialize()
     {
-        $responses = $this->dispatch('initialize', [
+        $response = $this->dispatch('initialize', [
             'rootUri' => __DIR__,
         ]);
-        $this->assertSuccess($responses);
-
-        return $responses;
+        $this->assertSuccess($response);
+        return $response;
     }
 
     /**
      * @return array<ResponseMessage>
      */
-    public function openDocument(TextDocumentItem $item): array
+    public function openDocument(TextDocumentItem $item)
     {
-        $responses = $this->dispatch('textDocument/didOpen', [
+        $response = $this->dispatch('textDocument/didOpen', [
             'textDocument' => $item
         ]);
-        $this->assertSuccess($responses);
+        $this->assertSuccess($response);
 
-        return $responses;
+        return $response;
     }
 
-    public function assertSuccess(array $responses): bool
+    public function assertSuccess(?ResponseMessage $response): bool
     {
-        $responses = (array) $responses;
+        if (!$response) {
+            return true;
+        }
 
-        foreach ($responses as $response) {
-            if (!$response instanceof ResponseMessage) {
-                continue;
-            }
-
-            if ($response->responseError) {
-                throw new RuntimeException(sprintf(
-                    'Response contains error: %s',
-                    json_encode($response->responseError, JSON_PRETTY_PRINT)
-                ));
-            }
+        if ($response->responseError) {
+            throw new RuntimeException(sprintf(
+                'Response contains error: %s',
+                json_encode($response->responseError, JSON_PRETTY_PRINT)
+            ));
         }
 
         return true;

@@ -14,8 +14,7 @@ class ServerTesterTest extends TestCase
     {
         $builder = LanguageServerBuilder::create();
         $tester = $builder->buildServerTester();
-        $responses = $tester->initialize();
-        $this->assertCount(1, $responses);
+        $response = $tester->initialize();
     }
 
     public function testOpensDocument()
@@ -25,7 +24,7 @@ class ServerTesterTest extends TestCase
         $builder->addSystemHandler(new TextDocumentHandler($workspace));
         $tester = $builder->buildServerTester();
         $tester->initialize();
-        $responses = $tester->openDocument(new TextDocumentItem('file://foobar', 'some text'));
+        $response = $tester->openDocument(new TextDocumentItem('file://foobar', 'some text'));
         $this->assertCount(1, $workspace);
     }
 }
