@@ -30,6 +30,9 @@ class SystemHandler implements Handler
         ];
     }
 
+    /**
+     * @return Promise<NotificationMessage>
+     */
     public function status(): Promise
     {
         return new Success(new NotificationMessage('window/showMessage', [

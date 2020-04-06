@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Server;
 
 use Amp\Promise;
 use Amp\Success;
-use Generator;
 use LanguageServerProtocol\InitializeParams;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
@@ -16,7 +15,6 @@ use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
-use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
 final class ApplicationContainer implements Handler
@@ -80,6 +78,9 @@ final class ApplicationContainer implements Handler
         ];
     }
 
+    /**
+     * @return Promise<InitializeResult>
+     */
     public function initialize(
         array $capabilities = [],
         array $initializationOptions = [],
@@ -115,6 +116,9 @@ final class ApplicationContainer implements Handler
         return new Success($result);
     }
 
+    /**
+     * @return Promise<null>
+     */
     public function initialized(): Promise
     {
         $this->startServices();

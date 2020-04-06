@@ -21,14 +21,17 @@ class ServerTester
         $this->container = $container;
     }
 
-    public function dispatch(string $method, array $params = [])
+    /**
+     * @param array<mixed> $params
+     */
+    public function dispatch(string $method, array $params = []): ?Message
     {
         static $id = 0;
         $request = new RequestMessage((int) ++$id, $method, $params);
         return \Amp\Promise\wait($this->container->dispatch($request));
     }
 
-    public function initialize()
+    public function initialize(): Message
     {
         $response = $this->dispatch('initialize', [
             'rootUri' => __DIR__,
@@ -37,26 +40,20 @@ class ServerTester
         return $response;
     }
 
-    /**
-     * @return array<ResponseMessage>
-     */
-    public function openDocument(TextDocumentItem $item)
+    public function openDocument(TextDocumentItem $item): void
     {
-        $response = $this->dispatch('textDocument/didOpen', [
+        $this->dispatch('textDocument/didOpen', [
             'textDocument' => $item
         ]);
-        $this->assertSuccess($response);
-
-        return $response;
     }
 
-    public function assertSuccess(?ResponseMessage $response): bool
+    public function assertSuccess(?Message $response): bool
     {
         if (!$response) {
             return true;
         }
 
-        if ($response->responseError) {
+        if ($response instanceof ResponseMessage && $response->responseError) {
             throw new RuntimeException(sprintf(
                 'Response contains error: %s',
                 json_encode($response->responseError, JSON_PRETTY_PRINT)

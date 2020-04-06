@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 use Amp\Promise;
 use Amp\Success;
-use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -35,7 +34,7 @@ class MethodDispatcher implements Dispatcher
 
     public function dispatch(Handlers $handlers, RequestMessage $request): Promise
     {
-        return \Amp\call(function () use ($request, $handlers){
+        return \Amp\call(function () use ($request, $handlers) {
             $handler = $handlers->get($request->method);
 
             $method = $this->methodResolver->resolveHandlerMethod($handler, $request->method);

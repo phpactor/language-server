@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 use Amp\Promise;
 use Amp\Success;
-use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 use Phpactor\LanguageServer\Core\Handler\Handlers;

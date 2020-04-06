@@ -73,6 +73,9 @@ final class LanguageServer implements StatProvider
      */
     private $created;
 
+    /**
+     * @var CancellationTokenSource[]
+     */
     private $requests = [];
 
     /**

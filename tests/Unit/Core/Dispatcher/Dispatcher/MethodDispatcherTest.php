@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
 use Amp\Success;
-use Generator;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
