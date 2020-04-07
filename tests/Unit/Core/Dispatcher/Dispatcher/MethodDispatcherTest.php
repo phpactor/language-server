@@ -57,12 +57,32 @@ class MethodDispatcherTest extends TestCase
             'two'
         ])->willReturn([ 'one', 'two' ]);
 
-        $expectedResult = new stdClass();
-
         $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]), []));
 
         $this->assertInstanceOf(ResponseMessage::class, $response);
-        $this->assertEquals($expectedResult, $response->result);
+        $this->assertEquals(5, $response->id);
+    }
+
+    public function testAdditionalArgumentsPassedToResolver()
+    {
+        $dispatcher = $this->create();
+        $handlers = new Handlers([
+            $this->handler
+        ]);
+
+        $this->argumentResolver->resolveArguments($this->handler, 'foobar', [
+            'one',
+            'two',
+            'three',
+            'four',
+        ])->willReturn([ 'one', 'two' ]);
+
+        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]), [
+            'three',
+            'four',
+        ]));
+
+        $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertEquals(5, $response->id);
     }
 
