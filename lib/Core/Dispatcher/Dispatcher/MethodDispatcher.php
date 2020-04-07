@@ -32,7 +32,7 @@ class MethodDispatcher implements Dispatcher
         $this->methodResolver = $resolver ?: new HandlerMethodResolver();
     }
 
-    public function dispatch(Handlers $handlers, RequestMessage $request): Promise
+    public function dispatch(Handlers $handlers, RequestMessage $request, array $extraArgs): Promise
     {
         return \Amp\call(function () use ($request, $handlers) {
             $handler = $handlers->get($request->method);

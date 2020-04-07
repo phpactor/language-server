@@ -43,11 +43,11 @@ class RecordingDispatcherTest extends TestCase
         $message = new RequestMessage(1, 'hello', []);
         $handlers = new Handlers([]);
 
-        $this->innerDispatcher->dispatch($handlers, $message)->will(function () {
+        $this->innerDispatcher->dispatch($handlers, $message, [])->will(function () {
             return new Success(null);
         });
 
-        \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message));
+        \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message, []));
         $this->output->end();
 
         $this->assertStringContainsString('{"id":1,"method":"hello","params":[],"jsonrpc":"2.0"}', \Amp\Promise\wait($this->output));

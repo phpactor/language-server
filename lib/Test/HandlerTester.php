@@ -20,7 +20,7 @@ class HandlerTester
         $this->handler = $handler;
     }
 
-    public function dispatch(string $methodName, array $params)
+    public function dispatch(string $methodName, array $params, array $extraArgs = [])
     {
         $dispatcher = new MethodDispatcher(
             new DTLArgumentResolver()
@@ -29,6 +29,6 @@ class HandlerTester
 
         $request = new RequestMessage(1, $methodName, $params);
 
-        return \Amp\Promise\wait($dispatcher->dispatch($handlers, $request));
+        return \Amp\Promise\wait($dispatcher->dispatch($handlers, $request, $extraArgs));
     }
 }

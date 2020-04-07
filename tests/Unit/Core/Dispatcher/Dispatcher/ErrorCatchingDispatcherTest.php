@@ -47,9 +47,9 @@ class ErrorCatchingDispatcherTest extends TestCase
     {
         $message = new RequestMessage(1, 'hello', []);
         $handlers = new Handlers([]);
-        $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new Exception('Hello'));
+        $this->innerDispatcher->dispatch($handlers, $message, [])->willThrow(new Exception('Hello'));
 
-        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message));
+        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message, []));
 
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertInstanceOf(ResponseError::class, $response->responseError);
@@ -60,9 +60,9 @@ class ErrorCatchingDispatcherTest extends TestCase
     {
         $message = new RequestMessage(1, 'hello', []);
         $handlers = new Handlers([]);
-        $this->innerDispatcher->dispatch($handlers, $message)->willThrow(new HandlerNotFound('Hello'));
+        $this->innerDispatcher->dispatch($handlers, $message, [])->willThrow(new HandlerNotFound('Hello'));
 
-        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message));
+        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message, []));
 
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertInstanceOf(ResponseError::class, $response->responseError);
@@ -75,11 +75,11 @@ class ErrorCatchingDispatcherTest extends TestCase
         $message = new RequestMessage(1, 'hello', []);
         $handlers = new Handlers([]);
 
-        $this->innerDispatcher->dispatch($handlers, $message)->will(function () {
+        $this->innerDispatcher->dispatch($handlers, $message, [])->will(function () {
             return new Success(new NotificationMessage('hello', []));
         });
 
-        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message));
+        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message, []));
 
         $this->assertInstanceOf(NotificationMessage::class, $response);
     }

@@ -28,7 +28,7 @@ class ServerTester
     {
         static $id = 0;
         $request = new RequestMessage((int) ++$id, $method, $params);
-        return \Amp\Promise\wait($this->container->dispatch($request));
+        return \Amp\Promise\wait($this->container->dispatch($request, []));
     }
 
     public function initialize(): Message

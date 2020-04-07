@@ -221,9 +221,12 @@ final class LanguageServer implements StatProvider
                     return;
                 }
 
-                \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection) {
+                \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection, $cancellationTokenSource) {
                     try {
-                        $response = yield $container->dispatch($request);
+                        $response = yield $container->dispatch($request, [
+                            'cancellationToken' => $cancellationTokenSource, 
+                            'transmitter' => $transmitter
+                        ]);
                     } catch (Exception $e) {
                         $connection->stream()->end();
 
@@ -241,7 +244,7 @@ final class LanguageServer implements StatProvider
                     }
 
                     $transmitter->transmit($response);
-                }, $cancellationTokenSource->getToken());
+                });
             };
         });
     }

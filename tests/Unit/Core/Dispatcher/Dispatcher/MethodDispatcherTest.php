@@ -59,7 +59,7 @@ class MethodDispatcherTest extends TestCase
 
         $expectedResult = new stdClass();
 
-        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ])));
+        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]), []));
 
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertEquals($expectedResult, $response->result);

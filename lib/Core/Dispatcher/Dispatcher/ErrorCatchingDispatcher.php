@@ -26,10 +26,10 @@ class ErrorCatchingDispatcher implements Dispatcher
         $this->innerDispatcher = $innerDispatcher;
     }
 
-    public function dispatch(Handlers $handlers, RequestMessage $request): Promise
+    public function dispatch(Handlers $handlers, RequestMessage $request, array $extraArgs): Promise
     {
         try {
-            return $this->innerDispatcher->dispatch($handlers, $request);
+            return $this->innerDispatcher->dispatch($handlers, $request, $extraArgs);
         } catch (ServerControl $exception) {
             throw $exception;
         } catch (Throwable $error) {

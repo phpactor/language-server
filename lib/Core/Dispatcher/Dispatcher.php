@@ -12,5 +12,5 @@ interface Dispatcher
     /**
      * @return Promise<Message>
      */
-    public function dispatch(Handlers $handlers, RequestMessage $request): Promise;
+    public function dispatch(Handlers $handlers, RequestMessage $request, array $extraArgs): Promise;
 }
