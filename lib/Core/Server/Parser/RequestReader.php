@@ -41,7 +41,7 @@ final class RequestReader implements StreamParser
     }
 
     /**
-     * @return Promise<?Request>
+     * @return Promise<Request|null>
      */
     public function wait(): Promise
     {

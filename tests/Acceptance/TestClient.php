@@ -9,7 +9,7 @@ use Phpactor\LanguageServer\Core\Rpc\Request;
 class TestClient
 {
     /**
-     * @var ClientSocket
+     * @var ResourceSocket
      */
     private $socket;
 
@@ -23,15 +23,18 @@ class TestClient
      */
     public function send(string $request): array
     {
-        $responses = [];
         $this->socket->write($request);
 
-        $parser = new RequestReader(function (Request $request) use (&$responses) {
-            $responses[] = $request;
-        });
 
-        $rawResponse = \Amp\Promise\Wait($this->socket->read());
-        $parser->feed($rawResponse);
+        $responses = \Amp\Promise\wait(\Amp\call(function () {
+            $reader = new RequestReader($this->socket);
+            $responses = [];
+            while (null !== $response = yield $reader->wait()) {
+                $responses[] = $response;
+            }
+
+            return $responses;
+        }));
 
         return $responses;
     }

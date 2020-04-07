@@ -207,13 +207,9 @@ final class LanguageServer implements StatProvider
                 new ServiceManager($transmitter, $this->logger)
             );
 
-            $parser = new RequestReader(function (
-                Request $request
-            ) use (
-                $transmitter,
-                $container,
-                $connection
-            ) {
+            $reader = new RequestReader($connection->stream());
+
+            while (null !== $request = yield $reader->wait()) {
                 $this->logger->info('REQUEST', $request->body());
 
                 $request = RequestMessageFactory::fromRequest($request);
@@ -246,11 +242,7 @@ final class LanguageServer implements StatProvider
 
                     $transmitter->transmit($response);
                 }, $cancellationTokenSource->getToken());
-            });
-
-            while (null !== ($chunk = yield $connection->stream()->read())) {
-                $parser->feed($chunk);
-            }
+            };
         });
     }
 
