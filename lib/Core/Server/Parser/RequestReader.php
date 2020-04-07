@@ -39,45 +39,53 @@ final class RequestReader implements StreamParser
     {
         return \Amp\call(function () {
             while (null !== $chunk = yield $this->stream->read()) {
-                for ($i = 0; $i < strlen($chunk); $i++) {
 
+                for ($i = 0; $i < strlen($chunk); $i++) {
                     $this->buffer .= $chunk[$i];
 
-                    // start by parsing the headers:
-                    if ($this->headers === null && substr($this->buffer, -4, 4) === "\r\n\r\n"
-                    ) {
-                        $this->headers = $this->parseHeaders(
-                            substr($this->buffer, 0, -4)
-                        );
-                        $this->buffer = '';
-                        continue;
-                    }
-
-                    if (null === $this->headers) {
-                        continue;
-                    }
-
-                    // we finished parsing the headers, now parse the body
-                    if (!isset($this->headers[self::HEADER_CONTENT_LENGTH])) {
-                        throw new CouldNotParseHeader(sprintf(
-                            'Header did not contain mandatory Content-Length in "%s"',
-                            json_encode($this->headers)
-                        ));
-                    }
-
-                    $contentLength = (int) $this->headers[self::HEADER_CONTENT_LENGTH];
-                    if (strlen($this->buffer) !== $contentLength) {
-                        continue;
+                    if (null !== $request = $this->parseRequest($this->buffer)) {
+                        return $request;
                     }
                 }
             }
-
-            $request = new Request($this->headers, $this->decodeBody($this->buffer));
-            $this->buffer = '';
-            $this->headers = null;
-
-            return $request;
         });
+    }
+
+    private function parseRequest(): ?Request
+    {
+        // start by parsing the headers:
+        if ($this->headers === null && substr($this->buffer, -4, 4) === "\r\n\r\n"
+        ) {
+            $this->headers = $this->parseHeaders(
+                substr($this->buffer, 0, -4)
+            );
+            $this->buffer = '';
+            return null;
+        }
+
+        if (null === $this->headers) {
+            return null;
+        }
+
+        // we finished parsing the headers, now parse the body
+        if (!isset($this->headers[self::HEADER_CONTENT_LENGTH])) {
+            throw new CouldNotParseHeader(sprintf(
+                'Header did not contain mandatory Content-Length in "%s"',
+                json_encode($this->headers)
+            ));
+        }
+
+        $contentLength = (int) $this->headers[self::HEADER_CONTENT_LENGTH];
+
+        if (strlen($this->buffer) !== $contentLength) {
+            return null;
+        }
+
+        $request = new Request($this->headers, $this->decodeBody($this->buffer));
+        $this->buffer = '';
+        $this->headers = null;
+
+        return $request;
     }
 
     private function parseHeaders(string $rawHeaders): array
