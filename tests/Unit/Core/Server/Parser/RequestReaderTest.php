@@ -2,11 +2,12 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Parser;
 
+use Amp\ByteStream\InMemoryStream;
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 
-class LanguageServerProtocolParserTest extends TestCase
+class RequestReaderTest extends TestCase
 {
     /**
      * @var LanguageServerProtocolParser
@@ -17,9 +18,9 @@ class LanguageServerProtocolParserTest extends TestCase
     {
     }
 
-    public function testCallsbackOnCompletedData()
+    public function testYieldsRequest()
     {
-        $payload = <<<EOT
+        $stream = new InMemoryStream(<<<EOT
 Content-Length: 74\r\n
 Content-Type: foo\r\n\r\n
 {
@@ -28,12 +29,11 @@ Content-Type: foo\r\n\r\n
    "method": "test",
    "params": {}
 }
-EOT;
-        $request = null;
-        $parser = new LanguageServerProtocolParser(function (Request $request) use (&$result) {
-            $result = $request;
-        });
-        $parser->feed($payload);
+EOT
+        );
+
+        $reader = new RequestReader($stream);
+        $result = \Amp\Promise\wait($reader->wait());
         $this->assertInstanceOf(Request::class, $result);
     }
 
@@ -48,7 +48,7 @@ Content-Type: foo\r\n\r\n
 EOT
         ;
         $result = null;
-        $parser = new LanguageServerProtocolParser(function (Request $request) use (&$result) {
+        $parser = new RequestReader(function (Request $request) use (&$result) {
             $result = $request;
         });
 
@@ -68,7 +68,7 @@ EOT;
     public function testCallsBackMultipleTimes()
     {
         $results = [];
-        $parser = new LanguageServerProtocolParser(function (Request $request) use (&$results) {
+        $parser = new RequestReader(function (Request $request) use (&$results) {
             $results[] = $request;
         });
 

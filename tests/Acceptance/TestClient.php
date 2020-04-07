@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
 use Amp\Socket\ResourceSocket;
-use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 
 class TestClient
@@ -26,7 +26,7 @@ class TestClient
         $responses = [];
         $this->socket->write($request);
 
-        $parser = new LanguageServerProtocolParser(function (Request $request) use (&$responses) {
+        $parser = new RequestReader(function (Request $request) use (&$responses) {
             $responses[] = $request;
         });
 

@@ -19,7 +19,7 @@ use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
-use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
@@ -165,14 +165,13 @@ final class LanguageServer implements StatProvider
 
     private function listenForConnections(): void
     {
-        if ($this->streamProvider instanceof SocketStreamProvider) {
-            $this->logger->info(sprintf(
-                'Listening on %s',
-                $this->streamProvider->address()
-            ));
-        }
-
         \Amp\asyncCall(function () {
+            if ($this->streamProvider instanceof SocketStreamProvider) {
+                $this->logger->info(sprintf(
+                    'Listening on %s',
+                    $this->streamProvider->address()
+                ));
+            }
 
             // accept incoming connections (in the case of a TCP server this is
             // a connection, with a STDIO stream this just returns the stream
@@ -208,7 +207,7 @@ final class LanguageServer implements StatProvider
                 new ServiceManager($transmitter, $this->logger)
             );
 
-            $parser = new LanguageServerProtocolParser(function (
+            $parser = new RequestReader(function (
                 Request $request
             ) use (
                 $transmitter,

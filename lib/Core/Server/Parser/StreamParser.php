@@ -2,7 +2,9 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Parser;
 
+use Amp\Promise;
+
 interface StreamParser
 {
-    public function feed(string $chunk): void;
+    public function wait(): Promise;
 }
