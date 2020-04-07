@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Test;
 
+use Amp\Promise;
 use LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
@@ -24,11 +25,21 @@ class ServerTester
     /**
      * @param array<mixed> $params
      */
-    public function dispatch(string $method, array $params = []): ?Message
+    public function dispatch(string $method, array $params = [], array $extraParams = []): ?Message
     {
         static $id = 0;
         $request = new RequestMessage((int) ++$id, $method, $params);
-        return \Amp\Promise\wait($this->container->dispatch($request, []));
+        return \Amp\Promise\wait($this->container->dispatch($request, $extraParams));
+    }
+
+    /**
+     * @return Promise<Message>
+     */
+    public function dispatchPromise(string $method, array $params = [], array $extraParams = []): Promise
+    {
+        static $id = 0;
+        $request = new RequestMessage((int) ++$id, $method, $params);
+        return $this->container->dispatch($request, $extraParams);
     }
 
     public function initialize(): Message

@@ -4,10 +4,10 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Parser;
 
 use Amp\ByteStream\InMemoryStream;
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
+use Phpactor\LanguageServer\Core\Server\Parser\LspRequestReader;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 
-class RequestReaderTest extends TestCase
+class LspRequestReaderTest extends TestCase
 {
     /**
      * @var LanguageServerProtocolParser
@@ -20,7 +20,8 @@ class RequestReaderTest extends TestCase
 
     public function testYieldsRequest()
     {
-        $stream = new InMemoryStream(<<<EOT
+        $stream = new InMemoryStream(
+            <<<EOT
 Content-Length: 74\r\n
 Content-Type: foo\r\n\r\n
 {
@@ -32,14 +33,15 @@ Content-Type: foo\r\n\r\n
 EOT
         );
 
-        $reader = new RequestReader($stream);
+        $reader = new LspRequestReader($stream);
         $result = \Amp\Promise\wait($reader->wait());
         $this->assertInstanceOf(Request::class, $result);
     }
 
     public function testReadsMultipleRequests()
     {
-        $stream = new InMemoryStream(<<<EOT
+        $stream = new InMemoryStream(
+            <<<EOT
 Content-Length: 74\r\n
 Content-Type: foo\r\n\r\n
 {
@@ -57,7 +59,7 @@ Content-Type: foo\r\n\r\n
 }
 EOT
         );
-        $reader = new RequestReader($stream);
+        $reader = new LspRequestReader($stream);
         $result = \Amp\Promise\wait($reader->wait());
         $this->assertInstanceOf(Request::class, $result, 'first');
         $result = \Amp\Promise\wait($reader->wait());

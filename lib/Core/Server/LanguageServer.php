@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Server;
 
 use Amp\CancellationTokenSource;
+use Amp\CancelledException;
 use Amp\Coroutine;
 use Amp\Loop;
 use Amp\Promise;
@@ -13,13 +14,14 @@ use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
-use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
+use Phpactor\LanguageServer\Core\Server\Parser\LspRequestReader;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
@@ -34,7 +36,7 @@ final class LanguageServer implements StatProvider
     const METHOD_CANCEL_REQUEST = '$/cancelRequest';
 
     /**
-     * @var LanguageServerProtocolParser
+     * @var RequestReader
      */
     private $parser;
 
@@ -207,7 +209,7 @@ final class LanguageServer implements StatProvider
                 new ServiceManager($transmitter, $this->logger)
             );
 
-            $reader = new RequestReader($connection->stream());
+            $reader = new LspRequestReader($connection->stream());
 
             while (null !== $request = yield $reader->wait()) {
                 $this->logger->info('REQUEST', $request->body());
@@ -217,14 +219,22 @@ final class LanguageServer implements StatProvider
                 $this->requests[$request->id] = $cancellationTokenSource;
 
                 if ($request->method === self::METHOD_CANCEL_REQUEST) {
-                    $cancellationTokenSource->cancel();
+                    try {
+                        $cancellationTokenSource->cancel();
+                    } catch (CancelledException $cancelled) {
+                        $this->logger->info(sprintf(
+                            'Request "%s" was cancelled',
+                            $request->id
+                        ));
+                    }
+
                     return;
                 }
 
                 \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection, $cancellationTokenSource) {
                     try {
                         $response = yield $container->dispatch($request, [
-                            'cancellationToken' => $cancellationTokenSource, 
+                            'cancellationToken' => $cancellationTokenSource,
                             'transmitter' => $transmitter
                         ]);
                     } catch (Exception $e) {

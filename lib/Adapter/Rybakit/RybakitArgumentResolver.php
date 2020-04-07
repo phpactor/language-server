@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Adapter\Rybakit;
 
-use ArgumentsResolver\ArgumentsResolver;
 use ArgumentsResolver\InDepthArgumentsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 

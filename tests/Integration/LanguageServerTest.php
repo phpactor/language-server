@@ -3,24 +3,39 @@
 namespace Phpactor\LanguageServer\Tests\Integration;
 
 use Amp\CancellationToken;
+use Amp\CancellationTokenSource;
+use Amp\CancelledException;
 use Amp\Delayed;
+use Amp\Loop;
 use Amp\Promise;
-use Amp\Success;
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Handler\Example\PingHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
-use Phpactor\LanguageServer\Test\ServerTester;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 
 class LanguageServerTest extends TestCase
 {
     public function testCancelRequest()
     {
+        $this->expectException(CancelledException::class);
+
         $tester = LanguageServerBuilder::create()
             ->addSystemHandler(new TestHandler())
             ->buildServerTester();
 
-        $tester->dispatch('longRunner');
+        $source = new CancellationTokenSource();
+        $token = $source->getToken();
+
+        \Amp\asyncCall(function () use ($tester, $token) {
+            yield $tester->dispatchPromise('longRunner', [], [
+                $token
+            ]);
+        });
+        \Amp\asyncCall(function () use ($tester, $source) {
+            yield new Delayed(20);
+            $source->cancel();
+        });
+
+        Loop::run();
     }
 }
 
@@ -36,8 +51,13 @@ class TestHandler implements Handler
         ];
     }
 
-    public function longRunner(): Promise
+    public function longRunner(CancellationToken $token): Promise
     {
-        return new Success(false);
+        return \Amp\call(function (CancellationToken $token) {
+            while (true) {
+                $token->throwIfRequested();
+                yield new Delayed(10);
+            }
+        }, $token);
     }
 }
