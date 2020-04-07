@@ -16,9 +16,9 @@ final class RequestReader implements StreamParser
     const HEADER_CONTENT_LENGTH = 'Content-Length';
 
     /**
-     * @var string[]
+     * @var string
      */
-    private $buffer = [];
+    private $buffer = '';
 
     /**
      * @var null|array<string>
@@ -40,17 +40,16 @@ final class RequestReader implements StreamParser
         return \Amp\call(function () {
             while (null !== $chunk = yield $this->stream->read()) {
                 for ($i = 0; $i < strlen($chunk); $i++) {
-                    $this->buffer[] = $chunk[$i];
+
+                    $this->buffer .= $chunk[$i];
 
                     // start by parsing the headers:
-                    if ($this->headers === null && array_slice($this->buffer, -4, 4) === [
-                        "\r", "\n",
-                        "\r", "\n"
-                    ]) {
+                    if ($this->headers === null && substr($this->buffer, -4, 4) === "\r\n\r\n"
+                    ) {
                         $this->headers = $this->parseHeaders(
-                            implode('', array_slice($this->buffer, 0, -4))
+                            substr($this->buffer, 0, -4)
                         );
-                        $this->buffer = [];
+                        $this->buffer = '';
                         continue;
                     }
 
@@ -67,14 +66,14 @@ final class RequestReader implements StreamParser
                     }
 
                     $contentLength = (int) $this->headers[self::HEADER_CONTENT_LENGTH];
-                    if (count($this->buffer) !== $contentLength) {
+                    if (strlen($this->buffer) !== $contentLength) {
                         continue;
                     }
                 }
             }
 
             $request = new Request($this->headers, $this->decodeBody($this->buffer));
-            $this->buffer = [];
+            $this->buffer = '';
             $this->headers = null;
 
             return $request;
@@ -96,9 +95,8 @@ final class RequestReader implements StreamParser
         return $headers;
     }
 
-    private function decodeBody(array $chars): array
+    private function decodeBody(string $string): array
     {
-        $string = implode('', $chars);
         $array = json_decode($string, true);
 
         if (null === $array) {
