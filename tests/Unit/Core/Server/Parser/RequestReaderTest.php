@@ -37,42 +37,9 @@ EOT
         $this->assertInstanceOf(Request::class, $result);
     }
 
-    public function testCallsbackWhenDataIsComplete()
+    public function testReadsMultipleRequests()
     {
-        $payload = <<<EOT
-Content-Length: 74\r\n
-Content-Type: foo\r\n\r\n
-{
-   "jsonrpc": "2.0",
-
-EOT
-        ;
-        $result = null;
-        $parser = new RequestReader(function (Request $request) use (&$result) {
-            $result = $request;
-        });
-
-        $parser->feed($payload);
-
-        $payload = <<<'EOT'
-   "id": 1,
-   "method": "test",
-   "params": {}
-}
-EOT;
-        $parser->feed($payload);
-
-        $this->assertInstanceOf(Request::class, $result);
-    }
-
-    public function testCallsBackMultipleTimes()
-    {
-        $results = [];
-        $parser = new RequestReader(function (Request $request) use (&$results) {
-            $results[] = $request;
-        });
-
-        $payload = <<<EOT
+        $stream = new InMemoryStream(<<<EOT
 Content-Length: 74\r\n
 Content-Type: foo\r\n\r\n
 {
@@ -88,10 +55,12 @@ Content-Type: foo\r\n\r\n
    "method": "tset",
    "params": {}
 }
-EOT;
-
-        $parser->feed($payload);
-
-        $this->assertCount(2, $results);
+EOT
+        );
+        $reader = new RequestReader($stream);
+        $result = \Amp\Promise\wait($reader->wait());
+        $this->assertInstanceOf(Request::class, $result, 'first');
+        $result = \Amp\Promise\wait($reader->wait());
+        $this->assertInstanceOf(Request::class, $result, 'second');
     }
 }

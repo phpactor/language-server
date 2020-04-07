@@ -21,6 +21,11 @@ final class RequestReader implements StreamParser
     private $buffer = '';
 
     /**
+     * @var string
+     */
+    private $overflow = '';
+
+    /**
      * @var null|array<string>
      */
     private $headers = null;
@@ -35,20 +40,36 @@ final class RequestReader implements StreamParser
         $this->stream = $stream;
     }
 
+    /**
+     * @return Promise<?Request>
+     */
     public function wait(): Promise
     {
         return \Amp\call(function () {
+            if (null !== $request = $this->processChunk($this->overflow)) {
+                return $request;
+            }
+
             while (null !== $chunk = yield $this->stream->read()) {
-
-                for ($i = 0; $i < strlen($chunk); $i++) {
-                    $this->buffer .= $chunk[$i];
-
-                    if (null !== $request = $this->parseRequest($this->buffer)) {
-                        return $request;
-                    }
+                if (null !== $request = $this->processChunk($chunk)) {
+                    return $request;
                 }
             }
         });
+    }
+
+    private function processChunk(string $chunk): ?Request
+    {
+        for ($i = 0; $i < strlen($chunk); $i++) {
+            $this->buffer .= $chunk[$i];
+
+            if (null !== $request = $this->parseRequest()) {
+                $this->overflow = substr($chunk, $i + 1);
+                return $request;
+            }
+        }
+
+        return null;
     }
 
     private function parseRequest(): ?Request
