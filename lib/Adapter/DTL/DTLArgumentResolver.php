@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Adapter\DTL;
 
+use Amp\CancellationToken;
+use Amp\CancellationTokenSource;
 use DTL\ArgumentResolver\ArgumentResolver as UpstreamArgumentResolver;
 use DTL\ArgumentResolver\ParamConverter\RecursiveInstantiator;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;

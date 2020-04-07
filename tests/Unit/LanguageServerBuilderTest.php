@@ -42,7 +42,7 @@ class LanguageServerBuilderTest extends TestCase
             ->buildServerTester();
 
         $server->dispatch('foo', ['foo' => 'bar']);
-        $this->assertStringContainsString('{"id":1,"method":"foo","params":{"foo":"bar"},"jsonrpc":"2.0"}', file_get_contents($name));
+        $this->assertStringContainsString('"method":"foo","params":{"foo":"bar"},"jsonrpc":"2.0"}', file_get_contents($name));
         unlink($name);
     }
 }
