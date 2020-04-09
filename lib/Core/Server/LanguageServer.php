@@ -231,12 +231,18 @@ final class LanguageServer implements StatProvider
                             $this->requests[$requestId]->cancel();
                         }
                     } catch (CancelledException $cancelled) {
-                        $this->logger->info(sprintf(
+                        $transmitter->transmit(new ResponseMessage($request->id, null, new ResponseError(32800, sprintf(
                             'Request "%s" was cancelled',
-                            $request->params['id']
-                        ));
+                            $requestId
+                        ))));
+                        continue;
                     }
-                    $transmitter->transmit(new ResponseMessage($request->id, null, new ResponseError(32800, 'Reuest cancelled')));
+
+                    $transmitter->transmit(new ResponseMessage($request->id, null, new ResponseError(32800, sprintf(
+                        'Handler did not respond to cancellation request (request: "%s")',
+                        $requestId
+                    ))));
+
                     continue;
                 }
 
