@@ -238,7 +238,7 @@ final class LanguageServer implements StatProvider
                             'cancellationToken' => $cancellationTokenSource,
                             'transmitter' => $transmitter
                         ]);
-                    } catch (Exception $e) {
+                    } catch (ExitSession $e) {
                         $connection->stream()->end();
 
                         if ($this->streamProvider instanceof ResourceStreamProvider) {
