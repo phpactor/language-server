@@ -27,7 +27,7 @@ class LanguageServerTest extends TestCase
         $token = $source->getToken();
 
         \Amp\asyncCall(function () use ($tester, $token) {
-            yield $tester->dispatchPromise('longRunner', [], [
+            yield $tester->dispatch('longRunner', [], [
                 $token
             ]);
         });
