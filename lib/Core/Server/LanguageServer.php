@@ -14,6 +14,8 @@ use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Rpc\ResponseError;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
@@ -212,29 +214,39 @@ final class LanguageServer implements StatProvider
             $reader = new LspRequestReader($connection->stream());
 
             while (null !== $request = yield $reader->wait()) {
-                $this->logger->info('REQUEST', $request->body());
-
                 $request = RequestMessageFactory::fromRequest($request);
-                $cancellationTokenSource = new CancellationTokenSource();
-                $this->requests[$request->id] = $cancellationTokenSource;
+
+                $this->logger->info(sprintf('REQUEST [%s] %s', $request->method, json_encode($request->params)));
 
                 if ($request->method === self::METHOD_CANCEL_REQUEST) {
                     try {
-                        $cancellationTokenSource->cancel();
+                        $requestId = $request->params['id'];
+                        if (!isset($this->requests[$requestId])) {
+                            $this->logger->warning(sprintf(
+                                'Request not found: "%s", current requests "%s"',
+                                $requestId,
+                                implode('", "', array_keys($this->requests))
+                            ));
+                        } else {
+                            $this->requests[$requestId]->cancel();
+                        }
                     } catch (CancelledException $cancelled) {
                         $this->logger->info(sprintf(
                             'Request "%s" was cancelled',
-                            $request->id
+                            $request->params['id']
                         ));
                     }
-
-                    return;
+                    $transmitter->transmit(new ResponseMessage($request->id, null, new ResponseError(32800, 'Reuest cancelled')));
+                    continue;
                 }
+
+                $cancellationTokenSource = new CancellationTokenSource();
+                $this->requests[$request->id] = $cancellationTokenSource;
 
                 \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection, $cancellationTokenSource) {
                     try {
                         $response = yield $container->dispatch($request, [
-                            'cancellationToken' => $cancellationTokenSource,
+                            'cancellationToken' => $cancellationTokenSource->getToken(),
                             'transmitter' => $transmitter
                         ]);
                     } catch (ExitSession $e) {
