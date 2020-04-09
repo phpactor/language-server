@@ -33,7 +33,7 @@ class ServerTester
     }
 
     /**
-     * @return Promise<Message>
+     * @return Promise<Message|null>
      */
     public function dispatchPromise(string $method, array $params = [], array $extraParams = []): Promise
     {

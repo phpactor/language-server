@@ -63,7 +63,7 @@ final class ApplicationContainer implements Handler
     }
 
     /**
-     * @return Promise<Message>
+     * @return Promise<Message|null>
      */
     public function dispatch(RequestMessage $message, array $extraArgs): Promise
     {
