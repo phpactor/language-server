@@ -41,7 +41,7 @@ class LanguageServerBuilderTest extends TestCase
             ->recordTo($name)
             ->buildServerTester();
 
-        $server->dispatchAndWait('foo', ['foo' => 'bar']);
+        $server->dispatchAndWait(1, 'foo', ['foo' => 'bar']);
         $this->assertStringContainsString('"method":"foo","params":{"foo":"bar"},"jsonrpc":"2.0"}', file_get_contents($name));
         unlink($name);
     }

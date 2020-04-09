@@ -25,9 +25,8 @@ class ServerTester
     /**
      * @param array<mixed> $params
      */
-    public function dispatchAndWait(string $method, array $params = [], array $extraParams = []): ?Message
+    public function dispatchAndWait(int $id, string $method, array $params = [], array $extraParams = []): ?Message
     {
-        static $id = 0;
         $request = new RequestMessage((int) ++$id, $method, $params);
         return \Amp\Promise\wait($this->container->dispatch($request, $extraParams));
     }
@@ -35,7 +34,7 @@ class ServerTester
     /**
      * @return Promise<Message|null>
      */
-    public function dispatch(string $method, array $params = [], array $extraParams = []): Promise
+    public function dispatch(int $id, string $method, array $params = [], array $extraParams = []): Promise
     {
         static $id = 0;
         $request = new RequestMessage((int) ++$id, $method, $params);
@@ -44,7 +43,7 @@ class ServerTester
 
     public function initialize(): Message
     {
-        $response = $this->dispatchAndWait('initialize', [
+        $response = $this->dispatchAndWait(1, 'initialize', [
             'rootUri' => __DIR__,
         ]);
         $this->assertSuccess($response);
@@ -53,7 +52,7 @@ class ServerTester
 
     public function openDocument(TextDocumentItem $item): void
     {
-        $this->dispatchAndWait('textDocument/didOpen', [
+        $this->dispatchAndWait(1, 'textDocument/didOpen', [
             'textDocument' => $item
         ]);
     }
