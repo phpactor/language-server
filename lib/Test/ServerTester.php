@@ -2,7 +2,9 @@
 
 namespace Phpactor\LanguageServer\Test;
 
+use Amp\Promise;
 use LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
@@ -20,53 +22,52 @@ class ServerTester
         $this->container = $container;
     }
 
-    public function dispatch(string $method, array $params = []): array
+    /**
+     * @param array<mixed> $params
+     */
+    public function dispatchAndWait(int $id, string $method, array $params = [], array $extraParams = []): ?Message
     {
-        static $id = 0;
         $request = new RequestMessage((int) ++$id, $method, $params);
-        $results = iterator_to_array($this->container->dispatch($request));
-
-        return $results;
-    }
-
-    public function initialize(): array
-    {
-        $responses = $this->dispatch('initialize', [
-            'rootUri' => __DIR__,
-        ]);
-        $this->assertSuccess($responses);
-
-        return $responses;
+        return \Amp\Promise\wait($this->container->dispatch($request, $extraParams));
     }
 
     /**
-     * @return array<ResponseMessage>
+     * @return Promise<Message|null>
      */
-    public function openDocument(TextDocumentItem $item): array
+    public function dispatch(int $id, string $method, array $params = [], array $extraParams = []): Promise
     {
-        $responses = $this->dispatch('textDocument/didOpen', [
-            'textDocument' => $item
-        ]);
-        $this->assertSuccess($responses);
-
-        return $responses;
+        static $id = 0;
+        $request = new RequestMessage((int) ++$id, $method, $params);
+        return $this->container->dispatch($request, $extraParams);
     }
 
-    public function assertSuccess(array $responses): bool
+    public function initialize(): Message
     {
-        $responses = (array) $responses;
+        $response = $this->dispatchAndWait(1, 'initialize', [
+            'rootUri' => __DIR__,
+        ]);
+        $this->assertSuccess($response);
+        return $response;
+    }
 
-        foreach ($responses as $response) {
-            if (!$response instanceof ResponseMessage) {
-                continue;
-            }
+    public function openDocument(TextDocumentItem $item): void
+    {
+        $this->dispatchAndWait(1, 'textDocument/didOpen', [
+            'textDocument' => $item
+        ]);
+    }
 
-            if ($response->responseError) {
-                throw new RuntimeException(sprintf(
-                    'Response contains error: %s',
-                    json_encode($response->responseError, JSON_PRETTY_PRINT)
-                ));
-            }
+    public function assertSuccess(?Message $response): bool
+    {
+        if (!$response) {
+            return true;
+        }
+
+        if ($response instanceof ResponseMessage && $response->responseError) {
+            throw new RuntimeException(sprintf(
+                'Response contains error: %s',
+                json_encode($response->responseError, JSON_PRETTY_PRINT)
+            ));
         }
 
         return true;

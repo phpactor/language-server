@@ -2,7 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
-use Generator;
+use Amp\Promise;
+use Amp\Success;
 use LanguageServerProtocol\InitializeParams;
 use LanguageServerProtocol\InitializeResult;
 use LanguageServerProtocol\ServerCapabilities;
@@ -12,6 +13,7 @@ use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
@@ -60,9 +62,12 @@ final class ApplicationContainer implements Handler
         $this->serviceManager = $serviceManager;
     }
 
-    public function dispatch(RequestMessage $message): Generator
+    /**
+     * @return Promise<Message|null>
+     */
+    public function dispatch(RequestMessage $message, array $extraArgs): Promise
     {
-        yield from $this->dispatcher->dispatch($this->handlers(), $message);
+        return $this->dispatcher->dispatch($this->handlers(), $message, $extraArgs);
     }
 
     public function methods(): array
@@ -70,10 +75,12 @@ final class ApplicationContainer implements Handler
         return [
             'initialize' => 'initialize',
             'initialized' => 'initialized',
-            '$/cancelRequest' => 'cancelRequest',
         ];
     }
 
+    /**
+     * @return Promise<InitializeResult>
+     */
     public function initialize(
         array $capabilities = [],
         array $initializationOptions = [],
@@ -81,7 +88,7 @@ final class ApplicationContainer implements Handler
         ?string $rootPath = null,
         ?string $rootUri = null,
         ?string $trace = null
-    ): Generator {
+    ): Promise {
         $this->applicationHandlers = $this->applicationHandlerLoader->load(
             new InitializeParams(
                 $capabilities,
@@ -106,17 +113,16 @@ final class ApplicationContainer implements Handler
         $result = new InitializeResult();
         $result->capabilities = $capabilities;
 
-        yield $result;
+        return new Success($result);
     }
 
-    public function initialized(): void
+    /**
+     * @return Promise<null>
+     */
+    public function initialized(): Promise
     {
         $this->startServices();
-    }
-
-    public function cancelRequest(): void
-    {
-        // not supported
+        return new Success(null);
     }
 
     /**

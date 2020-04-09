@@ -6,7 +6,6 @@ use DateInterval;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
-use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
@@ -36,8 +35,7 @@ class SystemHandlerTest extends HandlerTestCase
 
     public function testItReturnsTheCurrentSessionStatus()
     {
-        $responses = $this->dispatch('system/status', []);
-        $this->assertInstanceOf(ResponseMessage::class, $responses[0], 'Returns dummy response to request');
-        $this->assertInstanceOf(NotificationMessage::class, $responses[1], 'Issues notification with status');
+        $response = $this->dispatch('system/status', []);
+        $this->assertInstanceOf(NotificationMessage::class, $response, 'Issues notification with status');
     }
 }

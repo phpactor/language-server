@@ -16,7 +16,8 @@ class PingHandler implements ServiceProvider
      */
     public function methods(): array
     {
-        return [];
+        return [
+        ];
     }
 
     /**

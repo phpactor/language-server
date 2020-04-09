@@ -2,11 +2,15 @@
 
 namespace Phpactor\LanguageServer\Core\Dispatcher;
 
-use Generator;
+use Amp\Promise;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 
 interface Dispatcher
 {
-    public function dispatch(Handlers $handlers, RequestMessage $request): Generator;
+    /**
+     * @return Promise<Message|null>
+     */
+    public function dispatch(Handlers $handlers, RequestMessage $request, array $extraArgs): Promise;
 }

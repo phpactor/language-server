@@ -2,7 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
-use Generator;
+use Amp\Promise;
+use Amp\Success;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -31,39 +32,41 @@ class MethodDispatcher implements Dispatcher
         $this->methodResolver = $resolver ?: new HandlerMethodResolver();
     }
 
-    public function dispatch(Handlers $handlers, RequestMessage $request): Generator
+    public function dispatch(Handlers $handlers, RequestMessage $request, array $extraArgs): Promise
     {
-        $handler = $handlers->get($request->method);
+        return \Amp\call(function () use ($request, $handlers, $extraArgs) {
+            $handler = $handlers->get($request->method);
 
-        $method = $this->methodResolver->resolveHandlerMethod($handler, $request->method);
+            $method = $this->methodResolver->resolveHandlerMethod($handler, $request->method);
 
-        $arguments = $this->argumentResolver->resolveArguments(
-            $handler,
-            $method,
-            $request->params
-        );
+            $arguments = $this->argumentResolver->resolveArguments(
+                $handler,
+                $method,
+                array_merge($request->params, $extraArgs)
+            );
 
-        $messages = $handler->$method(...$arguments);
+            $promise = $handler->$method(...$arguments) ?? new Success(null);
 
-        if (null === $messages) {
-            return;
-        }
-
-        if (!$messages instanceof Generator) {
-            throw new RuntimeException(sprintf(
-                '%s handler "%s" did not return a generator, it returned a: %s',
-                $request->method,
-                get_class($handler),
-                is_object($messages) ? get_class($messages) : gettype($messages)
-            ));
-        }
-
-        foreach ($messages as $message) {
-            if ($message instanceof Message) {
-                yield $message;
-                continue;
+            if (!$promise instanceof Promise) {
+                throw new RuntimeException(sprintf(
+                    'Handler "%s:%s" must return instance of Amp\\Promise, got "%s"',
+                    get_class($handler),
+                    $method,
+                    is_object($promise) ? get_class($promise) : gettype($promise)
+                ));
             }
-            yield new ResponseMessage($request->id, $message);
-        }
+
+            $result = yield $promise;
+
+            if (null === $result) {
+                return;
+            }
+
+            if ($result instanceof Message) {
+                return $result;
+            }
+
+            return new ResponseMessage($request->id, $result);
+        });
     }
 }

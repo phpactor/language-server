@@ -2,22 +2,26 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
+use Amp\CancellationTokenSource;
+use Amp\CancelledException;
 use Amp\Coroutine;
 use Amp\Loop;
 use Amp\Promise;
 use DateTimeImmutable;
+use Exception;
 use Generator;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
-use Phpactor\LanguageServer\Core\Server\Parser\LanguageServerProtocolParser;
+use Phpactor\LanguageServer\Core\Server\Parser\LspRequestReader;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
@@ -29,8 +33,10 @@ use RuntimeException;
 
 final class LanguageServer implements StatProvider
 {
+    const METHOD_CANCEL_REQUEST = '$/cancelRequest';
+
     /**
-     * @var LanguageServerProtocolParser
+     * @var RequestReader
      */
     private $parser;
 
@@ -70,9 +76,9 @@ final class LanguageServer implements StatProvider
     private $created;
 
     /**
-     * @var int
+     * @var CancellationTokenSource[]
      */
-    private $requestCount = 0;
+    private $requests = [];
 
     /**
      * @var HandlerLoader
@@ -133,7 +139,7 @@ final class LanguageServer implements StatProvider
         return new ServerStats(
             $this->created->diff(new DateTimeImmutable()),
             count($this->connections),
-            $this->requestCount
+            count($this->requests)
         );
     }
 
@@ -161,14 +167,13 @@ final class LanguageServer implements StatProvider
 
     private function listenForConnections(): void
     {
-        if ($this->streamProvider instanceof SocketStreamProvider) {
-            $this->logger->info(sprintf(
-                'Listening on %s',
-                $this->streamProvider->address()
-            ));
-        }
-
         \Amp\asyncCall(function () {
+            if ($this->streamProvider instanceof SocketStreamProvider) {
+                $this->logger->info(sprintf(
+                    'Listening on %s',
+                    $this->streamProvider->address()
+                ));
+            }
 
             // accept incoming connections (in the case of a TCP server this is
             // a connection, with a STDIO stream this just returns the stream
@@ -184,17 +189,7 @@ final class LanguageServer implements StatProvider
                 // otherewise this is a STDIO session so re-throw a Shutdown
                 // exception and exit the process.
                 \Amp\asyncCall(function () use ($connection) {
-                    try {
-                        yield $this->handle($connection);
-                    } catch (ExitSession $exception) {
-                        $connection->stream()->end();
-
-                        if ($this->streamProvider instanceof ResourceStreamProvider) {
-                            throw new ShutdownServer(
-                                'Exit called on STDIO connection, exiting the server'
-                            );
-                        }
-                    }
+                    yield $this->handle($connection);
                 });
             }
         });
@@ -214,27 +209,53 @@ final class LanguageServer implements StatProvider
                 new ServiceManager($transmitter, $this->logger)
             );
 
-            $parser = new LanguageServerProtocolParser(function (
-                Request $request
-            ) use (
-                $transmitter,
-                $container
-            ) {
+            $reader = new LspRequestReader($connection->stream());
+
+            while (null !== $request = yield $reader->wait()) {
                 $this->logger->info('REQUEST', $request->body());
-                $this->requestCount++;
 
-                $responses = $container->dispatch(
-                    RequestMessageFactory::fromRequest($request)
-                );
+                $request = RequestMessageFactory::fromRequest($request);
+                $cancellationTokenSource = new CancellationTokenSource();
+                $this->requests[$request->id] = $cancellationTokenSource;
 
-                foreach ($responses as $response) {
-                    $transmitter->transmit($response);
+                if ($request->method === self::METHOD_CANCEL_REQUEST) {
+                    try {
+                        $cancellationTokenSource->cancel();
+                    } catch (CancelledException $cancelled) {
+                        $this->logger->info(sprintf(
+                            'Request "%s" was cancelled',
+                            $request->id
+                        ));
+                    }
+
+                    return;
                 }
-            });
 
-            while (null !== ($chunk = yield $connection->stream()->read())) {
-                $parser->feed($chunk);
-            }
+                \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection, $cancellationTokenSource) {
+                    try {
+                        $response = yield $container->dispatch($request, [
+                            'cancellationToken' => $cancellationTokenSource,
+                            'transmitter' => $transmitter
+                        ]);
+                    } catch (ExitSession $e) {
+                        $connection->stream()->end();
+
+                        if ($this->streamProvider instanceof ResourceStreamProvider) {
+                            throw new ShutdownServer(
+                                'Exit called on STDIO connection, exiting the server'
+                            );
+                        }
+                        return;
+                    }
+                    unset($this->requests[$request->id]);
+
+                    if (null === $response) {
+                        return;
+                    }
+
+                    $transmitter->transmit($response);
+                });
+            };
         });
     }
 

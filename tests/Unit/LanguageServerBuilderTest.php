@@ -32,14 +32,17 @@ class LanguageServerBuilderTest extends TestCase
             ->addSystemHandler(new class implements Handler {
                 public function methods(): array
                 {
-                    return [];
+                    return ['foo'=>'foo'];
+                }
+                public function foo()
+                {
                 }
             })
             ->recordTo($name)
             ->buildServerTester();
 
-        $server->dispatch('foo', ['foo' => 'bar']);
-        $this->assertStringContainsString('{"id":1,"method":"foo","params":{"foo":"bar"},"jsonrpc":"2.0"}', file_get_contents($name));
+        $server->dispatchAndWait(1, 'foo', ['foo' => 'bar']);
+        $this->assertStringContainsString('"method":"foo","params":{"foo":"bar"},"jsonrpc":"2.0"}', file_get_contents($name));
         unlink($name);
     }
 }

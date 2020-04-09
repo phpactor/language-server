@@ -23,5 +23,6 @@ class ExitHandlerTest extends HandlerTestCase
     public function testShutdownDoesNothing()
     {
         $this->dispatch('shutdown', []);
+        $this->addToAssertionCount(1);
     }
 }

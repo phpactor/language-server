@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
-use Generator;
+use Amp\Success;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
@@ -41,9 +41,36 @@ class MethodDispatcherTest extends TestCase
 
             public function foobar(string $one, string $two)
             {
-                yield new stdClass();
+                return new Success(new stdClass());
             }
         };
+    }
+
+    public function testExceptionIfHandlerDoesNotReturnPromise()
+    {
+        $this->expectExceptionMessage('must return instance of Amp\\Promise');
+        $handler = new class implements Handler {
+            public function methods(): array
+            {
+                return [
+                    'foobar' => 'foobar',
+                ];
+            }
+
+            public function foobar(string $one, string $two)
+            {
+                return new stdClass();
+            }
+        };
+
+        $this->argumentResolver->resolveArguments($handler, 'foobar', [
+            'one',
+            'two'
+        ])->willReturn([ 'one', 'two' ]);
+
+        \Amp\Promise\wait($this->create()->dispatch(new Handlers([
+            $handler
+        ]), new RequestMessage(5, 'foobar', [ 'one', 'two' ]), []));
     }
 
     public function testDispatchesRequest()
@@ -57,14 +84,32 @@ class MethodDispatcherTest extends TestCase
             'two'
         ])->willReturn([ 'one', 'two' ]);
 
-        $expectedResult = new stdClass();
+        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]), []));
 
-        $messages = $dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]));
-
-        $this->assertInstanceOf(Generator::class, $messages);
-        $response = $messages->current();
         $this->assertInstanceOf(ResponseMessage::class, $response);
-        $this->assertEquals($expectedResult, $response->result);
+        $this->assertEquals(5, $response->id);
+    }
+
+    public function testAdditionalArgumentsPassedToResolver()
+    {
+        $dispatcher = $this->create();
+        $handlers = new Handlers([
+            $this->handler
+        ]);
+
+        $this->argumentResolver->resolveArguments($this->handler, 'foobar', [
+            'one',
+            'two',
+            'three',
+            'four',
+        ])->willReturn([ 'one', 'two' ]);
+
+        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]), [
+            'three',
+            'four',
+        ]));
+
+        $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertEquals(5, $response->id);
     }
 

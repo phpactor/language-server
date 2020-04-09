@@ -35,12 +35,12 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
         ];
     }
 
-    public function didOpen(TextDocumentItem $textDocument)
+    public function didOpen(TextDocumentItem $textDocument): void
     {
         $this->workspace->open($textDocument);
     }
 
-    public function didChange(VersionedTextDocumentIdentifier $textDocument, array $contentChanges)
+    public function didChange(VersionedTextDocumentIdentifier $textDocument, array $contentChanges): void
     {
         foreach ($contentChanges as $contentChange) {
             $this->workspace->update(
@@ -50,14 +50,14 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
         }
     }
 
-    public function didClose(TextDocumentIdentifier $textDocument)
+    public function didClose(TextDocumentIdentifier $textDocument): void
     {
         $this->workspace->remove(
             $textDocument
         );
     }
 
-    public function didSave(TextDocumentIdentifier $textDocument, string $text = null)
+    public function didSave(TextDocumentIdentifier $textDocument, string $text = null): void
     {
         if ($text !== null) {
             $this->workspace->get($textDocument->uri)->text = $text;
