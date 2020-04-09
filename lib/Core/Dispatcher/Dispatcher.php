@@ -10,7 +10,7 @@ use Phpactor\LanguageServer\Core\Handler\Handlers;
 interface Dispatcher
 {
     /**
-     * @return Promise<Message>
+     * @return Promise<Message|null>
      */
     public function dispatch(Handlers $handlers, RequestMessage $request, array $extraArgs): Promise;
 }

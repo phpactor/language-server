@@ -55,6 +55,7 @@ class MethodDispatcher implements Dispatcher
                     is_object($promise) ? get_class($promise) : gettype($promise)
                 ));
             }
+
             $result = yield $promise;
 
             if (null === $result) {
