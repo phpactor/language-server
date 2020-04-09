@@ -28,17 +28,19 @@ class ErrorCatchingDispatcher implements Dispatcher
 
     public function dispatch(Handlers $handlers, RequestMessage $request, array $extraArgs): Promise
     {
-        try {
-            return $this->innerDispatcher->dispatch($handlers, $request, $extraArgs);
-        } catch (ServerControl $exception) {
-            throw $exception;
-        } catch (Throwable $error) {
-            return new Success(new ResponseMessage($request->id, null, new ResponseError(
-                $this->resolveErrorCode($error),
-                $error->getMessage(),
-                $error->getTraceAsString()
-            )));
-        }
+        return \Amp\call(function () use ($handlers, $request, $extraArgs) {
+            try {
+                return yield $this->innerDispatcher->dispatch($handlers, $request, $extraArgs);
+            } catch (ServerControl $exception) {
+                throw $exception;
+            } catch (Throwable $error) {
+                return new Success(new ResponseMessage($request->id, null, new ResponseError(
+                    $this->resolveErrorCode($error),
+                    $error->getMessage(),
+                    $error->getTraceAsString()
+                )));
+            }
+        });
     }
 
     private function resolveErrorCode(Throwable $error): int
