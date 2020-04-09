@@ -14,7 +14,6 @@ use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Request;
-use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;

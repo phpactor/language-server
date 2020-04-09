@@ -20,6 +20,7 @@ class LanguageServerTest extends TestCase
 
         $tester = LanguageServerBuilder::create()
             ->addSystemHandler(new TestHandler())
+        ->catchExceptions(false)
             ->buildServerTester();
 
         $source = new CancellationTokenSource();

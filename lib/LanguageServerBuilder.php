@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer;
 
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
-use Phpactor\LanguageServer\Adapter\Rybakit\RybakitArgumentResolver;
+use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\RecordingDispatcher;
@@ -208,7 +208,7 @@ class LanguageServerBuilder
     private function buildDispatcher(): Dispatcher
     {
         $dispatcher = new MethodDispatcher(
-            new RybakitArgumentResolver()
+            new DTLArgumentResolver()
         );
 
         if ($this->catchExceptions) {
