@@ -46,9 +46,10 @@ class MethodDispatcher implements Dispatcher
             );
 
             $promise = $handler->$method(...$arguments) ?? new Success(null);
+
             if (!$promise instanceof Promise) {
                 throw new RuntimeException(sprintf(
-                    'Handler "%s:%s" must return instance of Promise, got "%s"',
+                    'Handler "%s:%s" must return instance of Amp\\Promise, got "%s"',
                     get_class($handler),
                     $method,
                     is_object($promise) ? get_class($promise) : gettype($promise)

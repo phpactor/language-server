@@ -46,6 +46,33 @@ class MethodDispatcherTest extends TestCase
         };
     }
 
+    public function testExceptionIfHandlerDoesNotReturnPromise()
+    {
+        $this->expectExceptionMessage('must return instance of Amp\\Promise');
+        $handler = new class implements Handler {
+            public function methods(): array
+            {
+                return [
+                    'foobar' => 'foobar',
+                ];
+            }
+
+            public function foobar(string $one, string $two)
+            {
+                return new stdClass();
+            }
+        };
+
+        $this->argumentResolver->resolveArguments($handler, 'foobar', [
+            'one',
+            'two'
+        ])->willReturn([ 'one', 'two' ]);
+
+        \Amp\Promise\wait($this->create()->dispatch(new Handlers([
+            $handler
+        ]), new RequestMessage(5, 'foobar', [ 'one', 'two' ]), []));
+    }
+
     public function testDispatchesRequest()
     {
         $dispatcher = $this->create();

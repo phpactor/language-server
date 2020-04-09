@@ -13,8 +13,10 @@ class ServerTesterTest extends TestCase
     public function testServerTester()
     {
         $builder = LanguageServerBuilder::create();
+        $builder->catchExceptions(false);
         $tester = $builder->buildServerTester();
         $response = $tester->initialize();
+        $this->addToAssertionCount(1);
     }
 
     public function testOpensDocument()
