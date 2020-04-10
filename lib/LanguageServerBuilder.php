@@ -6,6 +6,7 @@ use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\CancellingMethodDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\RecordingDispatcher;
 use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
@@ -209,6 +210,11 @@ class LanguageServerBuilder
     {
         $dispatcher = new MethodDispatcher(
             new DTLArgumentResolver()
+        );
+
+        $dispatcher = new CancellingMethodDispatcher(
+            $dispatcher,
+            $this->logger
         );
 
         if ($this->catchExceptions) {
