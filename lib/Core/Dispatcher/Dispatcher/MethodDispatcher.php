@@ -62,10 +62,6 @@ class MethodDispatcher implements Dispatcher
                 return;
             }
 
-            if ($result instanceof Message) {
-                return $result;
-            }
-
             return new ResponseMessage($request->id, $result);
         });
     }
