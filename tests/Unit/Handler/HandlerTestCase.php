@@ -14,6 +14,6 @@ abstract class HandlerTestCase extends TestCase
     {
         $tester = new HandlerTester($this->handler());
 
-        return $tester->dispatch($method, $params);
+        return $tester->dispatchAndWait($method, $params);
     }
 }

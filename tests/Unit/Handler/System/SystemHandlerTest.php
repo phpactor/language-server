@@ -38,7 +38,7 @@ class SystemHandlerTest extends HandlerTestCase
     {
         $tester = new HandlerTester($this->handler());
 
-        $response = $tester->dispatch('system/status', []);
+        $response = $tester->dispatchAndWait('system/status', []);
 
         self::assertInstanceOf(ResponseMessage::class, $response);
         $message = $tester->transmitter()->shift();
