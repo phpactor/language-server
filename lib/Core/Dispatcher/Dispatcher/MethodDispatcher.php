@@ -56,6 +56,10 @@ class MethodDispatcher implements Dispatcher
                 ));
             }
 
+            if (null === $request->id) {
+                return null;
+            }
+
             return new ResponseMessage($request->id, yield $promise);
         });
     }

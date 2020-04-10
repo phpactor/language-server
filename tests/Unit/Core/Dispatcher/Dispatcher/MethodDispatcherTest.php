@@ -84,10 +84,34 @@ class MethodDispatcherTest extends TestCase
             'two'
         ])->willReturn([ 'one', 'two' ]);
 
-        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(5, 'foobar', [ 'one', 'two' ]), []));
+        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(
+            5,
+            'foobar',
+            [ 'one', 'two' ]
+        ), []));
 
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertEquals(5, $response->id);
+    }
+
+    public function testReturnsNullIfRequestIsNotification()
+    {
+        $dispatcher = $this->create();
+        $handlers = new Handlers([
+            $this->handler
+        ]);
+        $this->argumentResolver->resolveArguments($this->handler, 'foobar', [
+            'one',
+            'two'
+        ])->willReturn([ 'one', 'two' ]);
+
+        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(
+            null, // notifications have no ID
+            'foobar',
+            [ 'one', 'two' ]
+        ), []));
+
+        self::assertNull($response);
     }
 
     public function testAdditionalArgumentsPassedToResolver()
