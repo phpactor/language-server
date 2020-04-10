@@ -39,4 +39,19 @@ class RequestMessageFactoryTest extends TestCase
         $this->assertEquals(1, $request->id);
         $this->assertEquals(['one' => 'two'], $request->params);
     }
+
+    public function testReturnsRequestMessageForNotification()
+    {
+        $request = new Request([], [
+            'jsonrpc' => 2.0,
+            'id' => null,
+            'method' => 'foobar',
+            'params' => ['one' => 'two']
+        ]);
+        $request = RequestMessageFactory::fromRequest($request);
+        $this->assertEquals('foobar', $request->method);
+        $this->assertEquals(2.0, $request->jsonrpc);
+        $this->assertSame(null, $request->id);
+        $this->assertEquals(['one' => 'two'], $request->params);
+    }
 }

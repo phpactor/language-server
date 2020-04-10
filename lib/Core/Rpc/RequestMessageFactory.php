@@ -31,6 +31,11 @@ class RequestMessageFactory
             ));
         }
 
-        return new RequestMessage((int) $array['id'], $array['method'], $array['params'] ?? []);
+        $id = $array['id'];
+        if (!is_null($id)) {
+            $id = (int)$id;
+        }
+
+        return new RequestMessage($id, $array['method'], $array['params'] ?? []);
     }
 }
