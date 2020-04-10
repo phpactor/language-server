@@ -76,6 +76,11 @@ final class LanguageServer implements StatProvider
      */
     private $handlerLoader;
 
+    /**
+     * @var int
+     */
+    private $requestCount = 0;
+
     public function __construct(
         Dispatcher $dispatcher,
         Handlers $systemHandlers,
@@ -130,7 +135,7 @@ final class LanguageServer implements StatProvider
         return new ServerStats(
             $this->created->diff(new DateTimeImmutable()),
             count($this->connections),
-            count($this->requests)
+            $this->requestCount
         );
     }
 
@@ -204,6 +209,7 @@ final class LanguageServer implements StatProvider
 
             while (null !== $request = yield $reader->wait()) {
                 $this->logger->info('REQUEST', $request->body());
+                $this->requestCount++;
 
                 $request = RequestMessageFactory::fromRequest($request);
 

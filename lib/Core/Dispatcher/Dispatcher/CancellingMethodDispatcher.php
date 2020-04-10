@@ -3,10 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 use Amp\CancellationTokenSource;
-use Amp\CancelledException;
 use Amp\Promise;
-use Amp\Success;
-use LanguageServerProtocol\ErrorCode;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
@@ -47,11 +44,11 @@ class CancellingMethodDispatcher implements Dispatcher
         Handlers $handlers,
         RequestMessage $request,
         array $extraArgs
-    ): Promise
-    {
+    ): Promise {
         return \Amp\call(function () use ($handlers, $request, $extraArgs) {
             if ($request->method === self::METHOD_CANCEL_REQUEST) {
-                return $this->cancelRequest($request);
+                $this->cancelRequest($request);
+                return null;
             }
 
             $cancellationTokenSource = new CancellationTokenSource();

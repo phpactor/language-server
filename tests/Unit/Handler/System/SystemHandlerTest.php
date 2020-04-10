@@ -6,7 +6,6 @@ use DateInterval;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
-use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
 use Phpactor\LanguageServer\Test\HandlerTester;
