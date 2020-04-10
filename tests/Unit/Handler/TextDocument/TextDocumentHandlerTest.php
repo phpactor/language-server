@@ -6,6 +6,7 @@ use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
@@ -63,11 +64,12 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testWillSave()
     {
-        $result  =$this->dispatch('textDocument/willSave', [
+        $response = $this->dispatch('textDocument/willSave', [
             'identifier' => new TextDocumentIdentifier('foobar'),
             'reason' => 1
         ]);
-        $this->assertEmpty($result, 'This method does nothing currently');
+        self::assertInstanceOf(ResponseMessage::class, $response);
+        self::assertNull($response->result);
     }
 
     public function testClosesDocument()
