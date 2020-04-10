@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Test;
 
+use Amp\CancellationTokenSource;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -22,10 +23,16 @@ class HandlerTester
      */
     private $messageTransmitter;
 
+    /**
+     * @var CancellationTokenSource
+     */
+    private $cancellationTokenSource;
+
     public function __construct(Handler $handler)
     {
         $this->handler = $handler;
         $this->messageTransmitter = new TestMessageTransmitter();
+        $this->cancellationTokenSource = new CancellationTokenSource();
     }
 
     public function transmitter(): TestMessageTransmitterStack
@@ -33,12 +40,19 @@ class HandlerTester
         return $this->messageTransmitter;
     }
 
+    public function cancel(): void
+    {
+        $this->cancellationTokenSource->cancel();
+    }
+
     public function dispatch(string $methodName, array $params)
     {
         $this->messageTransmitter = new TestMessageTransmitter();
+        $this->cancellationTokenSource = new CancellationTokenSource();
 
         $extraArgs = [
-            $this->messageTransmitter
+            '_transmitter' => $this->messageTransmitter,
+            '_token' => $this->cancellationTokenSource->getToken()
         ];
 
         $dispatcher = new MethodDispatcher(
