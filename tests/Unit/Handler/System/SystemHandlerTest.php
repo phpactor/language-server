@@ -4,10 +4,12 @@ namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 
 use DateInterval;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
+use Phpactor\LanguageServer\Test\HandlerTester;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 
 class SystemHandlerTest extends HandlerTestCase
@@ -35,7 +37,12 @@ class SystemHandlerTest extends HandlerTestCase
 
     public function testItReturnsTheCurrentSessionStatus()
     {
-        $response = $this->dispatch('system/status', []);
-        $this->assertInstanceOf(NotificationMessage::class, $response, 'Issues notification with status');
+        $tester = new HandlerTester($this->handler());
+
+        $response = $tester->dispatch('system/status', []);
+
+        self::assertInstanceOf(ResponseMessage::class, $response);
+        $message = $tester->transmitter()->shift();
+        self::assertNotNull($message);
     }
 }

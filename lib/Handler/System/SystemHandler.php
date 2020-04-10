@@ -8,6 +8,7 @@ use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 
 class SystemHandler implements Handler
 {
@@ -31,11 +32,11 @@ class SystemHandler implements Handler
     }
 
     /**
-     * @return Promise<NotificationMessage>
+     * @return Promise<null>
      */
-    public function status(): Promise
+    public function status(MessageTransmitter $transmitter): Promise
     {
-        return new Success(new NotificationMessage('window/showMessage', [
+        $transmitter->transmit(new NotificationMessage('window/showMessage', [
             'type' => MessageType::INFO,
             'message' => implode(', ', [
                 'up: ' . $this->statProvider->stats()->uptime->format('%ad %hh %im %ss'),
@@ -44,5 +45,7 @@ class SystemHandler implements Handler
                 'mem: ' . number_format(memory_get_peak_usage()) . 'b',
             ]),
         ]));
+
+        return new Success(null);
     }
 }
