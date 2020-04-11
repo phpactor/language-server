@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Dispatcher;
 
 use Amp\Success;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
@@ -105,8 +106,7 @@ class MethodDispatcherTest extends TestCase
             'two'
         ])->willReturn([ 'one', 'two' ]);
 
-        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(
-            null, // notifications have no ID
+        $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new NotificationMessage(
             'foobar',
             [ 'one', 'two' ]
         ), []));

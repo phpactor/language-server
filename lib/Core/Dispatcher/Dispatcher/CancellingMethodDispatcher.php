@@ -55,7 +55,7 @@ class CancellingMethodDispatcher implements Dispatcher
             $cancellationTokenSource = new CancellationTokenSource();
 
             // we only cancel requests (that have IDs) and not notifications
-            if (is_int($request->id)) {
+            if ($request instanceof RequestMessage) {
                 $this->cancellations[$request->id] = $cancellationTokenSource;
             }
 

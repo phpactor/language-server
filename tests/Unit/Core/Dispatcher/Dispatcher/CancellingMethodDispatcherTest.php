@@ -9,6 +9,8 @@ use Amp\Success;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\CancellingMethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -128,8 +130,11 @@ class CancellingMethodDispatcherTest extends TestCase
         );
     }
 
-    private function createRequest(?int $id, string $method, array $params): RequestMessage
+    private function createRequest(?int $id, string $method, array $params): Message
     {
+        if (null === $id) {
+            return new NotificationMessage($method, $params);
+        }
         return new RequestMessage($id, $method, $params);
     }
 

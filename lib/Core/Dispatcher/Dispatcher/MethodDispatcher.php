@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
@@ -42,7 +43,7 @@ class MethodDispatcher implements Dispatcher
             $arguments = $this->argumentResolver->resolveArguments(
                 $handler,
                 $method,
-                array_merge($request->params, $extraArgs)
+                array_merge($request->params ?? [], $extraArgs)
             );
 
             $promise = $handler->$method(...$arguments) ?? new Success(null);
@@ -56,7 +57,7 @@ class MethodDispatcher implements Dispatcher
                 ));
             }
 
-            if (null === $request->id) {
+            if (!$request instanceof RequestMessage) {
                 return null;
             }
 
