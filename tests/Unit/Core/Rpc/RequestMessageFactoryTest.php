@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Rpc;
 
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
@@ -41,16 +42,29 @@ class RequestMessageFactoryTest extends TestCase
 
     public function testReturnsRequestMessageForNotification()
     {
-        $request = new RawMessage([], [
+        $notification = new RawMessage([], [
             'jsonrpc' => 2.0,
             'id' => null,
             'method' => 'foobar',
             'params' => ['one' => 'two']
         ]);
-        $request = RequestMessageFactory::fromRequest($request);
-        self::assertInstanceOf(NotificationMessage::class, $request);
-        $this->assertEquals('foobar', $request->method);
-        $this->assertEquals(2.0, $request->jsonrpc);
-        $this->assertEquals(['one' => 'two'], $request->params);
+        $notification = RequestMessageFactory::fromRequest($notification);
+        self::assertInstanceOf(NotificationMessage::class, $notification);
+        $this->assertEquals('foobar', $notification->method);
+        $this->assertEquals(2.0, $notification->jsonrpc);
+        $this->assertEquals(['one' => 'two'], $notification->params);
+    }
+
+    public function testReturnsRequestMessageForResponse()
+    {
+        $response = new RawMessage([], [
+            'jsonrpc' => 2.0,
+            'id' => 123,
+            'result' => 'foobar',
+            'error' => null 
+        ]);
+        $response = RequestMessageFactory::fromRequest($response);
+        self::assertInstanceOf(ResponseMessage::class, $response);
+        $this->assertEquals('foobar', $response->result);
     }
 }

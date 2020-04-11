@@ -63,10 +63,10 @@ class ServerTester
             return true;
         }
 
-        if ($response instanceof ResponseMessage && $response->responseError) {
+        if ($response instanceof ResponseMessage && $response->error) {
             throw new RuntimeException(sprintf(
                 'Response contains error: %s',
-                json_encode($response->responseError, JSON_PRETTY_PRINT)
+                json_encode($response->error, JSON_PRETTY_PRINT)
             ));
         }
 

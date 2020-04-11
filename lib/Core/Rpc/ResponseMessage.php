@@ -17,15 +17,15 @@ class ResponseMessage extends Message
     /**
      * @var ResponseError|null
      */
-    public $responseError;
+    public $error;
 
     /**
      * @param mixed $result
      */
-    public function __construct(int $id, $result, ?ResponseError $responseError = null)
+    public function __construct(int $id, $result, ?ResponseError $error = null)
     {
         $this->id = $id;
         $this->result = $result;
-        $this->responseError = $responseError;
+        $this->error = $error;
     }
 }

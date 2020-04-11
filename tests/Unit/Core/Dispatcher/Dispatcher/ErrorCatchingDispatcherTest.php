@@ -52,8 +52,8 @@ class ErrorCatchingDispatcherTest extends TestCase
         $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message, []));
 
         $this->assertInstanceOf(ResponseMessage::class, $response);
-        $this->assertInstanceOf(ResponseError::class, $response->responseError);
-        $this->assertEquals('Hello', $response->responseError->message);
+        $this->assertInstanceOf(ResponseError::class, $response->error);
+        $this->assertEquals('Hello', $response->error->message);
     }
 
     public function testCatchesHandlerNotFound()
@@ -65,9 +65,9 @@ class ErrorCatchingDispatcherTest extends TestCase
         $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message, []));
 
         $this->assertInstanceOf(ResponseMessage::class, $response);
-        $this->assertInstanceOf(ResponseError::class, $response->responseError);
-        $this->assertEquals(ErrorCodes::MethodNotFound, $response->responseError->code);
-        $this->assertEquals('Hello', $response->responseError->message);
+        $this->assertInstanceOf(ResponseError::class, $response->error);
+        $this->assertEquals(ErrorCodes::MethodNotFound, $response->error->code);
+        $this->assertEquals('Hello', $response->error->message);
     }
 
     public function testReturnsResultsFromInnerDispatcher()

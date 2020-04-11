@@ -13,7 +13,11 @@ class RequestMessageFactory
         $body = $request->body();
         unset($body['jsonrpc']);
 
-        if (!isset($body['id']) || $body['id'] === null) {
+        if (isset($body['result'])) {
+            return Invoke::new(ResponseMessage::class, $body);
+        }
+
+        if (!isset($body['id']) || is_null($body['id'])) {
             unset($body['id']);
             return Invoke::new(NotificationMessage::class, $body);
         }

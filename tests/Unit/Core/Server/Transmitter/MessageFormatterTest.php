@@ -33,7 +33,7 @@ class MessageFormatterTest extends TestCase
 
         $result = $writer->write($message);
         $this->assertEquals(
-            "Content-Length: 74\r\n\r\n" . '{"id":1,"result":{"hello":"goodbye"},"responseError":null,"jsonrpc":"2.0"}',
+            "Content-Length: 66\r\n\r\n" . '{"id":1,"result":{"hello":"goodbye"},"error":null,"jsonrpc":"2.0"}',
             $result
         );
     }
@@ -47,7 +47,7 @@ class MessageFormatterTest extends TestCase
 
         $result = $writer->write($message);
         $this->assertEquals(
-            "Content-Length: 115\r\n\r\n" . '{"id":1,"result":{"hello":"goodbye"},"responseError":{"code":-32603,"message":"Sorry","data":null},"jsonrpc":"2.0"}',
+            "Content-Length: 107\r\n\r\n" . '{"id":1,"result":{"hello":"goodbye"},"error":{"code":-32603,"message":"Sorry","data":null},"jsonrpc":"2.0"}',
             $result
         );
     }
