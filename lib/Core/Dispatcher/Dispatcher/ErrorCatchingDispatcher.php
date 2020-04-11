@@ -13,6 +13,7 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Exception\ServerControl;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 class ErrorCatchingDispatcher implements Dispatcher
@@ -22,9 +23,15 @@ class ErrorCatchingDispatcher implements Dispatcher
      */
     private $innerDispatcher;
 
-    public function __construct(Dispatcher $innerDispatcher)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(Dispatcher $innerDispatcher, LoggerInterface $logger)
     {
         $this->innerDispatcher = $innerDispatcher;
+        $this->logger = $logger;
     }
 
     public function dispatch(Handlers $handlers, Message $request, array $extraArgs): Promise
@@ -36,8 +43,13 @@ class ErrorCatchingDispatcher implements Dispatcher
                 throw $exception;
             } catch (Throwable $error) {
                 if (!$request instanceof RequestMessage) {
-                    // how to handle this?
-                    throw $error;
+                    $this->logger->error(sprintf(
+                        'Error when handling "%s" (%s): %s',
+                        get_class($request),
+                        json_encode($request),
+                        $error->getMessage()
+                    ));
+                    return null;
                 }
 
                 return new Success(new ResponseMessage($request->id, null, new ResponseError(

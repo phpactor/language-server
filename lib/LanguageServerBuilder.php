@@ -219,7 +219,8 @@ class LanguageServerBuilder
 
         if ($this->catchExceptions) {
             $dispatcher = new ErrorCatchingDispatcher(
-                $dispatcher
+                $dispatcher,
+                $this->logger
             );
         }
 

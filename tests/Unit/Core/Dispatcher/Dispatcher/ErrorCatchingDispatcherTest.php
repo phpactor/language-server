@@ -56,6 +56,17 @@ class ErrorCatchingDispatcherTest extends TestCase
         $this->assertEquals('Hello', $response->error->message);
     }
 
+    public function testLogsErrorsForNotificationsAndResponses()
+    {
+        $message = new NotificationMessage('hello', []);
+        $handlers = new Handlers([]);
+        $this->innerDispatcher->dispatch($handlers, $message, [])->willThrow(new Exception('Hello'));
+
+        $response = \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message, []));
+
+        $this->assertNull($response);
+    }
+
     public function testCatchesHandlerNotFound()
     {
         $message = new RequestMessage(1, 'hello', []);
