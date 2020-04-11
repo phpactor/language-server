@@ -37,7 +37,7 @@ class ServerClient
      */
     public function request(string $method, array $params): Promise
     {
-        $requestId = rand(0,1000);
+        $requestId = rand(0, 1000);
         $response = $this->responseWatcher->waitForResponse((string)$requestId);
         $this->transmitter->transmit(new RequestMessage($requestId, $method, $params));
 

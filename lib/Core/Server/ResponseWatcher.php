@@ -22,7 +22,8 @@ class ResponseWatcher
         }
 
         throw new RuntimeException(sprintf(
-            'Response to unknown request "%s"', $response->id
+            'Response to unknown request "%s"',
+            $response->id
         ));
     }
 

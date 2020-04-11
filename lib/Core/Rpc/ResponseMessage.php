@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Core\Rpc;
 class ResponseMessage extends Message
 {
     /**
-     * @var int
+     * @var string
      */
     public $id;
 
@@ -21,10 +21,11 @@ class ResponseMessage extends Message
 
     /**
      * @param mixed $result
+     * @param string|int $id
      */
-    public function __construct(int $id, $result, ?ResponseError $error = null)
+    public function __construct($id, $result, ?ResponseError $error = null)
     {
-        $this->id = $id;
+        $this->id = (string)$id;
         $this->result = $result;
         $this->error = $error;
     }
