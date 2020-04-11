@@ -7,7 +7,6 @@ use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
-use Ramsey\Uuid\Nonstandard\UuidBuilder;
 use Ramsey\Uuid\Uuid;
 
 class ServerClient
