@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Transmitter;
 
+use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
+use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -32,6 +34,20 @@ class MessageFormatterTest extends TestCase
         $result = $writer->write($message);
         $this->assertEquals(
             "Content-Length: 74\r\n\r\n" . '{"id":1,"result":{"hello":"goodbye"},"responseError":null,"jsonrpc":"2.0"}',
+            $result
+        );
+    }
+
+    public function testWriteErrorReponse()
+    {
+        $writer = new MessageFormatter();
+        $message = new ResponseMessage(1, [
+            'hello' => 'goodbye'
+        ], new ResponseError(ErrorCodes::InternalError, 'Sorry'));
+
+        $result = $writer->write($message);
+        $this->assertEquals(
+            "Content-Length: 115\r\n\r\n" . '{"id":1,"result":{"hello":"goodbye"},"responseError":{"code":-32603,"message":"Sorry","data":null},"jsonrpc":"2.0"}',
             $result
         );
     }
