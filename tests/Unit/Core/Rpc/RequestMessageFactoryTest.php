@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Rpc;
 
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use RuntimeException;
 
@@ -13,7 +13,7 @@ class RequestMessageFactoryTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Request has invalid keys: "foo", valid keys: "jsonrpc", "id", "method", "params"');
-        $request = new Request([], ['foo' => 'bar']);
+        $request = new RawMessage([], ['foo' => 'bar']);
         RequestMessageFactory::fromRequest($request);
     }
 
@@ -21,13 +21,13 @@ class RequestMessageFactoryTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('missing required keys');
-        $request = new Request([], []);
+        $request = new RawMessage([], []);
         RequestMessageFactory::fromRequest($request);
     }
 
     public function testReturnsRequestMessage()
     {
-        $request = new Request([], [
+        $request = new RawMessage([], [
             'jsonrpc' => 2.0,
             'id' => 1,
             'method' => 'foobar',
@@ -42,7 +42,7 @@ class RequestMessageFactoryTest extends TestCase
 
     public function testReturnsRequestMessageForNotification()
     {
-        $request = new Request([], [
+        $request = new RawMessage([], [
             'jsonrpc' => 2.0,
             'id' => null,
             'method' => 'foobar',

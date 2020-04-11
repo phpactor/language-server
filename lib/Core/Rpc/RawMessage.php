@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
-class Request
+class RawMessage
 {
     /**
      * @var array

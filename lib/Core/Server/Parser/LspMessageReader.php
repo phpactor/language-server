@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Server\Parser;
 
 use Amp\ByteStream\InputStream;
 use Amp\Promise;
-use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 use function json_encode;
 use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotDecodeBody;
 use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotParseHeader;
@@ -57,7 +57,7 @@ final class LspMessageReader implements RequestReader
         });
     }
 
-    private function processChunk(string $chunk): ?Request
+    private function processChunk(string $chunk): ?RawMessage
     {
         for ($i = 0; $i < strlen($chunk); $i++) {
             $this->buffer .= $chunk[$i];
@@ -71,7 +71,7 @@ final class LspMessageReader implements RequestReader
         return null;
     }
 
-    private function parseRequest(): ?Request
+    private function parseRequest(): ?RawMessage
     {
         // start by parsing the headers:
         if ($this->headers === null && substr($this->buffer, -4, 4) === "\r\n\r\n"
@@ -101,7 +101,7 @@ final class LspMessageReader implements RequestReader
             return null;
         }
 
-        $request = new Request($this->headers, $this->decodeBody($this->buffer));
+        $request = new RawMessage($this->headers, $this->decodeBody($this->buffer));
         $this->buffer = '';
         $this->headers = null;
 

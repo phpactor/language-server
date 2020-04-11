@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Parser;
 use Amp\ByteStream\InMemoryStream;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
-use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 
 class LspMessageReaderTest extends TestCase
 {
@@ -35,7 +35,7 @@ EOT
 
         $reader = new LspMessageReader($stream);
         $result = \Amp\Promise\wait($reader->wait());
-        $this->assertInstanceOf(Request::class, $result);
+        $this->assertInstanceOf(RawMessage::class, $result);
     }
 
     public function testReadsMultipleRequests()
@@ -61,8 +61,8 @@ EOT
         );
         $reader = new LspMessageReader($stream);
         $result = \Amp\Promise\wait($reader->wait());
-        $this->assertInstanceOf(Request::class, $result, 'first');
+        $this->assertInstanceOf(RawMessage::class, $result, 'first');
         $result = \Amp\Promise\wait($reader->wait());
-        $this->assertInstanceOf(Request::class, $result, 'second');
+        $this->assertInstanceOf(RawMessage::class, $result, 'second');
     }
 }

@@ -6,7 +6,7 @@ use Amp\Loop;
 use Amp\Loop\DriverFactory;
 use Amp\Socket\ResourceSocket;
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Phpactor\LanguageServer\Core\Rpc\Request;
+use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
@@ -59,7 +59,7 @@ class AcceptanceTestCase extends TestCase
         }
     }
 
-    protected function assertSuccess(Request $response)
+    protected function assertSuccess(RawMessage $response)
     {
         if (!isset($response->body()['responseError'])) {
             return;

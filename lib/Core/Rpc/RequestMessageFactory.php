@@ -3,10 +3,11 @@
 namespace Phpactor\LanguageServer\Core\Rpc;
 
 use RuntimeException;
+use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 
 class RequestMessageFactory
 {
-    public static function fromRequest(Request $request): RequestMessage
+    public static function fromRequest(RawMessage $request): RequestMessage
     {
         $array = $request->body();
 
