@@ -4,8 +4,13 @@ namespace Phpactor\LanguageServer\Handler\Example;
 
 use Amp\Delayed;
 use Amp\Promise;
+use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Server\ServerClient;
+use Ramsey\Uuid\Uuid;
 
 class ProgressHandler implements Handler
 {
@@ -25,7 +30,7 @@ class ProgressHandler implements Handler
     public function progress(ServerClient $client): Promise
     {
         return \Amp\call(function () use ($client) {
-            $token = uniqid();
+            $token = Uuid::uuid4();
             yield $client->request('window/workDoneProgress/create', [
                 'token' => $token,
             ]);
@@ -39,7 +44,7 @@ class ProgressHandler implements Handler
                 ],
             ]);
 
-            for ($progress = 0; $progress <= 100; $progress++) {
+            for($progress = 0; $progress <= 100; $progress++) {
                 $client->notification('$/progress', [
                     'token' => $token,
                     'value' => [
@@ -54,3 +59,4 @@ class ProgressHandler implements Handler
         });
     }
 }
+
