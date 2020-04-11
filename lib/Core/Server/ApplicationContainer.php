@@ -65,7 +65,7 @@ final class ApplicationContainer implements Handler
     /**
      * @return Promise<Message|null>
      */
-    public function dispatch(RequestMessage $message, array $extraArgs): Promise
+    public function dispatch(Message $message, array $extraArgs): Promise
     {
         return $this->dispatcher->dispatch($this->handlers(), $message, $extraArgs);
     }
