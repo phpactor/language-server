@@ -9,12 +9,16 @@ use RuntimeException;
 
 class ResponseWatcher
 {
+    /**
+     * @var array<string, Deferred<ResponseMessage>>
+     */
     private $watchers = [];
 
     public function handle(ResponseMessage $response): void
     {
         if (isset($this->watchers[$response->id])) {
             $this->watchers[$response->id]->resolve($response);
+            return;
         }
 
         throw new RuntimeException(sprintf(
@@ -22,6 +26,9 @@ class ResponseWatcher
         ));
     }
 
+    /**
+     * @return Promise<ResponseMessage>
+     */
     public function waitForResponse(string $requestId): Promise
     {
         $deferred = new Deferred();
