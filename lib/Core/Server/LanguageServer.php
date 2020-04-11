@@ -19,7 +19,7 @@ use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
-use Phpactor\LanguageServer\Core\Server\Parser\LspRequestReader;
+use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
@@ -205,7 +205,7 @@ final class LanguageServer implements StatProvider
                 new ServiceManager($transmitter, $this->logger)
             );
 
-            $reader = new LspRequestReader($connection->stream());
+            $reader = new LspMessageReader($connection->stream());
 
             while (null !== $request = yield $reader->wait()) {
                 $this->logger->info('REQUEST', $request->body());

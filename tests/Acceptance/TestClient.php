@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
 use Amp\Socket\ResourceSocket;
-use Phpactor\LanguageServer\Core\Server\Parser\LspRequestReader;
+use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 
 class TestClient
@@ -27,7 +27,7 @@ class TestClient
 
 
         $responses = \Amp\Promise\wait(\Amp\call(function () {
-            $reader = new LspRequestReader($this->socket);
+            $reader = new LspMessageReader($this->socket);
             $responses = [];
             while (null !== $response = yield $reader->wait()) {
                 $responses[] = $response;

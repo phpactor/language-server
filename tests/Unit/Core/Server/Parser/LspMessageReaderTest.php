@@ -4,10 +4,10 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Parser;
 
 use Amp\ByteStream\InMemoryStream;
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Phpactor\LanguageServer\Core\Server\Parser\LspRequestReader;
+use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
 use Phpactor\LanguageServer\Core\Rpc\Request;
 
-class LspRequestReaderTest extends TestCase
+class LspMessageReaderTest extends TestCase
 {
     /**
      * @var LanguageServerProtocolParser
@@ -33,7 +33,7 @@ Content-Type: foo\r\n\r\n
 EOT
         );
 
-        $reader = new LspRequestReader($stream);
+        $reader = new LspMessageReader($stream);
         $result = \Amp\Promise\wait($reader->wait());
         $this->assertInstanceOf(Request::class, $result);
     }
@@ -59,7 +59,7 @@ Content-Type: foo\r\n\r\n
 }
 EOT
         );
-        $reader = new LspRequestReader($stream);
+        $reader = new LspMessageReader($stream);
         $result = \Amp\Promise\wait($reader->wait());
         $this->assertInstanceOf(Request::class, $result, 'first');
         $result = \Amp\Promise\wait($reader->wait());
