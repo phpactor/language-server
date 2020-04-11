@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Rpc;
 
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
@@ -12,7 +13,6 @@ class RequestMessageFactoryTest extends TestCase
     public function testExceptionOnInvalidKeys()
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Request has invalid keys: "foo", valid keys: "jsonrpc", "id", "method", "params"');
         $request = new RawMessage([], ['foo' => 'bar']);
         RequestMessageFactory::fromRequest($request);
     }
@@ -20,7 +20,6 @@ class RequestMessageFactoryTest extends TestCase
     public function testExceptionMissingKeys()
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('missing required keys');
         $request = new RawMessage([], []);
         RequestMessageFactory::fromRequest($request);
     }
@@ -49,9 +48,9 @@ class RequestMessageFactoryTest extends TestCase
             'params' => ['one' => 'two']
         ]);
         $request = RequestMessageFactory::fromRequest($request);
+        self::assertInstanceOf(NotificationMessage::class, $request);
         $this->assertEquals('foobar', $request->method);
         $this->assertEquals(2.0, $request->jsonrpc);
-        $this->assertSame(null, $request->id);
         $this->assertEquals(['one' => 'two'], $request->params);
     }
 }

@@ -2,41 +2,22 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
+use DTL\Invoke\Invoke;
 use RuntimeException;
 use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 
 class RequestMessageFactory
 {
-    public static function fromRequest(RawMessage $request): RequestMessage
+    public static function fromRequest(RawMessage $request): Message
     {
-        $array = $request->body();
+        $body = $request->body();
+        unset($body['jsonrpc']);
 
-        $keys = [ 'jsonrpc', 'id', 'method', 'params' ];
-
-        if ($diff = array_diff(array_keys($array), $keys)) {
-            throw new RuntimeException(sprintf(
-                'Request has invalid keys: "%s", valid keys: "%s"',
-                implode('", "', $diff),
-                implode('", "', $keys)
-            ));
+        if (!isset($body['id']) || $body['id'] === null) {
+            unset($body['id']);
+            return Invoke::new(NotificationMessage::class, $body);
         }
 
-        $array = array_merge([
-            'id' => null
-        ], $array);
-
-        if ($diff = array_diff($keys, array_keys($array))) {
-            throw new RuntimeException(sprintf(
-                'Request is missing required keys: "%s"',
-                implode(', ', $diff)
-            ));
-        }
-
-        $id = $array['id'];
-        if (!is_null($id)) {
-            $id = (int)$id;
-        }
-
-        return new RequestMessage($id, $array['method'], $array['params'] ?? []);
+        return Invoke::new(RequestMessage::class, $body);
     }
 }
