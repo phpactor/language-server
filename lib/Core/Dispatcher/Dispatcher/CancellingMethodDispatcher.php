@@ -7,6 +7,7 @@ use Amp\Promise;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -42,7 +43,7 @@ class CancellingMethodDispatcher implements Dispatcher
      */
     public function dispatch(
         Handlers $handlers,
-        RequestMessage $request,
+        Message $request,
         array $extraArgs
     ): Promise {
         return \Amp\call(function () use ($handlers, $request, $extraArgs) {
@@ -66,7 +67,7 @@ class CancellingMethodDispatcher implements Dispatcher
         });
     }
 
-    private function cancelRequest(RequestMessage $request): void
+    private function cancelRequest(Message $request): void
     {
         $id = $request->params['id'];
         if (!isset($this->cancellations[$id])) {

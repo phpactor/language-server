@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -26,7 +27,7 @@ class ErrorCatchingDispatcher implements Dispatcher
         $this->innerDispatcher = $innerDispatcher;
     }
 
-    public function dispatch(Handlers $handlers, RequestMessage $request, array $extraArgs): Promise
+    public function dispatch(Handlers $handlers, Message $request, array $extraArgs): Promise
     {
         return \Amp\call(function () use ($handlers, $request, $extraArgs) {
             try {
@@ -34,6 +35,11 @@ class ErrorCatchingDispatcher implements Dispatcher
             } catch (ServerControl $exception) {
                 throw $exception;
             } catch (Throwable $error) {
+                if (!$request instanceof RequestMessage) {
+                    // how to handle this?
+                    throw $error;
+                }
+
                 return new Success(new ResponseMessage($request->id, null, new ResponseError(
                     $this->resolveErrorCode($error),
                     $error->getMessage(),
