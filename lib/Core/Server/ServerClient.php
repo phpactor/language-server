@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Core\Server;
 
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 
@@ -36,10 +37,10 @@ class ServerClient
      */
     public function request(string $method, array $params): Promise
     {
-        $requestId = uniqid();
-        $response = $this->responseWatcher->waitForResponse($requestId);
-        $this->transmitter->transmit(new NotificationMessage($method, $params));
+        $requestId = rand(0,1000);
+        $response = $this->responseWatcher->waitForResponse((string)$requestId);
+        $this->transmitter->transmit(new RequestMessage($requestId, $method, $params));
 
-        return $response->wait();
+        return $response;
     }
 }

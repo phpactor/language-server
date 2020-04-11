@@ -215,7 +215,7 @@ final class LanguageServer implements StatProvider
             $reader = new LspMessageReader($connection->stream());
 
             while (null !== $request = yield $reader->wait()) {
-                $this->logger->info('REQUEST', $request->body());
+                $this->logger->info('IN :', $request->body());
                 $this->requestCount++;
 
                 $request = RequestMessageFactory::fromRequest($request);

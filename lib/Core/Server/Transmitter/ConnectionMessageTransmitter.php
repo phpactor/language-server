@@ -34,7 +34,7 @@ class ConnectionMessageTransmitter implements MessageTransmitter
 
     public function transmit(Message $response): void
     {
-        $this->logger->info('RESPONSE', (array) $response);
+        $this->logger->info('OUT: ', (array) $response);
 
         $responseBody = $this->formatter->write($response);
 

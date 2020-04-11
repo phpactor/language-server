@@ -22,7 +22,6 @@ class ResponseDispatcher implements Dispatcher
      */
     private $innerDispatcher;
 
-
     public function __construct(Dispatcher $innerDispatcher, ResponseWatcher $watcher)
     {
         $this->watcher = $watcher;

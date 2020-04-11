@@ -14,7 +14,7 @@ class NotificationMessage extends Message
      */
     public $params;
 
-    public function __construct(string $method, ?array $params)
+    public function __construct(string $method, ?array $params = null)
     {
         $this->method = $method;
         $this->params = $params;
