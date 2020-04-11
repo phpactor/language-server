@@ -80,12 +80,18 @@ final class LanguageServer implements StatProvider
      */
     private $requestCount = 0;
 
+    /**
+     * @var ResponseWatcher
+     */
+    private $responseWatcher;
+
     public function __construct(
         Dispatcher $dispatcher,
         Handlers $systemHandlers,
         HandlerLoader $handlerLoader,
         LoggerInterface $logger,
         StreamProvider $streamProvider,
+        ResponseWatcher $responseWatcher,
         bool $enableEventLoop = true
     ) {
         $this->logger = $logger;
@@ -98,6 +104,7 @@ final class LanguageServer implements StatProvider
         $this->created = new DateTimeImmutable();
 
         $this->systemHandlers = $this->addSystemHandlers($systemHandlers);
+        $this->responseWatcher = $responseWatcher;
     }
 
     /**
@@ -197,6 +204,7 @@ final class LanguageServer implements StatProvider
     {
         return \Amp\call(function () use ($connection) {
             $transmitter = new ConnectionMessageTransmitter($connection, $this->logger);
+            $serverClient = new ServerClient($transmitter, $this->responseWatcher);
             $container = new ApplicationContainer(
                 $this->dispatcher,
                 $this->systemHandlers,
@@ -212,10 +220,11 @@ final class LanguageServer implements StatProvider
 
                 $request = RequestMessageFactory::fromRequest($request);
 
-                \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection) {
+                \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection, $serverClient) {
                     try {
                         $response = yield $container->dispatch($request, [
-                            'transmitter' => $transmitter
+                            '_transmitter' => $transmitter,
+                            '_serverClient' => $serverClient,
                         ]);
                     } catch (ExitSession $e) {
                         $connection->stream()->end();

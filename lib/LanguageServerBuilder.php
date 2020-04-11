@@ -166,7 +166,8 @@ class LanguageServerBuilder
      */
     public function build(): LanguageServer
     {
-        $dispatcher = $this->buildDispatcher();
+        $watcher = new ResponseWatcher();
+        $dispatcher = $this->buildDispatcher($watcher);
 
         if ($this->tcpAddress) {
             $provider = new SocketStreamProvider(
@@ -191,6 +192,7 @@ class LanguageServerBuilder
             $this->buildHandlerLoader(),
             $this->logger,
             $provider,
+            $watcher,
             $this->eventLoop
         );
     }
@@ -198,7 +200,7 @@ class LanguageServerBuilder
     public function buildServerTester(): ServerTester
     {
         return new ServerTester(new ApplicationContainer(
-            $this->buildDispatcher(),
+            $this->buildDispatcher(new ResponseWatcher()),
             $this->buildHandlers(),
             $this->buildHandlerLoader(),
             new ServiceManager(
@@ -208,7 +210,7 @@ class LanguageServerBuilder
         ));
     }
 
-    private function buildDispatcher(): Dispatcher
+    private function buildDispatcher(ResponseWatcher $watcher): Dispatcher
     {
         $dispatcher = new MethodDispatcher(
             new DTLArgumentResolver()
@@ -216,7 +218,7 @@ class LanguageServerBuilder
 
         $dispatcher = new ResponseDispatcher(
             $dispatcher,
-            new ResponseWatcher()
+            $watcher,
         );
 
         $dispatcher = new CancellingMethodDispatcher(
