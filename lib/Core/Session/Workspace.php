@@ -2,13 +2,18 @@
 
 namespace Phpactor\LanguageServer\Core\Session;
 
+use ArrayIterator;
 use Countable;
+use IteratorAggregate;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 
-class Workspace implements Countable
+/**
+ * @implements IteratorAggregate<string,TextDocumentItem>
+ */
+class Workspace implements Countable, IteratorAggregate
 {
     /**
      * @var TextDocumentItem[]
@@ -68,5 +73,13 @@ class Workspace implements Countable
     public function count(): int
     {
         return $this->openFiles();
+    }
+
+    /**
+     * @return ArrayIterator<string,TextDocumentItem>
+     */
+    public function getIterator(): ArrayIterator
+    {
+        return new ArrayIterator($this->documents);
     }
 }

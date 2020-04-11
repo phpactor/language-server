@@ -82,4 +82,17 @@ class WorkspaceTest extends TestCase
 
         $this->assertCount(0, $this->workspace);
     }
+
+    public function testIteratesOverDocuments()
+    {
+        $doc1 = new TextDocumentItem();
+        $doc1->uri = 'foobar1';
+        $doc2 = new TextDocumentItem();
+        $doc2->uri = 'foobar2';
+
+        $this->workspace->open($doc1);
+        $this->workspace->open($doc2);
+
+        $this->assertCount(2, iterator_to_array($this->workspace));
+    }
 }
