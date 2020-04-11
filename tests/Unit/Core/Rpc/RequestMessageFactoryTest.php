@@ -61,7 +61,7 @@ class RequestMessageFactoryTest extends TestCase
             'jsonrpc' => 2.0,
             'id' => 123,
             'result' => 'foobar',
-            'error' => null 
+            'error' => null
         ]);
         $response = RequestMessageFactory::fromRequest($response);
         self::assertInstanceOf(ResponseMessage::class, $response);

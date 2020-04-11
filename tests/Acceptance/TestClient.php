@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Tests\Acceptance;
 
 use Amp\Socket\ResourceSocket;
 use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
-use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 
 class TestClient
 {

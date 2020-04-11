@@ -3,8 +3,6 @@
 namespace Phpactor\LanguageServer\Core\Rpc;
 
 use DTL\Invoke\Invoke;
-use RuntimeException;
-use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 
 class RequestMessageFactory
 {

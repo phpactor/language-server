@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 interface RequestReader
 {
     /**
-     * @return Promise<Request|null>
+     * @return Promise<RawMessage|null>
      */
     public function wait(): Promise;
 }

@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
 use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -47,9 +48,11 @@ class CancellingMethodDispatcher implements Dispatcher
         array $extraArgs
     ): Promise {
         return \Amp\call(function () use ($handlers, $request, $extraArgs) {
-            if ($request->method === self::METHOD_CANCEL_REQUEST) {
-                $this->cancelRequest($request);
-                return null;
+            if ($request instanceof NotificationMessage) {
+                if ($request->method === self::METHOD_CANCEL_REQUEST) {
+                    $this->cancelRequest($request);
+                    return null;
+                }
             }
 
             $cancellationTokenSource = new CancellationTokenSource();
@@ -67,7 +70,7 @@ class CancellingMethodDispatcher implements Dispatcher
         });
     }
 
-    private function cancelRequest(Message $request): void
+    private function cancelRequest(NotificationMessage $request): void
     {
         $id = $request->params['id'];
         if (!isset($this->cancellations[$id])) {

@@ -39,9 +39,6 @@ final class LspMessageReader implements RequestReader
         $this->stream = $stream;
     }
 
-    /**
-     * @return Promise<Request|null>
-     */
     public function wait(): Promise
     {
         return \Amp\call(function () {
