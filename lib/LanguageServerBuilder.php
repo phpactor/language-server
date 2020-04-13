@@ -9,12 +9,14 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\CancellingMethodDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\RecordingDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ResponseDispatcher;
 use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
+use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
@@ -164,7 +166,8 @@ class LanguageServerBuilder
      */
     public function build(): LanguageServer
     {
-        $dispatcher = $this->buildDispatcher();
+        $watcher = new ResponseWatcher();
+        $dispatcher = $this->buildDispatcher($watcher);
 
         if ($this->tcpAddress) {
             $provider = new SocketStreamProvider(
@@ -189,6 +192,7 @@ class LanguageServerBuilder
             $this->buildHandlerLoader(),
             $this->logger,
             $provider,
+            $watcher,
             $this->eventLoop
         );
     }
@@ -196,7 +200,7 @@ class LanguageServerBuilder
     public function buildServerTester(): ServerTester
     {
         return new ServerTester(new ApplicationContainer(
-            $this->buildDispatcher(),
+            $this->buildDispatcher(new ResponseWatcher()),
             $this->buildHandlers(),
             $this->buildHandlerLoader(),
             new ServiceManager(
@@ -206,10 +210,15 @@ class LanguageServerBuilder
         ));
     }
 
-    private function buildDispatcher(): Dispatcher
+    private function buildDispatcher(ResponseWatcher $watcher): Dispatcher
     {
         $dispatcher = new MethodDispatcher(
             new DTLArgumentResolver()
+        );
+
+        $dispatcher = new ResponseDispatcher(
+            $dispatcher,
+            $watcher,
         );
 
         $dispatcher = new CancellingMethodDispatcher(

@@ -11,7 +11,7 @@ class RequestMessageFactory
         $body = $request->body();
         unset($body['jsonrpc']);
 
-        if (isset($body['result'])) {
+        if (array_key_exists('result', $body)) {
             return Invoke::new(ResponseMessage::class, $body);
         }
 
