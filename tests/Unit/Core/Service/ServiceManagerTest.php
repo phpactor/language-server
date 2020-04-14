@@ -50,6 +50,16 @@ class ServiceManagerTest extends AsyncTestCase
         self::assertTrue($service->called);
     }
 
+    public function testExceptionWhenTryingToStartRunningService()
+    {
+        $this->expectExceptionMessage('Service "ping" is already running');
+        $serviceManager = $this->createServiceManager();
+        $service = new PingService();
+        $serviceManager->register($service);
+        $serviceManager->start('ping');
+        $serviceManager->start('ping');
+    }
+
     public function testStopService()
     {
         $serviceManager = $this->createServiceManager();

@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Handler\Example;
 
+use Amp\CancellationToken;
+use Amp\CancelledException;
 use Amp\Delayed;
 use Amp\Promise;
 use LanguageServerProtocol\MessageType;
@@ -33,10 +35,15 @@ class PingHandler implements ServiceProvider
     /**
      * @return Promise<null>
      */
-    public function ping(MessageTransmitter $transmitter): Promise
+    public function ping(MessageTransmitter $transmitter, CancellationToken $cancel): Promise
     {
-        return \Amp\call(function () use ($transmitter) {
+        return \Amp\call(function () use ($transmitter, $cancel) {
             while (true) {
+                try {
+                    $cancel->throwIfRequested();
+                } catch (CancelledException $cancelled) {
+                    break;
+                }
                 yield new Delayed(1000);
                 $transmitter->transmit(new NotificationMessage('window/logMessage', [
                     'type' => MessageType::INFO,

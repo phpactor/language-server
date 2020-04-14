@@ -74,6 +74,13 @@ class ServiceManager
 
         $service = $this->services[$serviceName];
 
+        if (isset($this->cancellations[$serviceName])) {
+            throw new RuntimeException(sprintf(
+                'Service "%s" is already running',
+                $serviceName
+            ));
+        }
+
         $this->logger->info(sprintf('Starting service: %s (%s)', $serviceName, get_class($service)));
         
         if (!method_exists($service, $serviceName)) {
