@@ -8,7 +8,6 @@ use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
-use Phpactor\LanguageServer\Core\Server\ServerClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Psr\Log\LoggerInterface;
 use RuntimeException;

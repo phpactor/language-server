@@ -2,19 +2,11 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 
-use DateInterval;
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ServerClient;
-use Phpactor\LanguageServer\Core\Server\ServerClient\MessageServerClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
-use Phpactor\LanguageServer\Handler\System\SystemHandler;
-use Phpactor\LanguageServer\Core\Server\ServerStats;
-use Phpactor\LanguageServer\Core\Server\StatProvider;
-use Phpactor\LanguageServer\Test\HandlerTester;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
-use Phpactor\TestUtils\PHPUnit\TestCase;
 use Prophecy\Argument;
 
 class ServiceHandlerTest extends HandlerTestCase
