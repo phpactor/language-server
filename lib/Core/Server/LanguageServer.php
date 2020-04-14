@@ -8,6 +8,7 @@ use Amp\Promise;
 use DateTimeImmutable;
 use Exception;
 use Generator;
+use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -205,11 +206,12 @@ final class LanguageServer implements StatProvider
         return \Amp\call(function () use ($connection) {
             $transmitter = new ConnectionMessageTransmitter($connection, $this->logger);
             $serverClient = new ServerClient($transmitter, $this->responseWatcher);
+            $serviceManager = new ServiceManager($transmitter, $this->logger, new DTLArgumentResolver());
             $container = new ApplicationContainer(
                 $this->dispatcher,
                 $this->systemHandlers,
                 $this->handlerLoader,
-                new ServiceManager($transmitter, $this->logger)
+                $serviceManager
             );
 
             $reader = new LspMessageReader($connection->stream());
@@ -220,11 +222,12 @@ final class LanguageServer implements StatProvider
 
                 $request = RequestMessageFactory::fromRequest($request);
 
-                \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection, $serverClient) {
+                \Amp\asyncCall(function () use ($serviceManager, $request, $container, $transmitter, $connection, $serverClient) {
                     try {
                         $response = yield $container->dispatch($request, [
                             '_transmitter' => $transmitter,
                             '_serverClient' => $serverClient,
+                            '_serviceManager' => $serviceManager,
                         ]);
                     } catch (ExitSession $e) {
                         $connection->stream()->end();

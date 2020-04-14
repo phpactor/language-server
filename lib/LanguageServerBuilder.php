@@ -205,7 +205,8 @@ class LanguageServerBuilder
             $this->buildHandlerLoader(),
             new ServiceManager(
                 new NullMessageTransmitter(),
-                $this->logger
+                $this->logger,
+                $this->buildArgumentResolver()
             )
         ));
     }
@@ -213,7 +214,7 @@ class LanguageServerBuilder
     private function buildDispatcher(ResponseWatcher $watcher): Dispatcher
     {
         $dispatcher = new MethodDispatcher(
-            new DTLArgumentResolver()
+            $this->buildArgumentResolver()
         );
 
         $dispatcher = new ResponseDispatcher(
@@ -260,5 +261,10 @@ class LanguageServerBuilder
     private function buildHandlers(): Handlers
     {
         return new Handlers($this->handlers);
+    }
+
+    private function buildArgumentResolver(): DTLArgumentResolver
+    {
+        return new DTLArgumentResolver();
     }
 }

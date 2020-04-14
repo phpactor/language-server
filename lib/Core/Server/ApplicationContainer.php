@@ -152,6 +152,6 @@ final class ApplicationContainer implements Handler
             );
         }
         
-        $this->serviceManager->start();
+        $this->serviceManager->startAll();
     }
 }
