@@ -39,6 +39,7 @@ class SystemHandler implements Handler
         $transmitter->transmit(new NotificationMessage('window/showMessage', [
             'type' => MessageType::INFO,
             'message' => implode(', ', [
+                'pid: ' . getmypid(),
                 'up: ' . $this->statProvider->stats()->uptime->format('%ad %hh %im %ss'),
                 'connections: ' . $this->statProvider->stats()->connectionCount,
                 'requests: ' . $this->statProvider->stats()->requestCount,
