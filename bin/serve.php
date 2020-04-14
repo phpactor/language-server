@@ -16,6 +16,7 @@ use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
 use Phpactor\LanguageServer\Handler\Example\PingHandler;
 use Phpactor\LanguageServer\Handler\Example\ProgressHandler;
+use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\AbstractLogger;
@@ -61,7 +62,8 @@ $logger->info('i am a demonstration server and provide no functionality');
 $builder = LanguageServerBuilder::create($logger);
 $builder->catchExceptions(true);
 $builder->addSystemHandler(new TextDocumentHandler(new Workspace()));
-//$builder->addSystemHandler(new PingHandler());
+$builder->addSystemHandler(new ServiceHandler(new Workspace()));
+$builder->addSystemHandler(new PingHandler());
 $builder->addSystemHandler(new ProgressHandler());
 $builder->tcpServer($options['address']);
 

@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
+use Phpactor\LanguageServer\Core\Server\ServerClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -59,6 +60,14 @@ class ServiceManager
         foreach ($provider->services() as $serviceMethodName) {
             $this->add($serviceMethodName, $provider);
         }
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function runningServices(): array
+    {
+        return array_keys($this->services);
     }
 
     public function startAll(): void
@@ -133,6 +142,7 @@ class ServiceManager
         $tokenSource = $this->cancellations[$serviceName];
         assert($tokenSource instanceof CancellationTokenSource);
         $tokenSource->cancel();
+        unset($this->cancellations[$serviceName]);
     }
 
     private function add(string $name, ServiceProvider $service): void
