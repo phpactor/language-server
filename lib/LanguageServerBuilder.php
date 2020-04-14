@@ -105,10 +105,10 @@ class LanguageServerBuilder
 
     /**
      * Add a handler that will be registered at the system (server) level.
-     * Such handlers will bem general to all connections made to the server and
-     * is not connection (session) specific.
+     * Such handlers will be general to all connections made to the server and
+     * are not connection (session) specific.
      *
-     * For sessiaon specific handlers. See LanguageBuilder#addHandlerLoader.
+     * For session specific handlers. See LanguageBuilder#addHandlerLoader.
      */
     public function addSystemHandler(Handler $handler): self
     {
