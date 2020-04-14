@@ -10,8 +10,10 @@ server](https://microsoft.github.io/language-server-protocol/specification) plat
   features.
 - Can run as either a TCP server (accepting many connections) or a STDIO
   server (invoked by the client).
-- Can handle multiple sessions.
+- Multiple sessions.
 - Can manage text document synchronization.
+- Support for services.
+- Support for bi-directional requests.
 
 See the [Language Server
 Specification](https://microsoft.github.io/language-server-protocol/specification)
