@@ -63,8 +63,8 @@ class ServiceManager
 
     public function startAll(): void
     {
-        foreach ($this->services as $serviceMethodName => $service) {
-            $this->start($serviceMethodName, $service);
+        foreach (array_keys($this->services) as $serviceMethodName) {
+            $this->start($serviceMethodName);
         }
     }
 
@@ -118,7 +118,8 @@ class ServiceManager
         if (!isset($this->cancellations[$serviceName])) {
             throw new RuntimeException(sprintf(
                 'Cannot stop service "%s" it has not been started, running services: "%s"',
-                $serviceName, implode('", "', array_keys($this->cancellations))
+                $serviceName,
+                implode('", "', array_keys($this->cancellations))
             ));
         }
 
@@ -132,12 +133,13 @@ class ServiceManager
         $this->services[$name] = $service;
     }
 
-    private function assertServiceExists(string $serviceName)
+    private function assertServiceExists(string $serviceName): void
     {
         if (!isset($this->services[$serviceName])) {
             throw new RuntimeException(sprintf(
                 'Service "%s" not known, known services: "%s"',
-                $serviceName, implode('", "', array_keys($this->services))
+                $serviceName,
+                implode('", "', array_keys($this->services))
             ));
         }
     }
