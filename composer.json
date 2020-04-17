@@ -17,7 +17,9 @@
         "dantleech/argument-resolver": "^1.1",
         "amphp/socket": "^1.1",
         "dantleech/invoke": "^1.0",
-        "ramsey/uuid": "^4.0"
+        "ramsey/uuid": "^4.0",
+        "psr/event-dispatcher": "^1.0",
+        "phly/phly-event-dispatcher": "^1.0"
     },
     "require-dev": {
         "amphp/phpunit-util": "^1.3",

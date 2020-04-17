@@ -8,7 +8,14 @@ use IteratorAggregate;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use League\Event\Emitter;
+use Phly\EventDispatcher\EventDispatcher;
+use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
+use Phpactor\LanguageServer\Event\TextDocumentClosed;
+use Phpactor\LanguageServer\Event\TextDocumentOpened;
+use Phpactor\LanguageServer\Event\TextDocumentUpdated;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @implements IteratorAggregate<string,TextDocumentItem>
@@ -24,6 +31,16 @@ class Workspace implements Countable, IteratorAggregate
      * @var int
      */
     private $processId;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatchter;
+
+    public function __construct(EventDispatcherInterface $dispatchter = null)
+    {
+        $this->dispatchter = $dispatchter ?: new NullEventDispatcher();
+    }
 
     public function has(string $uri): bool
     {
@@ -42,6 +59,7 @@ class Workspace implements Countable, IteratorAggregate
     public function open(TextDocumentItem $textDocument): void
     {
         $this->documents[$textDocument->uri] = $textDocument;
+        $this->dispatchter->dispatch(new TextDocumentOpened($textDocument));
     }
 
     public function update(VersionedTextDocumentIdentifier $textDocument, string $updatedText): void
@@ -51,6 +69,7 @@ class Workspace implements Countable, IteratorAggregate
         }
 
         $this->documents[$textDocument->uri]->text = $updatedText;
+        $this->dispatchter->dispatch(new TextDocumentUpdated($textDocument, $updatedText));
     }
 
     public function openFiles(): int
@@ -58,13 +77,14 @@ class Workspace implements Countable, IteratorAggregate
         return count($this->documents);
     }
 
-    public function remove(TextDocumentIdentifier $textDocument): void
+    public function remove(TextDocumentIdentifier $identifier): void
     {
-        if (!isset($this->documents[$textDocument->uri])) {
+        if (!isset($this->documents[$identifier->uri])) {
             return;
         }
 
-        unset($this->documents[$textDocument->uri]);
+        unset($this->documents[$identifier->uri]);
+        $this->dispatchter->dispatch(new TextDocumentClosed($identifier));
     }
 
     /**
