@@ -8,8 +8,6 @@ use IteratorAggregate;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use League\Event\Emitter;
-use Phly\EventDispatcher\EventDispatcher;
 use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
