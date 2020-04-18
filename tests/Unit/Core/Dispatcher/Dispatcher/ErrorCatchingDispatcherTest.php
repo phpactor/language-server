@@ -53,7 +53,7 @@ class ErrorCatchingDispatcherTest extends TestCase
 
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertInstanceOf(ResponseError::class, $response->error);
-        $this->assertEquals('Hello', $response->error->message);
+        $this->assertEquals('Exception [Exception] Hello', $response->error->message);
     }
 
     public function testLogsErrorsForNotificationsAndResponses()
@@ -78,7 +78,7 @@ class ErrorCatchingDispatcherTest extends TestCase
         $this->assertInstanceOf(ResponseMessage::class, $response);
         $this->assertInstanceOf(ResponseError::class, $response->error);
         $this->assertEquals(ErrorCodes::MethodNotFound, $response->error->code);
-        $this->assertEquals('Hello', $response->error->message);
+        $this->assertEquals('Exception [Phpactor\LanguageServer\Core\Handler\HandlerNotFound] Hello', $response->error->message);
     }
 
     public function testReturnsResultsFromInnerDispatcher()

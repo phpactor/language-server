@@ -42,19 +42,20 @@ class ErrorCatchingDispatcher implements Dispatcher
             } catch (ServerControl $exception) {
                 throw $exception;
             } catch (Throwable $error) {
+                $message = sprintf('Exception [%s] %s', get_class($error), $error->getMessage());
                 if (!$request instanceof RequestMessage) {
                     $this->logger->error(sprintf(
                         'Error when handling "%s" (%s): %s',
                         get_class($request),
                         json_encode($request),
-                        $error->getMessage()
+                        $message
                     ));
                     return null;
                 }
 
                 return new Success(new ResponseMessage($request->id, null, new ResponseError(
                     $this->resolveErrorCode($error),
-                    $error->getMessage(),
+                    $message,
                     $error->getTraceAsString()
                 )));
             }
