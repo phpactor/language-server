@@ -8,10 +8,15 @@ use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
+use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
+use Phpactor\LanguageServer\Core\Server\ServerClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitterStack;
+use Phpactor\LanguageServer\Core\Service\ServiceManager;
+use Psr\Log\NullLogger;
 
 class HandlerTester
 {
@@ -30,11 +35,33 @@ class HandlerTester
      */
     private $cancellationTokenSource;
 
+    /**
+     * @var ResponseWatcher
+     */
+    private $responseWatcher;
+
+    /**
+     * @var ServerClient
+     */
+    private $serverClient;
+
+    /**
+     * @var ServiceManager
+     */
+    private $serviceManager;
+
     public function __construct(Handler $handler)
     {
         $this->handler = $handler;
         $this->messageTransmitter = new TestMessageTransmitter();
         $this->cancellationTokenSource = new CancellationTokenSource();
+        $this->responseWatcher = new ResponseWatcher();
+        $this->serverClient = new ServerClient($this->messageTransmitter, $this->responseWatcher);
+        $this->serviceManager = new ServiceManager($this->messageTransmitter, new NullLogger(), new DTLArgumentResolver());
+
+        if ($handler instanceof ServiceProvider) {
+            $this->serviceManager->register($handler);
+        }
     }
 
     public function transmitter(): TestMessageTransmitterStack
@@ -47,6 +74,11 @@ class HandlerTester
         $this->cancellationTokenSource->cancel();
     }
 
+    public function responseWatcher(): ResponseWatcher
+    {
+        return $this->responseWatcher;
+    }
+
     /**
      * @return Promise<ResponseMessage|null>
      */
@@ -57,7 +89,9 @@ class HandlerTester
 
         $extraArgs = [
             '_transmitter' => $this->messageTransmitter,
-            '_token' => $this->cancellationTokenSource->getToken()
+            '_token' => $this->cancellationTokenSource->getToken(),
+            '_serverClient' => $this->serverClient,
+            '_serviceManager' => $this->serviceManager,
         ];
 
         $dispatcher = new MethodDispatcher(
