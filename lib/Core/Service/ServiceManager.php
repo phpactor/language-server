@@ -42,7 +42,7 @@ class ServiceManager
     /**
      * @var array
      */
-    private $cancellations;
+    private $cancellations = [];
 
     public function __construct(
         MessageTransmitter $transmitter,
@@ -142,6 +142,11 @@ class ServiceManager
         assert($tokenSource instanceof CancellationTokenSource);
         $tokenSource->cancel();
         unset($this->cancellations[$serviceName]);
+    }
+
+    public function isRunning(string $serviceName): bool
+    {
+        return isset($this->cancellations[$serviceName]);
     }
 
     private function add(string $name, ServiceProvider $service): void

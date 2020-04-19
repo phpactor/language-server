@@ -46,6 +46,7 @@ class ServiceManagerTest extends AsyncTestCase
         $serviceManager->register($service);
         self::assertFalse($service->called);
         $serviceManager->start('ping');
+        self::assertTrue($serviceManager->isRunning('ping'));
 
         self::assertTrue($service->called);
     }
