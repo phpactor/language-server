@@ -84,7 +84,6 @@ class HandlerTester
      */
     public function dispatch(string $methodName, array $params): Promise
     {
-        $this->messageTransmitter = new TestMessageTransmitter();
         $this->cancellationTokenSource = new CancellationTokenSource();
 
         $extraArgs = [

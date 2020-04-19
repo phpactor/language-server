@@ -20,4 +20,9 @@ class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitt
     {
         return array_shift($this->buffer);
     }
+
+    public function clear(): void
+    {
+        $this->buffer = [];
+    }
 }
