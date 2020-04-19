@@ -109,4 +109,9 @@ class HandlerTester
     {
         return \Amp\Promise\wait($this->dispatch($methodName, $params));
     }
+
+    public function serviceManager(): ServiceManager
+    {
+        return $this->serviceManager;
+    }
 }
