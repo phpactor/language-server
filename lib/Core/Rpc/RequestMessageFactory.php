@@ -3,10 +3,21 @@
 namespace Phpactor\LanguageServer\Core\Rpc;
 
 use DTL\Invoke\Invoke;
+use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
+use RuntimeException;
 
 class RequestMessageFactory
 {
     public static function fromRequest(RawMessage $request): Message
+    {
+        try {
+            return self::doFromRequest($request);
+        } catch (RuntimeException $error) {
+            throw new CouldNotCreateMessage($error->getMessage(), 0, $error);
+        }
+    }
+
+    private static function doFromRequest(RawMessage $request): Message
     {
         $body = $request->body();
         unset($body['jsonrpc']);

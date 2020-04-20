@@ -12,6 +12,10 @@ use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
+use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
+use Phpactor\LanguageServer\Core\Rpc\ResponseError;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
@@ -220,7 +224,16 @@ final class LanguageServer implements StatProvider
                 $this->logger->info('IN :', $request->body());
                 $this->requestCount++;
 
-                $request = RequestMessageFactory::fromRequest($request);
+                try {
+                    $request = RequestMessageFactory::fromRequest($request);
+                } catch (CouldNotCreateMessage $e) {
+                    $transmitter->transmit(new ResponseMessage(
+                        $request->body()['id'] ?? 0,
+                        [],
+                        new ResponseError(ErrorCodes::InternalError, $e->getMessage())
+                    ));
+                    continue;
+                }
 
                 \Amp\asyncCall(function () use ($serviceManager, $request, $container, $transmitter, $connection, $serverClient) {
                     try {
