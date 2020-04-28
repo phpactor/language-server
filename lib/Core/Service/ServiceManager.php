@@ -11,6 +11,7 @@ use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Throwable;
 
 class ServiceManager
 {
@@ -123,7 +124,16 @@ class ServiceManager
                 ));
             }
         
-            yield $promise;
+            try {
+                yield $promise;
+            } catch (Throwable $error) {
+                $this->logger->error(sprintf(
+                    'Error in service "%s:%s": %s',
+                    get_class($this),
+                    __FUNCTION__,
+                    $error->getMessage()
+                ));
+            }
         });
     }
 

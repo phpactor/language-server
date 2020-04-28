@@ -12,9 +12,7 @@ use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
-use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
-use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
@@ -32,6 +30,7 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use RuntimeException;
+use Throwable;
 
 final class LanguageServer implements StatProvider
 {
@@ -167,6 +166,11 @@ final class LanguageServer implements StatProvider
             return;
         }
         
+        Loop::setErrorHandler(function (Throwable $error) {
+            $this->logger->critical($error->getMessage());
+            throw $error;
+        });
+
         Loop::run(function () {
             $this->listenForConnections();
         });
@@ -230,7 +234,6 @@ final class LanguageServer implements StatProvider
                     $transmitter->transmit(new ResponseMessage(
                         $request->body()['id'] ?? 0,
                         [],
-                        new ResponseError(ErrorCodes::InternalError, $e->getMessage())
                     ));
                     continue;
                 }

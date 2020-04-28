@@ -8,25 +8,36 @@ use Amp\Delayed;
 use Amp\PHPUnit\AsyncTestCase;
 use Amp\Promise;
 use Amp\Success;
+use Exception;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
-use Psr\Log\NullLogger;
+use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class ServiceManagerTest extends AsyncTestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var ArgumentResolver
      */
     private $argumentResolver;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->argumentResolver = new DTLArgumentResolver();
+        $this->logger = $this->prophesize(LoggerInterface::class);
     }
 
     public function testStartAllServices()
@@ -59,6 +70,15 @@ class ServiceManagerTest extends AsyncTestCase
         $serviceManager->register($service);
         $serviceManager->start('ping');
         $serviceManager->start('ping');
+    }
+
+    public function testHandlesExceptionsFromServices()
+    {
+        $serviceManager = $this->createServiceManager();
+        $service = new ExceptionThrowingService();
+        $serviceManager->register($service);
+        $serviceManager->start('exception');
+        $this->logger->error(Argument::containingString('No'))->shouldHaveBeenCalled();
     }
 
     public function testStopService()
@@ -111,7 +131,7 @@ class ServiceManagerTest extends AsyncTestCase
 
     private function createServiceManager(): ServiceManager
     {
-        return new ServiceManager(new NullMessageTransmitter(), new NullLogger(), $this->argumentResolver);
+        return new ServiceManager(new NullMessageTransmitter(), $this->logger->reveal(), $this->argumentResolver);
     }
 }
 
@@ -225,6 +245,28 @@ class DaemonService implements ServiceProvider
             }
             $this->called = true;
             return null;
+        });
+    }
+}
+
+class ExceptionThrowingService implements ServiceProvider
+{
+    public function methods(): array
+    {
+        return [];
+    }
+
+    public function services(): array
+    {
+        return [
+            'exception',
+        ];
+    }
+
+    public function exception(CancellationToken $cancel): Promise
+    {
+        return \Amp\call(function () use ($cancel) {
+            throw new Exception('No');
         });
     }
 }
