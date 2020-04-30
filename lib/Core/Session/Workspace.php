@@ -14,6 +14,8 @@ use Phpactor\LanguageServer\Event\TextDocumentClosed;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * @implements IteratorAggregate<string,TextDocumentItem>
@@ -40,9 +42,15 @@ class Workspace implements Countable, IteratorAggregate
      */
     private $dispatchter;
 
-    public function __construct(EventDispatcherInterface $dispatchter = null)
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
+
+    public function __construct(EventDispatcherInterface $dispatchter = null, ?LoggerInterface $logger = null)
     {
         $this->dispatchter = $dispatchter ?: new NullEventDispatcher();
+        $this->logger = $logger ?: new NullLogger();
     }
 
     public function has(string $uri): bool
@@ -79,7 +87,14 @@ class Workspace implements Countable, IteratorAggregate
         // https://microsoft.github.io/language-server-protocol/specification#versionedTextDocumentIdentifier
         // indicates that only the server should send NULL, but specifies no
         // behavior the an update from the client to the server.
-        if (null !== $textDocument->version && $this->documentVersions[$textDocument->uri] > $textDocument->version) {
+        $currentVersion = $this->documentVersions[$textDocument->uri];
+        if (null !== $textDocument->version && $currentVersion > $textDocument->version) {
+            $this->logger->info(sprintf(
+                'Version "%s" of incoming document (%s) is older than current version (%s), ignoring',
+                $textDocument->version,
+                $textDocument->uri,
+                $currentVersion
+            ));
             return;
         }
 
