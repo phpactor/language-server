@@ -60,25 +60,50 @@ class WorkspaceTest extends TestCase
         $this->assertEquals('my new text', $document->text);
     }
 
-    public function testDoesNotUpdateDocumentWithLowerVersionThanExistingDocument()
+    /**
+     * @dataProvider provideDoesNotUpdateDocumentWithLowerVersionThanExistingDocument
+     */
+    public function testDoesNotUpdateDocumentWithLowerVersionThanExistingDocument(int $originalVersion, ?int $newVersion, bool $shouldBeNewer)
     {
         $originalDocument = new TextDocumentItem();
-        $originalDocument->version = 5;
+        $originalDocument->version = $originalVersion;
         $originalDocument->uri = 'foobar';
         $originalDocument->text = 'original document';
-        $oldDocument = new VersionedTextDocumentIdentifier();
-        $oldDocument->version = 4;
-        $oldDocument->uri = $originalDocument->uri;
 
         $this->workspace->open($originalDocument);
-        $this->workspace->update($oldDocument, 'my new text');
+
+        $oldDocument = new VersionedTextDocumentIdentifier();
+        $oldDocument->version = $newVersion;
+        $oldDocument->uri = $originalDocument->uri;
+
+        $this->workspace->update($oldDocument, 'new document');
 
         $document = $this->workspace->get('foobar');
 
         $this->assertEquals($oldDocument->uri, $document->uri);
-        $this->assertEquals('my original document', $document->text);
+        $this->assertEquals($shouldBeNewer ? 'new document' : 'original document', $document->text);
     }
 
+    public function provideDoesNotUpdateDocumentWithLowerVersionThanExistingDocument()
+    {
+        yield 'older document does not overwrite' => [
+            5,
+            4,
+            false
+        ];
+
+        yield 'same versioned document overwrites' => [
+            5,
+            5,
+            true
+        ];
+
+        yield 'null overwrites the document' => [
+            5,
+            null,
+            true
+        ];
+    }
 
     public function testReturnsNumberOfOpenFiles()
     {

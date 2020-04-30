@@ -26,6 +26,11 @@ class Workspace implements Countable, IteratorAggregate
     private $documents = [];
 
     /**
+     * @var array<string,int>
+     */
+    private $documentVersions = [];
+
+    /**
      * @var int
      */
     private $processId;
@@ -57,6 +62,7 @@ class Workspace implements Countable, IteratorAggregate
     public function open(TextDocumentItem $textDocument): void
     {
         $this->documents[$textDocument->uri] = $textDocument;
+        $this->documentVersions[$textDocument->uri] = $textDocument->version;
         $this->dispatchter->dispatch(new TextDocumentOpened($textDocument));
     }
 
@@ -64,6 +70,17 @@ class Workspace implements Countable, IteratorAggregate
     {
         if (!isset($this->documents[$textDocument->uri])) {
             throw new UnknownDocument($textDocument->uri);
+        }
+
+        // if null, we take assume the new version as authoritative - otherwise
+        // if the new version is lower we discard it.
+        //
+        // the behavior described here:
+        // https://microsoft.github.io/language-server-protocol/specification#versionedTextDocumentIdentifier
+        // indicates that only the server should send NULL, but specifies no
+        // behavior the an update from the client to the server.
+        if (null !== $textDocument->version && $this->documentVersions[$textDocument->uri] > $textDocument->version) {
+            return;
         }
 
         $this->documents[$textDocument->uri]->text = $updatedText;
@@ -82,6 +99,8 @@ class Workspace implements Countable, IteratorAggregate
         }
 
         unset($this->documents[$identifier->uri]);
+        unset($this->documentVersions[$identifier->uri]);
+
         $this->dispatchter->dispatch(new TextDocumentClosed($identifier));
     }
 
