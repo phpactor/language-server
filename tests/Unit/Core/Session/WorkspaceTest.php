@@ -60,6 +60,26 @@ class WorkspaceTest extends TestCase
         $this->assertEquals('my new text', $document->text);
     }
 
+    public function testDoesNotUpdateDocumentWithLowerVersionThanExistingDocument()
+    {
+        $originalDocument = new TextDocumentItem();
+        $originalDocument->version = 5;
+        $originalDocument->uri = 'foobar';
+        $originalDocument->text = 'original document';
+        $oldDocument = new VersionedTextDocumentIdentifier();
+        $oldDocument->version = 4;
+        $oldDocument->uri = $originalDocument->uri;
+
+        $this->workspace->open($originalDocument);
+        $this->workspace->update($oldDocument, 'my new text');
+
+        $document = $this->workspace->get('foobar');
+
+        $this->assertEquals($oldDocument->uri, $document->uri);
+        $this->assertEquals('my original document', $document->text);
+    }
+
+
     public function testReturnsNumberOfOpenFiles()
     {
         $originalDocument = new TextDocumentItem();
