@@ -7,7 +7,7 @@ use JsonSerializable;
 class ResponseMessage extends Message implements JsonSerializable
 {
     /**
-     * @var string
+     * @var int|string
      */
     public $id;
 
@@ -27,19 +27,23 @@ class ResponseMessage extends Message implements JsonSerializable
      */
     public function __construct($id, $result, ?ResponseError $error = null)
     {
-        $this->id = (int)$id;
+        $this->id = $id;
         $this->result = $result;
         $this->error = $error;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        return [
+        $response = [
+            'jsonrpc' => $this->jsonrpc,
             'id' => $this->id,
             'result' => $this->result,
         ];
+
+        if (null !== $this->error) {
+            $response['error'] = $this->error;
+        }
+
+        return $response;
     }
 }

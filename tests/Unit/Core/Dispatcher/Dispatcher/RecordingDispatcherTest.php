@@ -50,6 +50,6 @@ class RecordingDispatcherTest extends TestCase
         \Amp\Promise\wait($this->dispatcher->dispatch($handlers, $message, []));
         $this->output->end();
 
-        $this->assertStringContainsString('{"id":"1","method":"hello","params":[],"jsonrpc":"2.0"}', \Amp\Promise\wait($this->output));
+        $this->assertStringContainsString('{"id":1,"method":"hello","params":[],"jsonrpc":"2.0"}', \Amp\Promise\wait($this->output));
     }
 }
