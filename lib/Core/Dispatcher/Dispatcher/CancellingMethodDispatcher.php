@@ -24,7 +24,7 @@ class CancellingMethodDispatcher implements Dispatcher
     private $innerDispatcher;
 
     /**
-     * @var array<string, CancellationTokenSource>
+     * @var array<string|int, CancellationTokenSource>
      */
     private $cancellations = [];
 

@@ -19,6 +19,7 @@ final class MessageFormatter
         }
 
         $headers = [
+            'Content-Type: application/vscode-jsonrpc; charset=utf8',
             'Content-Length: ' . strlen($body),
         ];
 

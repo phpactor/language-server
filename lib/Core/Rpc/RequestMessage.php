@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Core\Rpc;
 class RequestMessage extends Message
 {
     /**
-     * @var string
+     * @var string|int
      */
     public $id;
 
@@ -24,7 +24,7 @@ class RequestMessage extends Message
      */
     public function __construct($id, string $method, ?array $params)
     {
-        $this->id = (string)$id;
+        $this->id = $id;
         $this->method = $method;
         $this->params = $params;
     }

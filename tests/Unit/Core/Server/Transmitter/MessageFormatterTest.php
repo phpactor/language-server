@@ -33,7 +33,7 @@ class MessageFormatterTest extends TestCase
 
         $result = $writer->write($message);
         $this->assertEquals(
-            "Content-Length: 68\r\n\r\n" . '{"id":"1","result":{"hello":"goodbye"},"error":null,"jsonrpc":"2.0"}',
+            "Content-Type: application/vscode-jsonrpc; charset=utf8\r\nContent-Length: 53\r\n\r\n" . '{"jsonrpc":"2.0","id":1,"result":{"hello":"goodbye"}}',
             $result
         );
     }
@@ -47,7 +47,7 @@ class MessageFormatterTest extends TestCase
 
         $result = $writer->write($message);
         $this->assertEquals(
-            "Content-Length: 109\r\n\r\n" . '{"id":"1","result":{"hello":"goodbye"},"error":{"code":-32603,"message":"Sorry","data":null},"jsonrpc":"2.0"}',
+            "Content-Type: application/vscode-jsonrpc; charset=utf8\r\nContent-Length: 107\r\n\r\n" . '{"jsonrpc":"2.0","id":1,"result":{"hello":"goodbye"},"error":{"code":-32603,"message":"Sorry","data":null}}',
             $result
         );
     }
