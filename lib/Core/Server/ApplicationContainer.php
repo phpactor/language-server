@@ -100,6 +100,7 @@ final class ApplicationContainer implements Handler
         );
 
         $capabilities = new ServerCapabilities();
+        $capabilities->codeActionProvider = false;
 
         foreach ($this->handlers()->methods() as $handler) {
             if (!$handler instanceof CanRegisterCapabilities) {
