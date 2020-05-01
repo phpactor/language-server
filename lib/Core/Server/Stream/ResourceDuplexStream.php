@@ -18,10 +18,16 @@ class ResourceDuplexStream implements DuplexStream
      */
     private $output;
 
+    /**
+     * @var resource
+     */
+    private $debug;
+
     public function __construct(ResourceInputStream $input, ResourceOutputStream $output)
     {
         $this->input = $input;
         $this->output = $output;
+        $this->debug = fopen(__DIR__ . '/../../../../../../../debug.stream', 'w');
     }
 
     /**
@@ -37,6 +43,7 @@ class ResourceDuplexStream implements DuplexStream
      */
     public function write(string $data): Promise
     {
+        fwrite($this->debug, $data);
         return $this->output->write($data);
     }
 
@@ -45,6 +52,7 @@ class ResourceDuplexStream implements DuplexStream
      */
     public function end(string $finalData = ''): Promise
     {
+        fwrite($this->debug, $finalData);
         return $this->output->end($finalData);
     }
 }

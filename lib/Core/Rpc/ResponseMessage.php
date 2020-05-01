@@ -2,7 +2,9 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
-class ResponseMessage extends Message
+use JsonSerializable;
+
+class ResponseMessage extends Message implements JsonSerializable
 {
     /**
      * @var string
@@ -25,8 +27,19 @@ class ResponseMessage extends Message
      */
     public function __construct($id, $result, ?ResponseError $error = null)
     {
-        $this->id = (string)$id;
+        $this->id = (int)$id;
         $this->result = $result;
         $this->error = $error;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'result' => $this->result,
+        ];
     }
 }
