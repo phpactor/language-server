@@ -9,7 +9,7 @@ final class MessageFormatter
 {
     public function write(Message $message): string
     {
-        $body = json_encode($message);
+        $body = json_encode($this->normalize($message));
 
         if (false === $body) {
             throw new RuntimeException(sprintf(
@@ -28,5 +28,25 @@ final class MessageFormatter
             "\r\n\r\n",
             $body
         ]);
+    }
+
+    /**
+     * Normalize a message before being serialized by recursively applying array_filter.
+     *
+     * @param mixed $message
+     *
+     * @return mixed
+     */
+    private function normalize($message)
+    {
+        if (is_object($message)) {
+            $message = (array) $message;
+        }
+
+        if (!is_array($message)) {
+            return $message;
+        }
+
+        return array_filter(array_map([$this, 'normalize'], $message));
     }
 }
