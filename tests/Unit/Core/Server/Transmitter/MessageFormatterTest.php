@@ -31,17 +31,11 @@ class MessageFormatterTest extends TestCase
             'hello' => 'goodbye'
         ]);
 
-        $headers = [
-            'Content-Type: application/vscode-jsonrpc; charset=utf8',
-            'Content-Length: 53',
-        ];
-        $body = [
-            'jsonrpc' => '2.0',
-            'id' => 1,
-            'result' => ['hello' => 'goodbye'],
-        ];
-
-        $this->assertMessageContains($headers, $body, $writer->write($message));
+        $result = $writer->write($message);
+        $this->assertEquals(
+            "Content-Type: application/vscode-jsonrpc; charset=utf8\r\nContent-Length: 53\r\n\r\n" . '{"jsonrpc":"2.0","id":1,"result":{"hello":"goodbye"}}',
+            $result
+        );
     }
 
     public function testWriteErrorReponse()
@@ -51,30 +45,10 @@ class MessageFormatterTest extends TestCase
             'hello' => 'goodbye'
         ], new ResponseError(ErrorCodes::InternalError, 'Sorry'));
 
-        $headers = [
-            'Content-Type: application/vscode-jsonrpc; charset=utf8',
-            'Content-Length: 95',
-        ];
-        $body = [
-            'jsonrpc' => '2.0',
-            'id' => 1,
-            'result' => ['hello' => 'goodbye'],
-            'error' => ['code' => -32603, 'message' => 'Sorry']
-        ];
-
-        $this->assertMessageContains($headers, $body, $writer->write($message));
-    }
-
-    private function assertMessageContains(
-        array $expectedHeaders,
-        array $expectedBody,
-        string $result
-    ): void {
-        $expectedHeaders = explode("\r\n", $result);
-        $expectedBody = json_decode(array_pop($expectedHeaders), true);
-        array_pop($expectedHeaders); // Remove the separator
-
-        $this->assertEqualsCanonicalizing($expectedHeaders, $expectedHeaders);
-        $this->assertEqualsCanonicalizing($expectedBody, $expectedBody);
+        $result = $writer->write($message);
+        $this->assertEquals(
+            "Content-Type: application/vscode-jsonrpc; charset=utf8\r\nContent-Length: 107\r\n\r\n" . '{"jsonrpc":"2.0","id":1,"result":{"hello":"goodbye"},"error":{"code":-32603,"message":"Sorry","data":null}}',
+            $result
+        );
     }
 }
