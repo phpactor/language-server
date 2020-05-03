@@ -3,20 +3,22 @@
 namespace Phpactor\LanguageServer\Core\Server\Transmitter;
 
 use Phpactor\LanguageServer\Core\Rpc\Message;
-use RuntimeException;
 
 final class MessageFormatter
 {
+    /**
+     * @var MessageSerializer
+     */
+    private $serializer;
+
+    public function __construct(?MessageSerializer $serializer = null)
+    {
+        $this->serializer = $serializer ?: new MessageSerializer();
+    }
+
     public function write(Message $message): string
     {
-        $body = json_encode($message);
-
-        if (false === $body) {
-            throw new RuntimeException(sprintf(
-                'Could not encode JSON: "%s"',
-                \json_last_error_msg()
-            ));
-        }
+        $body = $this->serializer->serialize($message);
 
         $headers = [
             'Content-Type: application/vscode-jsonrpc; charset=utf8',

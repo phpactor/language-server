@@ -2,53 +2,45 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Transmitter;
 
-use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
-use Phpactor\LanguageServer\Core\Rpc\ResponseError;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use RuntimeException;
 
 class MessageFormatterTest extends TestCase
 {
-    public function testExceptionCouldNotEncodeJson()
+    /**
+     * @dataProvider provideFormat
+     */
+    public function testFormat(string $serialized, int $expectedContentLength)
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Could not encode JSON');
-
-        $writer = new MessageFormatter();
-        $message = new ResponseMessage(1, [
-            'hello' => \fopen('php://stdin', 'r')
-        ]);
-
-        $writer->write($message);
-    }
-
-    public function testWrite()
-    {
-        $writer = new MessageFormatter();
+        $serializer = $this->prophesize(MessageSerializer::class);
+        $writer = new MessageFormatter($serializer->reveal());
         $message = new ResponseMessage(1, [
             'hello' => 'goodbye'
         ]);
+        $serializer->serialize($message)->willReturn($serialized);
 
         $result = $writer->write($message);
-        $this->assertEquals(
-            "Content-Type: application/vscode-jsonrpc; charset=utf8\r\nContent-Length: 53\r\n\r\n" . '{"jsonrpc":"2.0","id":1,"result":{"hello":"goodbye"}}',
-            $result
-        );
+
+        $this->assertEquals(implode([
+            'Content-Type: application/vscode-jsonrpc; charset=utf8',
+            "\r\n",
+            'Content-Length: ' . $expectedContentLength,
+            "\r\n\r\n",
+            $serialized
+        ]), $result);
     }
 
-    public function testWriteErrorReponse()
+    public function provideFormat()
     {
-        $writer = new MessageFormatter();
-        $message = new ResponseMessage(1, [
-            'hello' => 'goodbye'
-        ], new ResponseError(ErrorCodes::InternalError, 'Sorry'));
-
-        $result = $writer->write($message);
-        $this->assertEquals(
-            "Content-Type: application/vscode-jsonrpc; charset=utf8\r\nContent-Length: 107\r\n\r\n" . '{"jsonrpc":"2.0","id":1,"result":{"hello":"goodbye"},"error":{"code":-32603,"message":"Sorry","data":null}}',
-            $result
-        );
+        yield [
+            '',
+            0
+        ];
+        yield [
+            '0123456789',
+            10,
+        ];
     }
 }
