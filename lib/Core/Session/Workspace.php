@@ -8,12 +8,7 @@ use IteratorAggregate;
 use LanguageServerProtocol\TextDocumentIdentifier;
 use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
-use Phpactor\LanguageServer\Event\TextDocumentClosed;
-use Phpactor\LanguageServer\Event\TextDocumentOpened;
-use Phpactor\LanguageServer\Event\TextDocumentUpdated;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 

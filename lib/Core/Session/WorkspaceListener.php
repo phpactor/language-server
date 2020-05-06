@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Session;
 
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
-use Phpactor\LanguageServer\Event\TextDocumentSaved;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Psr\EventDispatcher\ListenerProviderInterface;
 

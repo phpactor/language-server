@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Test;
 use LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\EventDispatcher\EventDispatcherInterface;

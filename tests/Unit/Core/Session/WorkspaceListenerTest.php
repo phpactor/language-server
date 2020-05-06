@@ -9,7 +9,6 @@ use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Core\Session\WorkspaceListener;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
-use Phpactor\LanguageServer\Event\TextDocumentSaved;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
