@@ -64,15 +64,15 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
         }
     }
 
-    public function willSave(TextDocumentIdentifier $identifier, int $reason)
+    public function willSave(TextDocumentIdentifier $identifier, int $reason): void
     {
     }
 
-    public function willSaveWaitUntil(TextDocumentIdentifier $identifier, int $reason)
+    public function willSaveWaitUntil(TextDocumentIdentifier $identifier, int $reason): void
     {
     }
 
-    public function registerCapabiltiies(ServerCapabilities $capabilities)
+    public function registerCapabiltiies(ServerCapabilities $capabilities): void
     {
         $capabilities->textDocumentSync = TextDocumentSyncKind::FULL;
     }
