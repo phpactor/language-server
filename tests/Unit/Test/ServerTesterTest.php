@@ -3,10 +3,12 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Test;
 
 use LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class ServerTesterTest extends TestCase
 {
@@ -22,11 +24,13 @@ class ServerTesterTest extends TestCase
     public function testOpensDocument()
     {
         $builder = LanguageServerBuilder::create();
-        $workspace = new Workspace();
-        $builder->addSystemHandler(new TextDocumentHandler($workspace));
+        $dispatcher = $this->prophesize(EventDispatcherInterface::class);
+        $builder->addSystemHandler(new TextDocumentHandler($dispatcher->reveal()));
         $tester = $builder->buildServerTester();
         $tester->initialize();
-        $response = $tester->openDocument(new TextDocumentItem('file://foobar', 'some text'));
-        $this->assertCount(1, $workspace);
+        $item = new TextDocumentItem('file://foobar', 'some text');
+        $tester->openDocument($item);
+
+        $dispatcher->dispatch(new TextDocumentOpened($item))->shouldHaveBeenCalled();
     }
 }

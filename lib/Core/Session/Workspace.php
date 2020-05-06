@@ -38,18 +38,12 @@ class Workspace implements Countable, IteratorAggregate
     private $processId;
 
     /**
-     * @var EventDispatcherInterface
-     */
-    private $dispatchter;
-
-    /**
      * @var LoggerInterface|null
      */
     private $logger;
 
-    public function __construct(EventDispatcherInterface $dispatchter = null, ?LoggerInterface $logger = null)
+    public function __construct(?LoggerInterface $logger = null)
     {
-        $this->dispatchter = $dispatchter ?: new NullEventDispatcher();
         $this->logger = $logger ?: new NullLogger();
     }
 
@@ -71,7 +65,6 @@ class Workspace implements Countable, IteratorAggregate
     {
         $this->documents[$textDocument->uri] = $textDocument;
         $this->documentVersions[$textDocument->uri] = $textDocument->version;
-        $this->dispatchter->dispatch(new TextDocumentOpened($textDocument));
     }
 
     public function update(VersionedTextDocumentIdentifier $textDocument, string $updatedText): void
@@ -99,7 +92,6 @@ class Workspace implements Countable, IteratorAggregate
         }
 
         $this->documents[$textDocument->uri]->text = $updatedText;
-        $this->dispatchter->dispatch(new TextDocumentUpdated($textDocument, $updatedText));
     }
 
     public function openFiles(): int
@@ -115,8 +107,6 @@ class Workspace implements Countable, IteratorAggregate
 
         unset($this->documents[$identifier->uri]);
         unset($this->documentVersions[$identifier->uri]);
-
-        $this->dispatchter->dispatch(new TextDocumentClosed($identifier));
     }
 
     /**

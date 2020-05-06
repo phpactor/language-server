@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Acceptance;
 use Amp\Loop;
 use Amp\Loop\DriverFactory;
 use Amp\Socket\ResourceSocket;
+use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 use Phpactor\LanguageServer\Core\Session\Workspace;
@@ -38,7 +39,7 @@ class AcceptanceTestCase extends TestCase
     protected function client(): TestClient
     {
         $server = LanguageServerBuilder::create()
-            ->addSystemHandler(new TextDocumentHandler(new Workspace()))
+            ->addSystemHandler(new TextDocumentHandler(new NullEventDispatcher()))
             ->tcpServer()
             ->eventLoop(false)
             ->build();

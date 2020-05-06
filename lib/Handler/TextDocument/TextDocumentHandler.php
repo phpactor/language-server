@@ -10,6 +10,11 @@ use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Event\TextDocumentClosed;
+use Phpactor\LanguageServer\Event\TextDocumentOpened;
+use Phpactor\LanguageServer\Event\TextDocumentSaved;
+use Phpactor\LanguageServer\Event\TextDocumentUpdated;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 {
@@ -18,9 +23,14 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
      */
     private $workspace;
 
-    public function __construct(Workspace $workspace)
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    public function __construct(EventDispatcherInterface $dispatcher)
     {
-        $this->workspace = $workspace;
+        $this->dispatcher = $dispatcher;
     }
 
     public function methods(): array
@@ -37,31 +47,24 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 
     public function didOpen(TextDocumentItem $textDocument): void
     {
-        $this->workspace->open($textDocument);
+        $this->dispatcher->dispatch(new TextDocumentOpened($textDocument));
     }
 
     public function didChange(VersionedTextDocumentIdentifier $textDocument, array $contentChanges): void
     {
         foreach ($contentChanges as $contentChange) {
-            $this->workspace->update(
-                $textDocument,
-                $contentChange['text']
-            );
+            $this->dispatcher->dispatch(new TextDocumentUpdated($textDocument, $contentChange['text']));
         }
     }
 
     public function didClose(TextDocumentIdentifier $textDocument): void
     {
-        $this->workspace->remove(
-            $textDocument
-        );
+        $this->dispatcher->dispatch(new TextDocumentClosed($textDocument));
     }
 
     public function didSave(TextDocumentIdentifier $textDocument, string $text = null): void
     {
-        if ($text !== null) {
-            $this->workspace->get($textDocument->uri)->text = $text;
-        }
+        $this->dispatcher->dispatch(new TextDocumentSaved($textDocument, $text));
     }
 
     public function willSave(TextDocumentIdentifier $identifier, int $reason): void

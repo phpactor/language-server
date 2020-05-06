@@ -7,9 +7,15 @@ use LanguageServerProtocol\TextDocumentItem;
 use LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Event\TextDocumentClosed;
+use Phpactor\LanguageServer\Event\TextDocumentOpened;
+use Phpactor\LanguageServer\Event\TextDocumentSaved;
+use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
+use Prophecy\Prophecy\ObjectProphecy;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class TextDocumentHandlerTest extends HandlerTestCase
 {
@@ -18,19 +24,24 @@ class TextDocumentHandlerTest extends HandlerTestCase
      */
     private $workspace;
 
+    /**
+     * @var ObjectProphecy
+     */
+    private $dispatcher;
+
     protected function setUp(): void
     {
-        $this->workspace = new Workspace();
+        $this->dispatcher = $this->prophesize(EventDispatcherInterface::class);
     }
 
     public function handler(): Handler
     {
         return new TextDocumentHandler(
-            $this->workspace
+            $this->dispatcher->reveal()
         );
     }
 
-    public function testOpensDocument()
+    public function testOpensDocument(): void
     {
         $textDocument = new TextDocumentItem();
         $textDocument->uri = 'foobar.html';
@@ -39,19 +50,16 @@ class TextDocumentHandlerTest extends HandlerTestCase
             'textDocument' => $textDocument
         ]);
 
-        $this->assertSame(
-            $this->workspace->get($textDocument->uri),
-            $textDocument
-        );
+        $this->dispatcher->dispatch(new TextDocumentOpened($textDocument))->shouldHaveBeenCalled();
     }
 
     public function testUpdatesDocument()
     {
         $document = new TextDocumentItem();
         $document->uri = 'foobar';
-        $this->workspace->open($document);
+        $identifier = new VersionedTextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didChange', [
-            'textDocument' => new VersionedTextDocumentIdentifier('foobar'),
+            'textDocument' => $identifier,
             'contentChanges' => [
                 [
                     'text' => 'asd',
@@ -59,7 +67,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
             ],
         ]);
 
-        $this->assertEquals('asd', $document->text);
+        $this->dispatcher->dispatch(new TextDocumentUpdated($identifier, 'asd'))->shouldHaveBeenCalled();
     }
 
     public function testWillSave()
@@ -76,9 +84,9 @@ class TextDocumentHandlerTest extends HandlerTestCase
     {
         $document = new TextDocumentItem();
         $document->uri = 'foobar';
-        $this->workspace->open($document);
+        $identifier = new TextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didClose', [
-            'textDocument' => new TextDocumentIdentifier('foobar'),
+            'textDocument' => $identifier,
             'contentChanges' => [
                 [
                     'text' => 'asd',
@@ -86,20 +94,17 @@ class TextDocumentHandlerTest extends HandlerTestCase
             ],
         ]);
 
-        $this->assertFalse($this->workspace->has('foobar'));
+        $this->dispatcher->dispatch(new TextDocumentClosed($identifier))->shouldHaveBeenCalled();
     }
 
     public function testSavesDocument()
     {
-        $document = new TextDocumentItem();
-        $document->uri = 'foobar';
-        $workspace = $this->workspace;
-        $workspace->open($document);
+        $identifier = new TextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didSave', [
-            'textDocument' => new TextDocumentIdentifier('foobar'),
+            'textDocument' => $identifier,
             'text' => 'hello',
         ]);
 
-        $this->assertEquals('hello', $workspace->get('foobar')->text);
+        $this->dispatcher->dispatch(new TextDocumentSaved($identifier, 'hello'))->shouldHaveBeenCalled();
     }
 }

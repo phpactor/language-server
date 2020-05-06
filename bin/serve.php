@@ -3,6 +3,7 @@
 
 use Amp\Loop;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
+use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
 use Phpactor\LanguageServer\Core\Session\Workspace;
@@ -61,7 +62,7 @@ $logger->info('i am a demonstration server and provide no functionality');
 
 $builder = LanguageServerBuilder::create($logger);
 $builder->catchExceptions(true);
-$builder->addSystemHandler(new TextDocumentHandler(new Workspace()));
+$builder->addSystemHandler(new TextDocumentHandler(new NullEventDispatcher()));
 $builder->addSystemHandler(new ServiceHandler(new Workspace()));
 $builder->addSystemHandler(new PingHandler());
 $builder->addSystemHandler(new ProgressHandler());
