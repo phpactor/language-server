@@ -56,6 +56,9 @@ Handlers simply declare a map of Language Server RPC metods to instance
 methods:
 
 ```php
+use function Amp\call;
+use Amp\Promise;
+
 class MyCompletionHandler implements Handler
 {
     public function methods(): array
@@ -65,13 +68,15 @@ class MyCompletionHandler implements Handler
         ];
     }
 
-    public function completion(): Generator
+    public function completion(): Promise
     {
-         $list = new CompletionList();
-         $list->items[] = new CompletionItem('hello');
-         $list->items[] = new CompletionItem('goodbye');
+         call(function () {
+             $list = new CompletionList();
+             $list->items[] = new CompletionItem('hello');
+             $list->items[] = new CompletionItem('goodbye');
 
-         yield $list;
+             return $list;
+         });
     }
 }
 ```
