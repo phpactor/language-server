@@ -19,7 +19,7 @@ interface ServiceProvider extends Handler
      *     public function services(): array
      *     {
      *         return [
-     *             'ping' => 'pingService'
+     *             'ping'
      *         ];
      *     }
      *
