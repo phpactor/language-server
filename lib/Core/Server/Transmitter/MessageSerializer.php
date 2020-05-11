@@ -3,13 +3,18 @@
 namespace Phpactor\LanguageServer\Core\Server\Transmitter;
 
 use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
 
 class MessageSerializer
 {
     public function serialize(Message $message): string
     {
-        $decoded = json_encode($this->normalize($message));
+        $data = $this->normalize($message);
+        if ($message instanceof ResponseMessage) {
+            $data = $this->ensureResultIsSet($data);
+        }
+        $decoded = json_encode($data);
 
         if (false === $decoded) {
             throw new RuntimeException(sprintf(
@@ -42,5 +47,14 @@ class MessageSerializer
         return array_filter(array_map([$this, 'normalize'], $message), function ($value) {
             return $value !== null;
         });
+    }
+
+    private function ensureResultIsSet(array $data): array
+    {
+        if (!array_key_exists('result', $data)) {
+            $data['result'] = null;
+        }
+
+        return $data;
     }
 }

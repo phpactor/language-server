@@ -39,6 +39,11 @@ class MessageSerializerTest extends TestCase
             '{"id":1,"result":[],"error":{"code":1,"message":"foobar","data":[]},"jsonrpc":"2.0"}',
         ];
 
+        yield 'response message with null result' => [
+            new ResponseMessage(1, null),
+            '{"id":1,"jsonrpc":"2.0","result":null}',
+        ];
+
         yield 'preserves falsey values' => [
             new ResponseMessage(0, ''),
             '{"id":0,"result":"","jsonrpc":"2.0"}',
