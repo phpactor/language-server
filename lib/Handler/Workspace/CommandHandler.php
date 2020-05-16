@@ -42,7 +42,9 @@ class CommandHandler implements Handler, CanRegisterCapabilities
 
     public function registerCapabiltiies(ServerCapabilities $capabilities)
     {
-        /** @phpstan-ignore-next-line */
+        // The protocol library is not up-to-date so
+        // we are writing to undefined properties.
+        // @phpstan-ignore-next-line
         $capabilities->executeCommandProvider = [
             'commands' => $this->dispatcher->registeredCommands(),
         ];

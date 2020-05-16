@@ -4,6 +4,9 @@ namespace Phpactor\LanguageServer\Workspace;
 
 use RuntimeException;
 
+/**
+ * Commands can be registered using this class.
+ */
 class CommandDispatcher
 {
     /**
@@ -11,6 +14,9 @@ class CommandDispatcher
      */
     private $commandMap = [];
 
+    /**
+     * @param array<string,object> $commandMap Map of command names to invokable objects
+     */
     public function __construct(array $commandMap)
     {
         foreach ($commandMap as $id => $command) {
