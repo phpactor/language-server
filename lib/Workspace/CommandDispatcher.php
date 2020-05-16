@@ -30,7 +30,8 @@ class CommandDispatcher
     {
         if (!is_callable($invokable)) {
             throw new RuntimeException(sprintf(
-                'Object "%s" is not invokable', get_class($invokable)
+                'Object "%s" is not invokable',
+                get_class($invokable)
             ));
         }
 
@@ -47,7 +48,8 @@ class CommandDispatcher
         if (!isset($this->commandMap[$command])) {
             throw new RuntimeException(sprintf(
                 'Command "%s" not found, known commands: "%s"',
-                $command, implode('", "', array_keys($this->commandMap))
+                $command,
+                implode('", "', array_keys($this->commandMap))
             ));
         }
 

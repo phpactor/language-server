@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\Workspace;
 
+use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
@@ -11,14 +12,7 @@ class CommandHandlerTest extends HandlerTestCase
 {
     public function handler(): Handler
     {
-        return new CommandHandler(new CommandDispatcher([
-            'foobar' => new class {
-                public function __invoke(string $arg)
-                {
-                    return $arg;
-                }
-            }
-        ]));
+        return $this->createHandler();
     }
 
     public function testExecutesCommand()
@@ -30,5 +24,26 @@ class CommandHandlerTest extends HandlerTestCase
             ],
         ]);
         self::assertEquals('barfoo', $result->result);
+    }
+
+    public function testRegistersCapabilities()
+    {
+        $server = new ServerCapabilities();
+        $this->createHandler()->registerCapabiltiies($server);
+
+        /** @phpstan-ignore-next-line */
+        self::assertEquals(['foobar'], $server->executeCommandProvider['commands']);
+    }
+
+    private function createHandler(): CommandHandler
+    {
+        return new CommandHandler(new CommandDispatcher([
+            'foobar' => new class {
+                public function __invoke(string $arg)
+                {
+                    return $arg;
+                }
+            }
+        ]));
     }
 }

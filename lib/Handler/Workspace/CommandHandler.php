@@ -3,10 +3,12 @@
 namespace Phpactor\LanguageServer\Handler\Workspace;
 
 use Amp\Promise;
+use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Workspace\CommandDispatcher;
 
-class CommandHandler implements Handler
+class CommandHandler implements Handler, CanRegisterCapabilities
 {
     /**
      * @var CommandDispatcher
@@ -36,5 +38,13 @@ class CommandHandler implements Handler
         return \Amp\call(function () use ($command, $arguments) {
             return $this->dispatcher->dispatch($command, $arguments);
         });
+    }
+
+    public function registerCapabiltiies(ServerCapabilities $capabilities)
+    {
+        /** @phpstan-ignore-next-line */
+        $capabilities->executeCommandProvider = [
+            'commands' => $this->dispatcher->registeredCommands(),
+        ];
     }
 }
