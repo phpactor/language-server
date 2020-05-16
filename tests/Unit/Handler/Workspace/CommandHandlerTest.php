@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\Workspace;
 
+use Amp\Success;
 use LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
@@ -41,7 +42,7 @@ class CommandHandlerTest extends HandlerTestCase
             'foobar' => new class {
                 public function __invoke(string $arg)
                 {
-                    return $arg;
+                    return new Success($arg);
                 }
             }
         ]));

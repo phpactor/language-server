@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Workspace;
 
+use Amp\Success;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Workspace\CommandDispatcher;
 use RuntimeException;
@@ -14,14 +15,14 @@ class CommandDispatcherTest extends TestCase
             'foobar' => new class {
                 public function __invoke(string $foobar)
                 {
-                    return $foobar;
+                    return new Success($foobar);
                 }
             }
         ])->dispatch('foobar', [
             'barfoo',
         ]);
 
-        self::assertEquals('barfoo', $result);
+        self::assertEquals('barfoo', \Amp\Promise\wait($result));
     }
 
     public function testExceptionWhenCommandNotFound(): void
