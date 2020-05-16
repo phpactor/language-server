@@ -47,6 +47,26 @@ class CommandDispatcherTest extends TestCase
         ]);
     }
 
+    public function testReturnsRegisteredCommands(): void
+    {
+        $result = $this->createDispatcher([
+            'foobar' => new class {
+                public function __invoke(string $foobar)
+                {
+                    return $foobar;
+                }
+            },
+            'barfoo' => new class {
+                public function __invoke(string $foobar)
+                {
+                    return $foobar;
+                }
+            }
+        ]);
+
+        self::assertEquals(['foobar','barfoo'], $result->registeredCommands());
+    }
+
     private function createDispatcher(array $map): CommandDispatcher
     {
         return new CommandDispatcher($map);

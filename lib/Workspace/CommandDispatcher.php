@@ -18,12 +18,19 @@ class CommandDispatcher
         }
     }
 
+    /**
+     * @return array<string>
+     */
+    public function registeredCommands(): array
+    {
+        return array_keys($this->commandMap);
+    }
+
     private function addCommand(string $id, object $invokable): void
     {
         if (!is_callable($invokable)) {
             throw new RuntimeException(sprintf(
-                'Object "%s" is not invokable',
-                get_class($invokable)
+                'Object "%s" is not invokable', get_class($invokable)
             ));
         }
 
@@ -40,8 +47,7 @@ class CommandDispatcher
         if (!isset($this->commandMap[$command])) {
             throw new RuntimeException(sprintf(
                 'Command "%s" not found, known commands: "%s"',
-                $command,
-                implode('", "', array_keys($this->commandMap))
+                $command, implode('", "', array_keys($this->commandMap))
             ));
         }
 
