@@ -3,8 +3,6 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\Workspace;
 
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
-use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 use Phpactor\LanguageServer\Workspace\CommandDispatcher;
@@ -15,7 +13,8 @@ class CommandHandlerTest extends HandlerTestCase
     {
         return new CommandHandler(new CommandDispatcher([
             'foobar' => new class {
-                public function __invoke(string $arg) {
+                public function __invoke(string $arg)
+                {
                     return $arg;
                 }
             }
@@ -30,7 +29,5 @@ class CommandHandlerTest extends HandlerTestCase
                 'barfoo',
             ],
         ]);
-
-
     }
 }
