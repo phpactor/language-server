@@ -29,5 +29,6 @@ class CommandHandlerTest extends HandlerTestCase
                 'barfoo',
             ],
         ]);
+        self::assertEquals('barfoo', $result->result);
     }
 }
