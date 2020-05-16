@@ -128,8 +128,9 @@ class ServiceManager
                 yield $promise;
             } catch (Throwable $error) {
                 $this->logger->error(sprintf(
-                    'Error in service "%s:%s": %s',
-                    get_class($this),
+                    'Error in service "%s" "%s:%s": %s',
+                    $serviceName,
+                    get_class($service),
                     __FUNCTION__,
                     $error->getMessage()
                 ));
