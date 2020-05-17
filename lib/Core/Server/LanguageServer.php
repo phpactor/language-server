@@ -219,7 +219,7 @@ final class LanguageServer implements StatProvider
                 $this->dispatcher,
                 $this->systemHandlers,
                 $this->handlerLoader,
-                $serviceManager
+                new SessionServices($transmitter, $serviceManager)
             );
 
             $reader = new LspMessageReader($connection->stream());

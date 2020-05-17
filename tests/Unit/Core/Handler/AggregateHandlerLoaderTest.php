@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServer\Core\Server\SessionServices;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handler;
@@ -36,6 +37,10 @@ class AggregateHandlerLoaderTest extends TestCase
      */
     private $handler2;
 
+    /**
+     * @var ObjectProphecy
+     */
+    private $services;
 
     protected function setUp(): void
     {
@@ -46,12 +51,14 @@ class AggregateHandlerLoaderTest extends TestCase
 
         $this->handler1 = $this->prophesize(Handler::class);
         $this->handler2 = $this->prophesize(Handler::class);
+
+        $this->services = $this->prophesize(SessionServices::class);
     }
 
     public function testNoHandlersNoProblem()
     {
         $loader = new AggregateHandlerLoader([]);
-        $handlers = $loader->load($this->params);
+        $handlers = $loader->load($this->params, $this->services->reveal());
         $this->assertInstanceOf(Handlers::class, $handlers);
         $this->assertCount(0, $handlers);
     }
@@ -64,12 +71,12 @@ class AggregateHandlerLoaderTest extends TestCase
         $loader = new AggregateHandlerLoader([
             $this->loader1->reveal(),
             $this->loader2->reveal()
-        ]);
+        ], $this->services->reveal());
 
-        $this->loader1->load($this->params)->willReturn(new Handlers([$this->handler1->reveal()]));
-        $this->loader2->load($this->params)->willReturn(new Handlers([$this->handler2->reveal()]));
+        $this->loader1->load($this->params, $this->services->reveal())->willReturn(new Handlers([$this->handler1->reveal()]));
+        $this->loader2->load($this->params, $this->services->reveal())->willReturn(new Handlers([$this->handler2->reveal()]));
 
-        $handlers = $loader->load($this->params);
+        $handlers = $loader->load($this->params, $this->services->reveal());
 
         $this->assertInstanceOf(Handlers::class, $handlers);
         $this->assertCount(2, $handlers);

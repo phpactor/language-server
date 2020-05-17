@@ -17,6 +17,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
+use Phpactor\LanguageServer\Core\Server\SessionServices;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
@@ -199,16 +200,21 @@ class LanguageServerBuilder
 
     public function buildServerTester(): ServerTester
     {
-        return new ServerTester(new ApplicationContainer(
+        return new ServerTester(
+            new ApplicationContainer(
             $this->buildDispatcher(new ResponseWatcher()),
             $this->buildHandlers(),
             $this->buildHandlerLoader(),
-            new ServiceManager(
+            new SessionServices(
                 new NullMessageTransmitter(),
-                $this->logger,
-                $this->buildArgumentResolver()
+                new ServiceManager(
+                    new NullMessageTransmitter(),
+                    $this->logger,
+                    $this->buildArgumentResolver()
+                )
             )
-        ));
+        )
+        );
     }
 
     private function buildDispatcher(ResponseWatcher $watcher): Dispatcher

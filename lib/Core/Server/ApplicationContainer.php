@@ -14,7 +14,6 @@ use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\Message;
-use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
 final class ApplicationContainer implements Handler
 {
@@ -44,21 +43,21 @@ final class ApplicationContainer implements Handler
     private $dispatcher;
 
     /**
-     * @var ServiceManager
+     * @var SessionServices
      */
-    private $serviceManager;
+    private $sessionServices;
 
     public function __construct(
         Dispatcher $dispatcher,
         Handlers $serverHandlers,
         HandlerLoader $applicationHandlerLoader,
-        ServiceManager $serviceManager
+        SessionServices $sessionService
     ) {
         $this->serverHandlers = $serverHandlers;
         $this->applicationHandlerLoader = $applicationHandlerLoader;
         $this->dispatcher = $dispatcher;
         $this->defaultHandlers = new Handlers([$this]);
-        $this->serviceManager = $serviceManager;
+        $this->sessionServices = $sessionService;
     }
 
     /**
@@ -96,7 +95,8 @@ final class ApplicationContainer implements Handler
                 $rootPath,
                 $rootUri,
                 $trace
-            )
+            ),
+            $this->sessionServices
         );
 
         $capabilities = new ServerCapabilities();
@@ -148,11 +148,11 @@ final class ApplicationContainer implements Handler
                 continue;
             }
         
-            $this->serviceManager->register(
+            $this->sessionServices->serviceManager()->register(
                 $handler
             );
         }
         
-        $this->serviceManager->startAll();
+        $this->sessionServices->serviceManager()->startAll();
     }
 }
