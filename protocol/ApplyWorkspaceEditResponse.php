@@ -10,11 +10,11 @@ class ApplyWorkspaceEditResponse
     public $applied;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $failureReason;
 
-    public function __construct(bool $applied, string $failureReason)
+    public function __construct(bool $applied, ?string $failureReason = null)
     {
         $this->applied = $applied;
         $this->failureReason = $failureReason;
