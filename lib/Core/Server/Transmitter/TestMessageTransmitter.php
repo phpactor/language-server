@@ -24,9 +24,14 @@ class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitt
         return array_shift($this->buffer);
     }
 
-    public function shiftNotification(): NotificationMessage
+    public function shiftNotification(): ?NotificationMessage
     {
         $message = array_shift($this->buffer);
+
+        if (null === $message) {
+            return null;
+        }
+
         if (!$message instanceof NotificationMessage) {
             throw new RuntimeException(sprintf(
                 'Expected NotificationMessage, got "%s"',
@@ -37,9 +42,14 @@ class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitt
         return $message;
     }
 
-    public function shiftRequest(): RequestMessage
+    public function shiftRequest(): ?RequestMessage
     {
         $message = array_shift($this->buffer);
+
+        if (null === $message) {
+            return null;
+        }
+
         if (!$message instanceof RequestMessage) {
             throw new RuntimeException(sprintf(
                 'Expected RequestMessage, got "%s"',
