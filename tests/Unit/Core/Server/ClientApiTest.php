@@ -20,6 +20,7 @@ class ClientApiTest extends AsyncTestCase
      * @dataProvider provideWindowShowMessageRequest
      * @dataProvider provideWorkspaceEdit
      * @dataProvider provideWorkspaceExecuteCommand
+     * @dataProvider provideDiagnostics
      */
     public function testSend(Closure $executor, Closure $assertions): void
     {
@@ -160,6 +161,27 @@ class ClientApiTest extends AsyncTestCase
 
                 $result = \Amp\Promise\wait($result);
                 self::assertEquals('result', $result);
+            }
+        ];
+    }
+
+    /**
+     * @reuturn Generator<mixed>
+     */
+    public function provideDiagnostics(): Generator
+    {
+        yield [
+            function (ClientApi $api) {
+                $api->diagnostics()->publishDiagnostics(
+                    'file://file.php',
+                    1,
+                    [
+                    ]
+                );
+            },
+            function (TestRpcClient $client, $result) {
+                $message = $client->transmitter()->shiftNotification();
+                self::assertEquals('diagnostics/publishDiagnostics', $message->method);
             }
         ];
     }

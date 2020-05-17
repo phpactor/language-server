@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
+use Phpactor\LanguageServer\Core\Server\Client\DiagnosticsClient;
 use Phpactor\LanguageServer\Core\Server\Client\WindowClient;
 use Phpactor\LanguageServer\Core\Server\Client\WorkspaceClient;
 
@@ -25,5 +26,10 @@ class ClientApi
     public function workspace(): WorkspaceClient
     {
         return new WorkspaceClient($this->client);
+    }
+
+    public function diagnostics(): DiagnosticsClient
+    {
+        return new DiagnosticsClient($this->client);
     }
 }
