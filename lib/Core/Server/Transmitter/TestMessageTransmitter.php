@@ -43,7 +43,7 @@ class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitt
         if (!$message instanceof RequestMessage) {
             throw new RuntimeException(sprintf(
                 'Expected RequestMessage, got "%s"',
-                get_class($message)
+                is_object($message) ? get_class($message) : gettype($message)
             ));
         }
 
