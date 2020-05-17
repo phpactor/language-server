@@ -207,14 +207,14 @@ class LanguageServerBuilder
                 $this->buildHandlers(),
                 $this->buildHandlerLoader(),
                 new SessionServices(
-                new NullMessageTransmitter(),
-                new ServiceManager(
+                    new NullMessageTransmitter(),
+                    new ServiceManager(
                     new NullMessageTransmitter(),
                     $this->logger,
                     $this->buildArgumentResolver()
                 ),
-                new JsonRpcClient(new NullMessageTransmitter(), new ResponseWatcher())
-            )
+                    new JsonRpcClient(new NullMessageTransmitter(), new ResponseWatcher())
+                )
             )
         );
     }

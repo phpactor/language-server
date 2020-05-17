@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
-use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;

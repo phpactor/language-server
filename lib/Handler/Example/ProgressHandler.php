@@ -6,7 +6,6 @@ use Amp\Delayed;
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
-use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Ramsey\Uuid\Uuid;
 
 class ProgressHandler implements Handler
