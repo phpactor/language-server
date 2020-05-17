@@ -12,7 +12,8 @@ use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\ServerClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitterStack;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
@@ -41,7 +42,7 @@ class HandlerTester
     private $responseWatcher;
 
     /**
-     * @var ServerClient
+     * @var RpcClient
      */
     private $serverClient;
 
@@ -56,7 +57,7 @@ class HandlerTester
         $this->messageTransmitter = new TestMessageTransmitter();
         $this->cancellationTokenSource = new CancellationTokenSource();
         $this->responseWatcher = new ResponseWatcher();
-        $this->serverClient = new ServerClient($this->messageTransmitter, $this->responseWatcher);
+        $this->serverClient = new JsonRpcClient($this->messageTransmitter, $this->responseWatcher);
         $this->serviceManager = new ServiceManager($this->messageTransmitter, new NullLogger(), new DTLArgumentResolver());
 
         if ($handler instanceof ServiceProvider) {

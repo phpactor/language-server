@@ -17,7 +17,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\ServerClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Server\SessionServices;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
@@ -213,7 +213,7 @@ class LanguageServerBuilder
                     $this->logger,
                     $this->buildArgumentResolver()
                 ),
-                new ServerClient(new NullMessageTransmitter(), new ResponseWatcher())
+                new JsonRpcClient(new NullMessageTransmitter(), new ResponseWatcher())
             )
             )
         );

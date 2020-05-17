@@ -31,6 +31,7 @@ use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use RuntimeException;
 use Throwable;
+use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 
 final class LanguageServer implements StatProvider
 {
@@ -213,7 +214,7 @@ final class LanguageServer implements StatProvider
     {
         return \Amp\call(function () use ($connection) {
             $transmitter = new ConnectionMessageTransmitter($connection, $this->logger);
-            $serverClient = new ServerClient($transmitter, $this->responseWatcher);
+            $serverClient = new JsonRpcClient($transmitter, $this->responseWatcher);
             $serviceManager = new ServiceManager($transmitter, $this->logger, new DTLArgumentResolver());
             $container = new ApplicationContainer(
                 $this->dispatcher,

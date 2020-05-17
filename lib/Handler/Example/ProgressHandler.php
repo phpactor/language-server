@@ -5,7 +5,8 @@ namespace Phpactor\LanguageServer\Handler\Example;
 use Amp\Delayed;
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Server\ServerClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Ramsey\Uuid\Uuid;
 
 class ProgressHandler implements Handler
@@ -23,7 +24,7 @@ class ProgressHandler implements Handler
     /**
      * @return Promise<null>
      */
-    public function progress(ServerClient $client): Promise
+    public function progress(RpcClient $client): Promise
     {
         return \Amp\call(function () use ($client) {
             $token = Uuid::uuid4();

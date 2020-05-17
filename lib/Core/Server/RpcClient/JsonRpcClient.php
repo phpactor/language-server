@@ -1,15 +1,18 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Server;
+namespace Phpactor\LanguageServer\Core\Server\RpcClient;
 
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Core\Server\Client\WindowClient;
+use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
+use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Ramsey\Uuid\Uuid;
 
-class ServerClient
+class JsonRpcClient implements RpcClient
 {
     /**
      * @var MessageTransmitter
@@ -20,7 +23,6 @@ class ServerClient
      * @var ResponseWatcher
      */
     private $responseWatcher;
-
 
     public function __construct(MessageTransmitter $transmitter, ResponseWatcher $responseWatcher)
     {

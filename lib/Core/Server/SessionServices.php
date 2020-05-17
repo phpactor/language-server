@@ -17,11 +17,11 @@ class SessionServices
     private $serviceManager;
 
     /**
-     * @var ServerClient
+     * @var RpcClient
      */
     private $client;
 
-    public function __construct(MessageTransmitter $messageTransmitter, ServiceManager $serviceManager, ServerClient $client)
+    public function __construct(MessageTransmitter $messageTransmitter, ServiceManager $serviceManager, RpcClient $client)
     {
         $this->messageTransmitter = $messageTransmitter;
         $this->serviceManager = $serviceManager;
@@ -38,7 +38,7 @@ class SessionServices
         return $this->messageTransmitter;
     }
 
-    public function client(): ServerClient
+    public function client(): RpcClient
     {
         return $this->client;
     }

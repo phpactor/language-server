@@ -3,7 +3,8 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Server\ServerClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
@@ -17,7 +18,7 @@ class ServiceHandlerTest extends HandlerTestCase
     private $serviceManager;
 
     /**
-     * @var ObjectProphecy
+     * @var RpcClient
      */
     private $serverClient;
 
@@ -29,7 +30,7 @@ class ServiceHandlerTest extends HandlerTestCase
     protected function setUp(): void
     {
         $this->serviceManager = $this->prophesize(ServiceManager::class);
-        $this->serverClient = $this->prophesize(ServerClient::class);
+        $this->serverClient = $this->prophesize(RpcClient::class);
         $this->serviceHandler = new ServiceHandler();
     }
 

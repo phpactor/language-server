@@ -3,7 +3,8 @@
 namespace Phpactor\LanguageServer\Handler\System;
 
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Server\ServerClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient;
+use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
 class ServiceHandler implements Handler
@@ -30,7 +31,7 @@ class ServiceHandler implements Handler
         $manager->stop($name);
     }
 
-    public function runningServices(ServiceManager $manager, ServerClient $client): void
+    public function runningServices(ServiceManager $manager, RpcClient $client): void
     {
         $client->notification('window/showMessage', [
             'type' => 'info',
