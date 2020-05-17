@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Server\Client;
 
 use Amp\Promise;
+use DTL\Invoke\Invoke;
 use LanguageServerProtocol\MessageActionItem;
 use LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
@@ -63,7 +64,13 @@ class MessageRequestClient
                 'actions' => $actions
             ]);
 
-            return $response->result;
+            $result = $response->result;
+
+            if (null !== $result) {
+                return Invoke::new(MessageActionItem::class, (array)$result);
+            }
+
+            return null;
         });
     }
 }

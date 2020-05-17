@@ -5,9 +5,10 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server;
 use Amp\PHPUnit\AsyncTestCase;
 use Closure;
 use Generator;
+use LanguageServerProtocol\ApplyWorkspaceEditResponse;
 use LanguageServerProtocol\MessageActionItem;
 use LanguageServerProtocol\MessageType;
-use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use LanguageServerProtocol\WorkspaceEdit;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 
@@ -17,6 +18,7 @@ class ClientApiTest extends AsyncTestCase
      * @dataProvider provideWindowShowMessage
      * @dataProvider provideWindowLogMessage
      * @dataProvider provideWindowShowMessageRequest
+     * @dataProvider provideWorkspaceEdit
      */
     public function testSend(Closure $executor, Closure $assertions): void
     {
@@ -100,14 +102,43 @@ class ClientApiTest extends AsyncTestCase
     {
         yield [
             function (ClientApi $api) {
-                return $api->window()->showMessageRequest()->info('foobar');
+                return $api->window()->showMessageRequest()->info('foobar', new MessageActionItem('foobar'));
             },
             function (TestRpcClient $client, $result) {
-                $client->responseWatcher()->resolveLastResponse(new MessageActionItem('foobar'));
+                $client->responseWatcher()->resolveLastResponse(['title' => 'foobar']);
                 $message = $client->transmitter()->shiftRequest();
                 self::assertEquals('window/showMessageRequest', $message->method);
                 self::assertEquals(MessageType::INFO, $message->params['type']);
                 self::assertEquals('foobar', $message->params['message']);
+
+                $result = \Amp\Promise\wait($result);
+                self::assertInstanceOf(MessageActionItem::class, $result);
+                self::assertEquals('foobar', $result->title);
+            }
+        ];
+    }
+
+    /**
+     * @reuturn Generator<mixed>
+     */
+    public function provideWorkspaceEdit(): Generator
+    {
+        yield [
+            function (ClientApi $api) {
+                return $api->workspace()->applyEdit(new WorkspaceEdit([]));
+            },
+            function (TestRpcClient $client, $result) {
+                $client->responseWatcher()->resolveLastResponse([
+                    'applied' => false,
+                    'failureReason' => 'sorry',
+                ]);
+                $message = $client->transmitter()->shiftRequest();
+                self::assertEquals('workspace/applyEdit', $message->method);
+
+                $result = \Amp\Promise\wait($result);
+                self::assertInstanceOf(ApplyWorkspaceEditResponse::class, $result);
+                self::assertFalse($result->applied);
+                self::assertEquals('sorry', $result->failureReason);
             }
         ];
     }

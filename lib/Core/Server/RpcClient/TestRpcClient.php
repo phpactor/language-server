@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Server\RpcClient;
 
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\TestResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
