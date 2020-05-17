@@ -16,10 +16,16 @@ class SessionServices
      */
     private $serviceManager;
 
-    public function __construct(MessageTransmitter $messageTransmitter, ServiceManager $serviceManager)
+    /**
+     * @var ServerClient
+     */
+    private $client;
+
+    public function __construct(MessageTransmitter $messageTransmitter, ServiceManager $serviceManager, ServerClient $client)
     {
         $this->messageTransmitter = $messageTransmitter;
         $this->serviceManager = $serviceManager;
+        $this->client = $client;
     }
 
     public function serviceManager(): ServiceManager
@@ -30,5 +36,10 @@ class SessionServices
     public function messageTransmitter(): MessageTransmitter
     {
         return $this->messageTransmitter;
+    }
+
+    public function client(): ServerClient
+    {
+        return $this->client;
     }
 }
