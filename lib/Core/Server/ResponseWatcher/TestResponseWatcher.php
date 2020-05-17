@@ -30,9 +30,9 @@ class TestResponseWatcher implements ResponseWatcher
     }
 
     /**
-     * @param array $result
+     * @param mixed $result
      */
-    public function resolveLastResponse(?array $result): void
+    public function resolveLastResponse($result): void
     {
         $id = array_shift($this->requestIds);
         if (null === $id) {

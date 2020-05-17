@@ -19,6 +19,7 @@ class ClientApiTest extends AsyncTestCase
      * @dataProvider provideWindowLogMessage
      * @dataProvider provideWindowShowMessageRequest
      * @dataProvider provideWorkspaceEdit
+     * @dataProvider provideWorkspaceExecuteCommand
      */
     public function testSend(Closure $executor, Closure $assertions): void
     {
@@ -139,6 +140,26 @@ class ClientApiTest extends AsyncTestCase
                 self::assertInstanceOf(ApplyWorkspaceEditResponse::class, $result);
                 self::assertFalse($result->applied);
                 self::assertEquals('sorry', $result->failureReason);
+            }
+        ];
+    }
+
+    /**
+     * @reuturn Generator<mixed>
+     */
+    public function provideWorkspaceExecuteCommand(): Generator
+    {
+        yield [
+            function (ClientApi $api) {
+                return $api->workspace()->executeCommand('one', ['one', 'two']);
+            },
+            function (TestRpcClient $client, $result) {
+                $client->responseWatcher()->resolveLastResponse('result');
+                $message = $client->transmitter()->shiftRequest();
+                self::assertEquals('workspace/executeCommand', $message->method);
+
+                $result = \Amp\Promise\wait($result);
+                self::assertEquals('result', $result);
             }
         ];
     }

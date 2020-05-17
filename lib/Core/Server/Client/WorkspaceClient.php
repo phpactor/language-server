@@ -37,4 +37,22 @@ class WorkspaceClient
             return Invoke::new(ApplyWorkspaceEditResponse::class, (array)$response->result);
         });
     }
+
+    /**
+     * @return Promise<mixed>
+     */
+    public function executeCommand(string $command, array $arguments): Promise
+    {
+        return \Amp\call(function () use ($command, $arguments) {
+            $response = yield $this->client->request(
+                'workspace/executeCommand',
+                [
+                    'command' => $command,
+                    'arguments' => $arguments
+                ]
+            );
+
+            return $response->result;
+        });
+    }
 }
