@@ -5,7 +5,9 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server;
 use Amp\PHPUnit\AsyncTestCase;
 use Closure;
 use Generator;
+use LanguageServerProtocol\MessageActionItem;
 use LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 
@@ -101,6 +103,7 @@ class ClientApiTest extends AsyncTestCase
                 return $api->window()->showMessageRequest()->info('foobar');
             },
             function (TestRpcClient $client, $result) {
+                $client->responseWatcher()->resolveLastResponse(new MessageActionItem('foobar'));
                 $message = $client->transmitter()->shiftRequest();
                 self::assertEquals('window/showMessageRequest', $message->method);
                 self::assertEquals(MessageType::INFO, $message->params['type']);
