@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Core\Server\RpcClient;
 
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
+use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 
@@ -33,7 +34,7 @@ class TestRpcClient implements RpcClient
 
     public static function create(): TestRpcClient
     {
-        return new self(new TestMessageTransmitter(), new ResponseWatcher());
+        return new self(new TestMessageTransmitter(), new DeferredResponseWatcher());
     }
 
     public function notification(string $method, array $params): void

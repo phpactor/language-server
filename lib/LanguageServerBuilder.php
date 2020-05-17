@@ -17,7 +17,8 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
+use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
+use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Server\SessionServices;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
@@ -168,7 +169,7 @@ class LanguageServerBuilder
      */
     public function build(): LanguageServer
     {
-        $watcher = new ResponseWatcher();
+        $watcher = new DeferredResponseWatcher();
         $dispatcher = $this->buildDispatcher($watcher);
 
         if ($this->tcpAddress) {
@@ -203,17 +204,17 @@ class LanguageServerBuilder
     {
         return new ServerTester(
             new ApplicationContainer(
-                $this->buildDispatcher(new ResponseWatcher()),
+                $this->buildDispatcher(new DeferredResponseWatcher()),
                 $this->buildHandlers(),
                 $this->buildHandlerLoader(),
                 new SessionServices(
                     new NullMessageTransmitter(),
                     new ServiceManager(
-                    new NullMessageTransmitter(),
-                    $this->logger,
-                    $this->buildArgumentResolver()
-                ),
-                    new JsonRpcClient(new NullMessageTransmitter(), new ResponseWatcher())
+                        new NullMessageTransmitter(),
+                        $this->logger,
+                        $this->buildArgumentResolver()
+                    ),
+                    TestRpcClient::create()
                 )
             )
         );
