@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\Workspace;
 
 use Amp\Success;
-use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;

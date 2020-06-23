@@ -2,9 +2,9 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 
-use LanguageServerProtocol\TextDocumentIdentifier;
-use LanguageServerProtocol\TextDocumentItem;
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Core\Session\WorkspaceListener;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;

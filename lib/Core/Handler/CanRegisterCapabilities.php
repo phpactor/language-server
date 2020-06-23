@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
-use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServerProtocol\ServerCapabilities;
 
 interface CanRegisterCapabilities
 {

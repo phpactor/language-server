@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
-use LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Server\SessionServices;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;

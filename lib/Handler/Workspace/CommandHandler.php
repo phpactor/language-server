@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Handler\Workspace;
 
 use Amp\Promise;
-use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Workspace\CommandDispatcher;

@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Client;
 
-use LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 
 class MessageClient

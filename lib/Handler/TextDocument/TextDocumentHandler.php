@@ -2,11 +2,11 @@
 
 namespace Phpactor\LanguageServer\Handler\TextDocument;
 
-use LanguageServerProtocol\ServerCapabilities;
-use LanguageServerProtocol\TextDocumentIdentifier;
-use LanguageServerProtocol\TextDocumentItem;
-use LanguageServerProtocol\TextDocumentSyncKind;
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServerProtocol\TextDocumentSyncKind;
+use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Session\Workspace;

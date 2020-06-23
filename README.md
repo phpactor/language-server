@@ -113,7 +113,7 @@ Creating Services
 ```php
 use Amp\Promise;
 use Amp\Delayed;
-use LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 

@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Test;
 
 use Amp\Promise;
-use LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;

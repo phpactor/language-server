@@ -2,9 +2,9 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 
-use LanguageServerProtocol\TextDocumentIdentifier;
-use LanguageServerProtocol\TextDocumentItem;
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
 use Phpactor\LanguageServer\Core\Session\Workspace;

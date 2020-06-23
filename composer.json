@@ -12,13 +12,13 @@
     ],
     "require": {
         "php": "^7.2",
-        "felixfbecker/language-server-protocol": "^1.0",
         "psr/log": "^1.0",
         "dantleech/argument-resolver": "^1.1",
         "amphp/socket": "^1.1",
         "dantleech/invoke": "^1.0",
         "ramsey/uuid": "^4.0",
-        "psr/event-dispatcher": "^1.0"
+        "psr/event-dispatcher": "^1.0",
+        "phpactor/language-server-protocol": "9999999-dev"
     },
     "require-dev": {
         "amphp/phpunit-util": "^1.3",

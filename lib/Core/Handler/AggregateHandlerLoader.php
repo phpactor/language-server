@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
-use LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Server\SessionServices;
 
 class AggregateHandlerLoader implements HandlerLoader

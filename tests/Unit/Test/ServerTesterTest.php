@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Test;
 
-use LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;

@@ -5,10 +5,10 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server;
 use Amp\PHPUnit\AsyncTestCase;
 use Closure;
 use Generator;
-use LanguageServerProtocol\ApplyWorkspaceEditResponse;
-use LanguageServerProtocol\MessageActionItem;
-use LanguageServerProtocol\MessageType;
-use LanguageServerProtocol\WorkspaceEdit;
+use Phpactor\LanguageServerProtocol\ApplyWorkspaceEditResponse;
+use Phpactor\LanguageServerProtocol\MessageActionItem;
+use Phpactor\LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServerProtocol\WorkspaceEdit;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 

@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Handler\System;
 
 use Amp\Promise;
 use Amp\Success;
-use LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
