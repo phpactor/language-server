@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
+use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Server\SessionServices;
 use Phpactor\TestUtils\PHPUnit\TestCase;
@@ -44,7 +45,7 @@ class AggregateHandlerLoaderTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->params = new InitializeParams();
+        $this->params = new InitializeParams(new ClientCapabilities());
 
         $this->loader1 = $this->prophesize(HandlerLoader::class);
         $this->loader2 = $this->prophesize(HandlerLoader::class);

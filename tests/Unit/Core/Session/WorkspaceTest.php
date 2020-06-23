@@ -21,16 +21,15 @@ class WorkspaceTest extends TestCase
         $this->workspace = new Workspace();
     }
 
-    public function testThrowsExceptionGetUnknown()
+    public function testThrowsExceptionGetUnknown(): void
     {
         $this->expectException(UnknownDocument::class);
         $this->workspace->get('foobar');
     }
 
-    public function testOpensDocument()
+    public function testOpensDocument(): void
     {
-        $expectedDocument = new TextDocumentItem();
-        $expectedDocument->uri = 'foobar';
+        $expectedDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $this->workspace->open($expectedDocument);
         $document = $this->workspace->get('foobar');
 
@@ -41,17 +40,14 @@ class WorkspaceTest extends TestCase
     {
         $this->expectException(UnknownDocument::class);
 
-        $expectedDocument = new VersionedTextDocumentIdentifier();
-        $expectedDocument->uri = 'foobar';
+        $expectedDocument = new VersionedTextDocumentIdentifier('foobar');
         $this->workspace->update($expectedDocument, 'foobar');
     }
 
     public function testUpdatesDocument()
     {
-        $originalDocument = new TextDocumentItem();
-        $originalDocument->uri = 'foobar';
-        $expectedDocument = new VersionedTextDocumentIdentifier();
-        $expectedDocument->uri = $originalDocument->uri;
+        $originalDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
+        $expectedDocument = new VersionedTextDocumentIdentifier($originalDocument->uri);
         $this->workspace->open($originalDocument);
         $this->workspace->update($expectedDocument, 'my new text');
         $document = $this->workspace->get('foobar');
@@ -65,16 +61,11 @@ class WorkspaceTest extends TestCase
      */
     public function testDoesNotUpdateDocumentWithLowerVersionThanExistingDocument(int $originalVersion, ?int $newVersion, bool $shouldBeNewer)
     {
-        $originalDocument = new TextDocumentItem();
-        $originalDocument->version = $originalVersion;
-        $originalDocument->uri = 'foobar';
-        $originalDocument->text = 'original document';
+        $originalDocument = new TextDocumentItem('foobar', 'php', $originalVersion, 'original document');
 
         $this->workspace->open($originalDocument);
 
-        $oldDocument = new VersionedTextDocumentIdentifier();
-        $oldDocument->version = $newVersion;
-        $oldDocument->uri = $originalDocument->uri;
+        $oldDocument = new VersionedTextDocumentIdentifier($originalDocument->uri, $newVersion);
 
         $this->workspace->update($oldDocument, 'new document');
 
@@ -107,7 +98,7 @@ class WorkspaceTest extends TestCase
 
     public function testReturnsNumberOfOpenFiles()
     {
-        $originalDocument = new TextDocumentItem();
+        $originalDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $originalDocument->uri = 'foobar';
         $this->workspace->open($originalDocument);
         $this->assertEquals(1, $this->workspace->openFiles());
@@ -116,7 +107,7 @@ class WorkspaceTest extends TestCase
 
     public function testRemoveDocument()
     {
-        $originalDocument = new TextDocumentItem();
+        $originalDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $originalDocument->uri = 'foobar';
 
         $this->workspace->open($originalDocument);
@@ -130,10 +121,8 @@ class WorkspaceTest extends TestCase
 
     public function testIteratesOverDocuments()
     {
-        $doc1 = new TextDocumentItem();
-        $doc1->uri = 'foobar1';
-        $doc2 = new TextDocumentItem();
-        $doc2->uri = 'foobar2';
+        $doc1 = new TextDocumentItem('foobar1', 'php', 1, 'foo');
+        $doc2 = new TextDocumentItem('foobar2', 'php', 1, 'foo');
 
         $this->workspace->open($doc1);
         $this->workspace->open($doc2);

@@ -43,8 +43,8 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testOpensDocument(): void
     {
-        $textDocument = new TextDocumentItem();
-        $textDocument->uri = 'foobar.html';
+        $textDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
+        $textDocument->uri = 'foobar';
 
         $this->dispatch('textDocument/didOpen', [
             'textDocument' => $textDocument
@@ -55,8 +55,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testUpdatesDocument()
     {
-        $document = new TextDocumentItem();
-        $document->uri = 'foobar';
+        $document = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $identifier = new VersionedTextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didChange', [
             'textDocument' => $identifier,
@@ -70,10 +69,10 @@ class TextDocumentHandlerTest extends HandlerTestCase
         $this->dispatcher->dispatch(new TextDocumentUpdated($identifier, 'asd'))->shouldHaveBeenCalled();
     }
 
-    public function testWillSave()
+    public function testWillSave(): void
     {
         $response = $this->dispatch('textDocument/willSave', [
-            'identifier' => new TextDocumentIdentifier('foobar'),
+            'identifier' => new TextDocumentIdentifier('foobar', 'php', 1, 'foo'),
             'reason' => 1
         ]);
         self::assertInstanceOf(ResponseMessage::class, $response);
@@ -82,7 +81,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testClosesDocument()
     {
-        $document = new TextDocumentItem();
+        $document = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $document->uri = 'foobar';
         $identifier = new TextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didClose', [
@@ -99,7 +98,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testSavesDocument()
     {
-        $identifier = new TextDocumentIdentifier('foobar');
+        $identifier = new TextDocumentIdentifier('foobar', 'php', 1, 'foo');
         $this->dispatch('textDocument/didSave', [
             'textDocument' => $identifier,
             'text' => 'hello',
