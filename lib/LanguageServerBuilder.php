@@ -5,6 +5,8 @@ namespace Phpactor\LanguageServer;
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\CancellingMethodDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
@@ -272,8 +274,10 @@ class LanguageServerBuilder
         return new Handlers($this->handlers);
     }
 
-    private function buildArgumentResolver(): DTLArgumentResolver
+    private function buildArgumentResolver(): ArgumentResolver
     {
-        return new DTLArgumentResolver();
+        return new ChainArgumentResolver(
+            new DTLArgumentResolver()
+        );
     }
 }
