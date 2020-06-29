@@ -7,6 +7,7 @@ use Amp\ByteStream\ResourceOutputStream;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\CancellingMethodDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
@@ -277,6 +278,7 @@ class LanguageServerBuilder
     private function buildArgumentResolver(): ArgumentResolver
     {
         return new ChainArgumentResolver(
+            new LanguageSeverProtocolResolver(),
             new DTLArgumentResolver()
         );
     }
