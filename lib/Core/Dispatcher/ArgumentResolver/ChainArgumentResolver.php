@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
-use RuntimeException;
 
 class ChainArgumentResolver implements ArgumentResolver
 {

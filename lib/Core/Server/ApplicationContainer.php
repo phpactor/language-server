@@ -79,7 +79,8 @@ final class ApplicationContainer implements Handler
     /**
      * @return Promise<InitializeResult>
      */
-    public function initialize(InitializeParams $params): Promise {
+    public function initialize(InitializeParams $params): Promise
+    {
         $this->applicationHandlers = $this->applicationHandlerLoader->load($params, $this->sessionServices);
 
         $capabilities = new ServerCapabilities();

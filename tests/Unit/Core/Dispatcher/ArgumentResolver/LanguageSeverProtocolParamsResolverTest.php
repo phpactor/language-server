@@ -6,7 +6,6 @@ use Amp\CancellationToken;
 use Amp\CancellationTokenSource;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServerProtocol\InitializeParams;
-use Phpactor\LanguageServerProtocol\InitializedParams;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
 
