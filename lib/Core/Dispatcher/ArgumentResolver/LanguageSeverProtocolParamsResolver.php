@@ -10,7 +10,7 @@ use ReflectionClass;
 use ReflectionType;
 use Symfony\Component\Process\Exception\RuntimeException;
 
-class LanguageSeverProtocolResolver implements ArgumentResolver
+class LanguageSeverProtocolParamsResolver implements ArgumentResolver
 {
     /**
      * {@inheritDoc}
@@ -39,7 +39,7 @@ class LanguageSeverProtocolResolver implements ArgumentResolver
             /** @var class-string */
             $classFqn = $type->__toString();
 
-            if (0 === strpos($classFqn, 'Phpactor\\LanguageServerProtocol')) {
+            if (preg_match('{^Phpactor\\\LanguageServerProtocol\\\.*Params$}', $classFqn)) {
                 return $this->doResolveArguments($classFqn, $parameter->getName(), $arguments, $extraArgs, $cancellationToken);
             }
 

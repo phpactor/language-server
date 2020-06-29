@@ -79,25 +79,8 @@ final class ApplicationContainer implements Handler
     /**
      * @return Promise<InitializeResult>
      */
-    public function initialize(
-        array $capabilities = [],
-        array $initializationOptions = [],
-        ?int $processId = null,
-        ?string $rootPath = null,
-        ?string $rootUri = null,
-        ?string $trace = null
-    ): Promise {
-        $this->applicationHandlers = $this->applicationHandlerLoader->load(
-            new InitializeParams(
-                $capabilities,
-                $initializationOptions,
-                $processId,
-                $rootPath,
-                $rootUri,
-                $trace
-            ),
-            $this->sessionServices
-        );
+    public function initialize(InitializeParams $params): Promise {
+        $this->applicationHandlers = $this->applicationHandlerLoader->load($params, $this->sessionServices);
 
         $capabilities = new ServerCapabilities();
         $capabilities->codeActionProvider = false;
@@ -110,8 +93,7 @@ final class ApplicationContainer implements Handler
             $handler->registerCapabiltiies($capabilities);
         }
 
-        $result = new InitializeResult();
-        $result->capabilities = $capabilities;
+        $result = new InitializeResult($capabilities);
 
         return new Success($result);
     }

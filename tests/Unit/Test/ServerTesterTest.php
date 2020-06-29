@@ -27,8 +27,8 @@ class ServerTesterTest extends TestCase
         $builder->addSystemHandler(new TextDocumentHandler($dispatcher->reveal()));
         $tester = $builder->buildServerTester();
         $tester->initialize();
-        $item = new TextDocumentItem('file://foobar', 'some text');
-        $tester->openDocument($item);
+        $item = new TextDocumentItem('file://foobar', 'some text', 1, 'foo');
+        $response = $tester->openDocument($item);
 
         $dispatcher->dispatch(new TextDocumentOpened($item))->shouldHaveBeenCalled();
     }

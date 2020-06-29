@@ -7,15 +7,15 @@ use Amp\CancellationTokenSource;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServerProtocol\InitializedParams;
-use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
 
-class LanguageSeverProtocolResolverTest extends TestCase
+class LanguageSeverProtocolParamsResolverTest extends TestCase
 {
     public function testResolvesLspParams(): void
     {
         $handler = new LspHandler();
-        $resolver = new LanguageSeverProtocolResolver();
+        $resolver = new LanguageSeverProtocolParamsResolver();
         $args = [
             'capabilities' => [
             ],
@@ -31,7 +31,7 @@ class LanguageSeverProtocolResolverTest extends TestCase
     public function testPassesCancellationToken(): void
     {
         $handler = new LspHandler();
-        $resolver = new LanguageSeverProtocolResolver();
+        $resolver = new LanguageSeverProtocolParamsResolver();
         $args = [
             'capabilities' => [
             ],
@@ -50,12 +50,12 @@ class LanguageSeverProtocolResolverTest extends TestCase
         ], $resolvedArgs);
     }
 
-    public function testNotResolvableWhenFirstParamNotProcolParams(): void
+    public function testNotResolvableWhenFirstParamNotProtocolParams(): void
     {
         $this->expectException(CouldNotResolveArguments::class);
         $this->expectExceptionMessage('First argument');
         $handler = new LspHandler();
-        $resolver = new LanguageSeverProtocolResolver();
+        $resolver = new LanguageSeverProtocolParamsResolver();
 
         $args = [
             'capabilities' => [

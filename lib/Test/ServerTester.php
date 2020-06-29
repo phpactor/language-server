@@ -45,16 +45,19 @@ class ServerTester
     {
         $response = $this->dispatchAndWait(1, 'initialize', [
             'rootUri' => __DIR__,
+            'capabilities' => [],
         ]);
         $this->assertSuccess($response);
         return $response;
     }
 
-    public function openDocument(TextDocumentItem $item): void
+    public function openDocument(TextDocumentItem $item): ?Message
     {
-        $this->dispatchAndWait(1, 'textDocument/didOpen', [
+        $response = $this->dispatchAndWait(1, 'textDocument/didOpen', [
             'textDocument' => $item
         ]);
+        $this->assertSuccess($response);
+        return $response;
     }
 
     public function assertSuccess(?Message $response): bool
