@@ -6,6 +6,7 @@ use Amp\CancellationToken;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
 use ReflectionClass;
+use ReflectionNamedType;
 use Symfony\Component\Process\Exception\RuntimeException;
 
 class LanguageSeverProtocolParamsResolver implements ArgumentResolver
@@ -33,6 +34,10 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
             }
 
             $type = $parameter->getType();
+
+            if (!$type instanceof ReflectionNamedType) {
+                continue;
+            }
 
             /** @var class-string */
             $classFqn = $type->getName();
