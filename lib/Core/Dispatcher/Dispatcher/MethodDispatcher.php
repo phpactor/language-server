@@ -36,10 +36,6 @@ class MethodDispatcher implements Dispatcher
     public function dispatch(Handlers $handlers, Message $request, array $extraArgs): Promise
     {
         return \Amp\call(function () use ($request, $handlers, $extraArgs) {
-            if (!$request instanceof NotificationMessage && !$request instanceof RequestMessage) {
-                return null;
-            }
-
             $handler = $handlers->get($request->method);
 
             $method = $this->methodResolver->resolveHandlerMethod($handler, $request->method);
@@ -47,7 +43,8 @@ class MethodDispatcher implements Dispatcher
             $arguments = $this->argumentResolver->resolveArguments(
                 $handler,
                 $method,
-                array_merge($request->params ?? [], $extraArgs)
+                array_merge($request->params ?? []),
+                $extraArgs
             );
 
             $promise = $handler->$method(...$arguments) ?? new Success(null);

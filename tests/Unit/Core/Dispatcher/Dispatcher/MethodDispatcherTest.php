@@ -67,7 +67,7 @@ class MethodDispatcherTest extends TestCase
         $this->argumentResolver->resolveArguments($handler, 'foobar', [
             'one',
             'two'
-        ])->willReturn([ 'one', 'two' ]);
+        ], [])->willReturn([ 'one', 'two' ]);
 
         \Amp\Promise\wait($this->create()->dispatch(new Handlers([
             $handler
@@ -83,7 +83,7 @@ class MethodDispatcherTest extends TestCase
         $this->argumentResolver->resolveArguments($this->handler, 'foobar', [
             'one',
             'two'
-        ])->willReturn([ 'one', 'two' ]);
+        ], [])->willReturn([ 'one', 'two' ]);
 
         $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new RequestMessage(
             5,
@@ -104,7 +104,7 @@ class MethodDispatcherTest extends TestCase
         $this->argumentResolver->resolveArguments($this->handler, 'foobar', [
             'one',
             'two'
-        ])->willReturn([ 'one', 'two' ]);
+        ], [])->willReturn([ 'one', 'two' ]);
 
         $response = \Amp\Promise\wait($dispatcher->dispatch($handlers, new NotificationMessage(
             'foobar',
@@ -114,7 +114,7 @@ class MethodDispatcherTest extends TestCase
         self::assertNull($response);
     }
 
-    public function testAdditionalArgumentsPassedToResolver()
+    public function testAdditionalArgumentsPassedToResolver(): void
     {
         $dispatcher = $this->create();
         $handlers = new Handlers([
@@ -124,6 +124,7 @@ class MethodDispatcherTest extends TestCase
         $this->argumentResolver->resolveArguments($this->handler, 'foobar', [
             'one',
             'two',
+        ], [
             'three',
             'four',
         ])->willReturn([ 'one', 'two' ]);

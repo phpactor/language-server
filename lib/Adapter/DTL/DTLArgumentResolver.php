@@ -20,8 +20,8 @@ class DTLArgumentResolver implements ArgumentResolver
         ], UpstreamArgumentResolver::ALLOW_UNKNOWN_ARGUMENTS | UpstreamArgumentResolver::MATCH_TYPE);
     }
 
-    public function resolveArguments(object $object, string $method, array $arguments): array
+    public function resolveArguments(object $object, string $method, array $arguments, array $extraArgs): array
     {
-        return $this->dtlArgumnetResolver->resolveArguments(get_class($object), $method, $arguments);
+        return $this->dtlArgumnetResolver->resolveArguments(get_class($object), $method, array_merge($arguments, $extraArgs));
     }
 }
