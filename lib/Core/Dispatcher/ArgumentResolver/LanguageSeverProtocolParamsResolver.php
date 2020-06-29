@@ -65,7 +65,7 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
         $reflection = new ReflectionClass($classFqn);
 
         $args = [
-            $reflection->getMethod('fromArray')->invoke(null, $arguments)
+            $reflection->getMethod('fromArray')->invoke(null, $arguments, true)
         ];
         
         if ($cancellationToken) {
