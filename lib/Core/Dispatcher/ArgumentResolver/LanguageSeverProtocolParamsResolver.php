@@ -35,7 +35,7 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
             $type = $parameter->getType();
 
             /** @var class-string */
-            $classFqn = $type->__toString();
+            $classFqn = $type->getName();
 
             if (preg_match('{^Phpactor\\\LanguageServerProtocol\\\.*Params$}', $classFqn)) {
                 return $this->doResolveArguments($classFqn, $parameter->getName(), $arguments, $extraArgs, $cancellationToken);
