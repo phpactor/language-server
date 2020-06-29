@@ -239,13 +239,9 @@ final class LanguageServer implements StatProvider
                     continue;
                 }
 
-                \Amp\asyncCall(function () use ($serviceManager, $request, $container, $transmitter, $connection, $serverClient) {
+                \Amp\asyncCall(function () use ($request, $container, $transmitter, $connection) {
                     try {
-                        $response = yield $container->dispatch($request, [
-                            '_transmitter' => $transmitter,
-                            '_serverClient' => $serverClient,
-                            '_serviceManager' => $serviceManager,
-                        ]);
+                        $response = yield $container->dispatch($request, []);
                     } catch (ExitSession $e) {
                         $connection->stream()->end();
 
