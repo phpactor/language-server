@@ -28,11 +28,6 @@ class HandlerTester
     private $handler;
 
     /**
-     * @var TestMessageTransmitter
-     */
-    private $messageTransmitter;
-
-    /**
      * @var CancellationTokenSource
      */
     private $cancellationTokenSource;
@@ -47,28 +42,11 @@ class HandlerTester
      */
     private $serverClient;
 
-    /**
-     * @var ServiceManager
-     */
-    private $serviceManager;
-
     public function __construct(Handler $handler)
     {
         $this->handler = $handler;
-        $this->messageTransmitter = new TestMessageTransmitter();
         $this->cancellationTokenSource = new CancellationTokenSource();
         $this->responseWatcher = new TestResponseWatcher();
-        $this->serverClient = new JsonRpcClient($this->messageTransmitter, $this->responseWatcher);
-        $this->serviceManager = new ServiceManager($this->messageTransmitter, new NullLogger(), new DTLArgumentResolver());
-
-        if ($handler instanceof ServiceProvider) {
-            $this->serviceManager->register($handler);
-        }
-    }
-
-    public function transmitter(): TestMessageTransmitterStack
-    {
-        return $this->messageTransmitter;
     }
 
     public function cancel(): void
@@ -89,10 +67,7 @@ class HandlerTester
         $this->cancellationTokenSource = new CancellationTokenSource();
 
         $extraArgs = [
-            '_transmitter' => $this->messageTransmitter,
             '_token' => $this->cancellationTokenSource->getToken(),
-            '_serverClient' => $this->serverClient,
-            '_serviceManager' => $this->serviceManager,
         ];
 
         $dispatcher = new MethodDispatcher(
@@ -109,10 +84,5 @@ class HandlerTester
     public function dispatchAndWait(string $methodName, array $params)
     {
         return \Amp\Promise\wait($this->dispatch($methodName, $params));
-    }
-
-    public function serviceManager(): ServiceManager
-    {
-        return $this->serviceManager;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Stream;
 
+use Amp\ByteStream\InputStream;
+use Amp\ByteStream\OutputStream;
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
 use Amp\Promise;
@@ -9,16 +11,16 @@ use Amp\Promise;
 class ResourceDuplexStream implements DuplexStream
 {
     /**
-     * @var ResourceInputStream
+     * @var InputStream
      */
     private $input;
 
     /**
-     * @var ResourceOutputStream
+     * @var OutputStream
      */
     private $output;
 
-    public function __construct(ResourceInputStream $input, ResourceOutputStream $output)
+    public function __construct(InputStream $input, OutputStream $output)
     {
         $this->input = $input;
         $this->output = $output;
@@ -46,5 +48,12 @@ class ResourceDuplexStream implements DuplexStream
     public function end(string $finalData = ''): Promise
     {
         return $this->output->end($finalData);
+    }
+
+    public function close(): void
+    {
+        if ($this->input instanceof ResourceInputStream) {
+            $this->input->close();
+        }
     }
 }

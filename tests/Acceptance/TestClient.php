@@ -24,7 +24,6 @@ class TestClient
     {
         $this->socket->write($request);
 
-
         $responses = \Amp\Promise\wait(\Amp\call(function () {
             $reader = new LspMessageReader($this->socket);
             $responses = [];

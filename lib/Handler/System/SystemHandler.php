@@ -19,9 +19,15 @@ class SystemHandler implements Handler
      */
     private $statProvider;
 
-    public function __construct(StatProvider $statProvider)
+    /**
+     * @var MessageTransmitter
+     */
+    private $transmitter;
+
+    public function __construct(MessageTransmitter $transmitter, StatProvider $statProvider)
     {
         $this->statProvider = $statProvider;
+        $this->transmitter = $transmitter;
     }
 
     public function methods(): array
@@ -34,9 +40,9 @@ class SystemHandler implements Handler
     /**
      * @return Promise<null>
      */
-    public function status(MessageTransmitter $transmitter): Promise
+    public function status(): Promise
     {
-        $transmitter->transmit(new NotificationMessage('window/showMessage', [
+        $this->transmitter->transmit(new NotificationMessage('window/showMessage', [
             'type' => MessageType::INFO,
             'message' => implode(', ', [
                 'pid: ' . getmypid(),

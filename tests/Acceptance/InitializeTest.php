@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Tests\Acceptance;
 
+use Phpactor\LanguageServer\Tests\Acceptance\AcceptanceTestCase;
+
 class InitializeTest extends AcceptanceTestCase
 {
     /**

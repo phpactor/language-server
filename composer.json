@@ -18,7 +18,8 @@
         "dantleech/invoke": "^1.0",
         "ramsey/uuid": "^4.0",
         "psr/event-dispatcher": "^1.0",
-        "phpactor/language-server-protocol": "dev-master"
+        "phpactor/language-server-protocol": "dev-master",
+        "thecodingmachine/safe": "^1.1"
     },
     "require-dev": {
         "amphp/phpunit-util": "^1.3",
