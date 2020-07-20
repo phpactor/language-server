@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Dispatcher\ClosureDispatcher;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ClosureDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ClosureDispatcherFactory;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;

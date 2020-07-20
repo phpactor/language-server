@@ -1,10 +1,12 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Dispatcher;
+namespace Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 
 use Amp\Promise;
 use Closure;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 class ClosureDispatcher implements Dispatcher
 {
@@ -21,7 +23,7 @@ class ClosureDispatcher implements Dispatcher
     /**
      * {@inheritDoc}
      */
-    public function dispatch(Message $request): Promise
+    public function dispatch(RequestMessage $request): Promise
     {
         return $this->closure->__invoke($request);
     }

@@ -13,5 +13,5 @@ interface Dispatcher
     /**
      * @return Promise<ResponseMessage|null>
      */
-    public function dispatch(Message $request): Promise;
+    public function dispatch(RequestMessage $request): Promise;
 }
