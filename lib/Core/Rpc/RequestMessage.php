@@ -10,6 +10,17 @@ class RequestMessage extends Message
     public $id;
 
     /**
+     * @var string
+     */
+    public $method;
+
+    /**
+     * @var array
+     */
+    public $params;
+
+
+    /**
      * @param string|int $id
      */
     public function __construct($id, string $method, ?array $params)

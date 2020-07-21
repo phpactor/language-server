@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Middleware;
 
-use Phpactor\LanguageServer\Core\Handler\HandlerMethodDispatcher;
+use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
@@ -16,7 +16,7 @@ class HandlerMiddleware implements Middleware
      */
     private $dispatcher;
 
-    public function __construct(HandlerMethodDispatcher $dispatcher)
+    public function __construct(HandlerMethodRunner $dispatcher)
     {
         $this->dispatcher = $dispatcher;
     }

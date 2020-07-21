@@ -1,11 +1,11 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Dispatcher;
+namespace Phpactor\LanguageServer\Core\Dispatcher\Factory;
 
 use Closure;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
-use Phpactor\LanguageServer\Core\Session\DispatcherFactory;
+use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 use RuntimeException;
 
 class ClosureDispatcherFactory implements DispatcherFactory

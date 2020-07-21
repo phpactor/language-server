@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Session\DispatcherFactory;
 
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Server\SessionServices;
-use Phpactor\LanguageServer\Core\Session\DispatcherFactory;
+use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 
 class DefaultDispatcherFactory implements DispatcherFactory
 {

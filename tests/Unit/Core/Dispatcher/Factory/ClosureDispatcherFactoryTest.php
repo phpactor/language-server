@@ -1,11 +1,11 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Factory;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ClosureDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\ClosureDispatcherFactory;
+use Phpactor\LanguageServer\Core\Dispatcher\Factory\ClosureDispatcherFactory;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;

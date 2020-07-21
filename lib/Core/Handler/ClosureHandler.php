@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
+use Amp\CancellationToken;
 use Amp\Promise;
 use Closure;
 
@@ -33,8 +34,8 @@ class ClosureHandler implements Handler
         ];
     }
 
-    public function handle(array $params)
+    public function handle(array $params, CancellationToken $token)
     {
-        return $this->closure->__invoke($params);
+        return $this->closure->__invoke($params, $token);
     }
 }

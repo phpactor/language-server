@@ -2,19 +2,23 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
+use Amp\CancellationToken;
+use Amp\CancelledException;
 use Amp\PHPUnit\AsyncTestCase;
 use Amp\Success;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Handler\ClosureHandler;
-use Phpactor\LanguageServer\Core\Handler\HandlerMethodDispatcher;
+use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use RuntimeException;
+use function Amp\call;
+use function Amp\delay;
 
-class HandlerMethodDispatcherTest extends AsyncTestCase
+class HandlerMethodRunnerTest extends AsyncTestCase
 {
     public function testThrowsExceptionIfHandlerNotReturnPromise()
     {
@@ -62,9 +66,51 @@ class HandlerMethodDispatcherTest extends AsyncTestCase
         self::assertEquals(2, $response->id);
     }
 
-    private function createDispatcher(array $handlers): HandlerMethodDispatcher
+    public function testToleratesTryingToCancelNonRunningRequest()
     {
-        return new HandlerMethodDispatcher(
+        $dispatcher = $this->createDispatcher([
+            new ClosureHandler('foobar', function () {
+                return call(function () {
+                    yield delay(10);
+                });
+            })
+        ]);
+
+        $response = $dispatcher->dispatch(
+            new RequestMessage(1, 'foobar', ['bar' => 'foo'])
+        );
+
+        delay(5);
+
+        $dispatcher->cancelRequest(2);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testCancelsRequest()
+    {
+        $this->expectException(CancelledException::class);
+
+        $dispatcher = $this->createDispatcher([
+            new ClosureHandler('foobar', function (array $params, CancellationToken $token ) {
+                return call(function () use ($params, $token) {
+                    yield delay(100);
+                    $token->throwIfRequested();
+                });
+            })
+        ]);
+
+        $promise = $dispatcher->dispatch(
+            new RequestMessage(1, 'foobar', ['bar' => 'foo'])
+        );
+
+        $dispatcher->cancelRequest(1);
+
+        yield $promise;
+    }
+
+    private function createDispatcher(array $handlers): HandlerMethodRunner
+    {
+        return new HandlerMethodRunner(
             new Handlers($handlers),
             new HandlerMethodResolver()
         );
