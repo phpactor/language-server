@@ -11,7 +11,7 @@ use Psr\Log\NullLogger;
 use RuntimeException;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
-class HandlerMethodRunner
+final class HandlerMethodRunner
 {
     /**
      * @var Handlers
@@ -33,10 +33,10 @@ class HandlerMethodRunner
      */
     private $logger;
 
-    public function __construct(Handlers $handlers, HandlerMethodResolver $resolver, ?LoggerInterface $logger = null)
+    public function __construct(Handlers $handlers, ?HandlerMethodResolver $resolver = null, ?LoggerInterface $logger = null)
     {
         $this->handlers = $handlers;
-        $this->resolver = $resolver;
+        $this->resolver = $resolver ?: new HandlerMethodResolver();
         $this->logger = $logger ?: new NullLogger();
     }
 
