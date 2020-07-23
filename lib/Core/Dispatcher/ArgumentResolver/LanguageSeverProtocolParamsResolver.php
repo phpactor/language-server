@@ -45,9 +45,10 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
             }
 
             throw new CouldNotResolveArguments(sprintf(
-                'First argument of LSP class "%s" method "%s" must be the LSP param object',
+                'First argument of LSP class "%s" method "%s" must be the LSP param object, it is "%s"',
                 get_class($object),
-                $method
+                $method,
+                $classFqn
             ));
         }
 

@@ -17,7 +17,7 @@ class ChainArgumentResolver implements ArgumentResolver
         $this->resolvers = $resolvers;
     }
 
-    public function resolveArguments(object $object, string $method, array $arguments, array $extraArgs): array
+    public function resolveArguments(object $object, string $method, array $arguments): array
     {
         if (empty($this->resolvers)) {
             throw new CouldNotResolveArguments('No resolvers defined in chain resolver, chain resolver cannot resolve anything');
@@ -25,7 +25,7 @@ class ChainArgumentResolver implements ArgumentResolver
 
         foreach ($this->resolvers as $resolver) {
             try {
-                return $resolver->resolveArguments($object, $method, $arguments, $extraArgs);
+                return $resolver->resolveArguments($object, $method, $arguments);
             } catch (CouldNotResolveArguments $couldNotResolve) {
                 $lastException = $couldNotResolve;
             }

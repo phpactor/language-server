@@ -72,7 +72,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
     public function testWillSave(): void
     {
         $response = $this->dispatch('textDocument/willSave', [
-            'identifier' => new TextDocumentIdentifier('foobar', 'php', 1, 'foo'),
+            'textDocument' => ProtocolFactory::textDocumentIdentifier('foobar'),
             'reason' => 1
         ]);
         self::assertInstanceOf(ResponseMessage::class, $response);
@@ -98,7 +98,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testSavesDocument()
     {
-        $identifier = new TextDocumentIdentifier('foobar', 'php', 1, 'foo');
+        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didSave', [
             'textDocument' => $identifier,
             'text' => 'hello',

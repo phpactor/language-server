@@ -81,10 +81,12 @@ final class HandlerMethodRunner
                 $this->cancellations[$request->id] = $cancellationTokenSource;
             }
 
-            $promise = $handler->$method(
+            $promise = $handler->$method(...array_merge(
                 $this->argumentResolver->resolveArguments($handler, $method, $request->params),
-                $cancellationTokenSource->getToken()
-            ) ?? new Success(null);
+                [
+                    $cancellationTokenSource->getToken()
+                ]
+            )) ?? new Success(null);
 
             if (!$promise instanceof Promise) {
                 throw new RuntimeException(sprintf(
