@@ -6,6 +6,9 @@ use Amp\Promise;
 use Amp\Success;
 use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Server\ClientApi;
+use Phpactor\LanguageServer\Core\Server\RpcClient;
+use Phpactor\LanguageServer\Core\Server\ServerStatsReader;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
@@ -15,19 +18,19 @@ class SystemHandler implements Handler
     const METHOD_STATUS = 'system/status';
 
     /**
-     * @var StatProvider
+     * @var ServerStatsReader
      */
     private $statProvider;
 
     /**
-     * @var MessageTransmitter
+     * @var ClientApi
      */
-    private $transmitter;
+    private $client;
 
-    public function __construct(MessageTransmitter $transmitter, StatProvider $statProvider)
+    public function __construct(ClientApi $client, ServerStatsReader $statProvider)
     {
         $this->statProvider = $statProvider;
-        $this->transmitter = $transmitter;
+        $this->client = $client;
     }
 
     public function methods(): array
@@ -42,16 +45,15 @@ class SystemHandler implements Handler
      */
     public function status(): Promise
     {
-        $this->transmitter->transmit(new NotificationMessage('window/showMessage', [
-            'type' => MessageType::INFO,
-            'message' => implode(', ', [
+        $this->client->window()->showMessage()->info(
+            implode(', ', [
                 'pid: ' . getmypid(),
-                'up: ' . $this->statProvider->stats()->uptime->format('%ad %hh %im %ss'),
-                'connections: ' . $this->statProvider->stats()->connectionCount,
-                'requests: ' . $this->statProvider->stats()->requestCount,
+                'up: ' . $this->statProvider->uptime()->format('%ad %hh %im %ss'),
+                'connections: ' . $this->statProvider->connectionCount(),
+                'requests: ' . $this->statProvider->requestCount(),
                 'mem: ' . number_format(memory_get_peak_usage()) . 'b',
-            ]),
-        ]));
+            ])
+        );
 
         return new Success(null);
     }

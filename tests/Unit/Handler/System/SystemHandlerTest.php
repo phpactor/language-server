@@ -5,6 +5,8 @@ namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 use DateInterval;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Core\Server\ClientApi;
+use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\StatProvider;
@@ -14,24 +16,30 @@ use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 class SystemHandlerTest extends HandlerTestCase
 {
     /**
-     * @var ObjectProphecy
+     * @var ServerStats
      */
-    private $provider;
+    private $stats;
+
+    /**
+     * @var ClientApi
+     */
+    private $clientApi;
+
+    /**
+     * @var TestRpcClient
+     */
+    private $client;
 
     protected function setUp(): void
     {
-        $this->provider = $this->prophesize(StatProvider::class);
-        $stats = new ServerStats(
-            new DateInterval('PT1S'),
-            5,
-            6
-        );
-        $this->provider->stats()->willReturn($stats);
+        $this->stats = new ServerStats();
+        $this->client = TestRpcClient::create();
+        $this->clientApi = new ClientApi($this->client);
     }
 
     public function handler(): Handler
     {
-        return new SystemHandler($this->provider->reveal());
+        return new SystemHandler($this->clientApi, $this->stats);
     }
 
     public function testItReturnsTheCurrentSessionStatus()
@@ -39,9 +47,11 @@ class SystemHandlerTest extends HandlerTestCase
         $tester = new HandlerTester($this->handler());
 
         $response = $tester->dispatchAndWait('system/status', []);
-
         self::assertInstanceOf(ResponseMessage::class, $response);
-        $message = $tester->transmitter()->shift();
+
+
+        $message = $this->client->transmitter()->shift();
+
         self::assertNotNull($message);
     }
 }

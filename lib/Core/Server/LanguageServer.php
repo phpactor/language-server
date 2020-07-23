@@ -61,16 +61,6 @@ final class LanguageServer implements StatProvider
     private $connections = [];
 
     /**
-     * @var DateTimeImmutable
-     */
-    private $created;
-
-    /**
-     * @var int
-     */
-    private $requestCount = 0;
-
-    /**
      * @var DispatcherFactory
      */
     private $dispatcherFactory;
@@ -80,11 +70,17 @@ final class LanguageServer implements StatProvider
      */
     private $initializer;
 
+    /**
+     * @var ServerStats
+     */
+    private $stats;
+
     public function __construct(
         DispatcherFactory $dispatcherFactory,
         LoggerInterface $logger,
         StreamProvider $streamProvider,
-        Initializer $initializer
+        Initializer $initializer,
+        ?ServerStats $stats = null
     ) {
         $this->logger = $logger;
         $this->streamProvider = $streamProvider;
@@ -92,6 +88,7 @@ final class LanguageServer implements StatProvider
         $this->created = new DateTimeImmutable();
         $this->dispatcherFactory = $dispatcherFactory;
         $this->initializer = $initializer;
+        $this->stats = $stats ?: new ServerStats();
     }
 
     /**
@@ -134,15 +131,6 @@ final class LanguageServer implements StatProvider
         return $this->streamProvider->address();
     }
 
-    public function stats(): ServerStats
-    {
-        return new ServerStats(
-            $this->created->diff(new DateTimeImmutable()),
-            count($this->connections),
-            $this->requestCount
-        );
-    }
-
     private function listenForConnections(): Generator
     {
         if ($this->streamProvider instanceof SocketStreamProvider) {
@@ -156,14 +144,15 @@ final class LanguageServer implements StatProvider
         // a connection, with a STDIO stream this just returns the stream
         // immediately)
         while ($connection = yield $this->streamProvider->accept()) {
+            $this->stats->incConnectionCount();
 
             // create a reference to the connection so that we can later
             // terminate it if necessary
             $this->connections[$connection->id()] = $connection;
 
-            // handle the session as a coroutine. If the handler throws an
             \Amp\asyncCall(function () use ($connection) {
                 yield $this->handle($connection);
+                $this->stats->decConnectionCount();
             });
         }
     }
@@ -181,7 +170,7 @@ final class LanguageServer implements StatProvider
             // wait for the next request
             while (null !== $request = yield $reader->wait()) {
                 $this->logger->info('IN:', $request->body());
-                $this->requestCount++;
+                $this->stats->incRequestCount();
 
                 try {
                     $request = RequestMessageFactory::fromRequest($request);
@@ -193,8 +182,8 @@ final class LanguageServer implements StatProvider
                     continue;
                 }
 
-                // initialize the dispatcher with the initialize parameters (for
-                // example to allow a container to boot with the client
+                // initialize the dispatcher with the initialize parameters
+                // (for example to allow a container to boot with the client
                 // capabilities)
                 if (null === $dispatcher) {
                     $dispatcher = $this->dispatcherFactory->create(

@@ -26,6 +26,6 @@ class MiddlewareDispatcher implements Dispatcher
     public function dispatch(Message $request): Promise
     {
         $handler = new RequestHandler($this->middleware);
-        return $handler->handle($request, $handler);
+        return $handler->handle($request);
     }
 }
