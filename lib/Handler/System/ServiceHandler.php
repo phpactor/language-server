@@ -9,6 +9,22 @@ use Phpactor\LanguageServer\Core\Service\ServiceManager;
 class ServiceHandler implements Handler
 {
     /**
+     * @var ServiceManager
+     */
+    private $manager;
+
+    /**
+     * @var RpcClient
+     */
+    private $client;
+
+    public function __construct(ServiceManager $manager, RpcClient $client)
+    {
+        $this->manager = $manager;
+        $this->client = $client;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function methods(): array
@@ -20,19 +36,19 @@ class ServiceHandler implements Handler
         ];
     }
 
-    public function startService(ServiceManager $manager, string $name): void
+    public function startService(string $name): void
     {
-        $manager->start($name);
+        $this->manager->start($name);
     }
 
-    public function stopService(ServiceManager $manager, string $name): void
+    public function stopService(string $name): void
     {
-        $manager->stop($name);
+        $this->manager->stop($name);
     }
 
-    public function runningServices(ServiceManager $manager, RpcClient $client): void
+    public function runningServices(ServiceManager $manager): void
     {
-        $client->notification('window/showMessage', [
+        $this->client->notification('window/showMessage', [
             'type' => 'info',
             'message' => sprintf(
                 'Running services: "%s"',

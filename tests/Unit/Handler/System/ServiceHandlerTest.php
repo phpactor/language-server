@@ -30,19 +30,21 @@ class ServiceHandlerTest extends HandlerTestCase
     {
         $this->serviceManager = $this->prophesize(ServiceManager::class);
         $this->serverClient = $this->prophesize(RpcClient::class);
-        $this->serviceHandler = new ServiceHandler();
     }
 
     public function handler(): Handler
     {
-        return new ServiceHandler();
+        return new ServiceHandler(
+            $this->serviceManager->reveal(),
+            $this->serverClient->reveal()
+        );
     }
 
-    public function testItStartsAService()
+    public function testItStartsAService(): void
     {
         $this->serviceManager->start('foobar')->shouldBeCalled();
+
         $this->dispatch('service/start', [
-            $this->serviceManager->reveal(),
             'name' => 'foobar'
         ]);
     }

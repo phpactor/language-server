@@ -34,8 +34,9 @@ class ClosureHandler implements Handler
         ];
     }
 
-    public function handle(array $params, CancellationToken $token = null)
+    public function handle()
     {
-        return $this->closure->__invoke($params, $token);
+        $args = func_get_args();
+        return $this->closure->__invoke(...$args);
     }
 }

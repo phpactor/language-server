@@ -81,6 +81,8 @@ class HandlerTester
                     new HandlerMethodResolver(),
                     new ChainArgumentResolver(
                         new LanguageSeverProtocolParamsResolver(),
+                        new DTLArgumentResolver(),
+                        new PassThroughArgumentResolver()
                     )
                 )
             )

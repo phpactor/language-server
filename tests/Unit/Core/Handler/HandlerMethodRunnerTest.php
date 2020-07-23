@@ -67,8 +67,8 @@ class HandlerMethodRunnerTest extends AsyncTestCase
     public function testReturnsValueFromHandler()
     {
         $dispatcher = $this->createRunner([
-            new ClosureHandler('foobar', function (array $params) {
-                return new Success('foobar: '.$params['bar']);
+            new ClosureHandler('foobar', function (string $bar) {
+                return new Success('foobar: '.$bar);
             })
         ]);
 
@@ -106,8 +106,8 @@ class HandlerMethodRunnerTest extends AsyncTestCase
         $this->expectException(CancelledException::class);
 
         $dispatcher = $this->createRunner([
-            new ClosureHandler('foobar', function (array $params, CancellationToken $token ) {
-                return call(function () use ($params, $token) {
+            new ClosureHandler('foobar', function (string $bar, CancellationToken $token ) {
+                return call(function () use ($token) {
                     yield delay(100);
                     $token->throwIfRequested();
                 });
