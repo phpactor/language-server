@@ -11,7 +11,7 @@ use RuntimeException;
 class DeferredResponseWatcher implements ResponseWatcher
 {
     /**
-     * @var array<string, Deferred<ResponseMessage>>
+     * @var array<string|int, Deferred<ResponseMessage>>
      */
     private $watchers = [];
 
@@ -29,9 +29,11 @@ class DeferredResponseWatcher implements ResponseWatcher
     }
 
     /**
+     * @param string|int $requestId
+     *
      * @return Promise<ResponseMessage>
      */
-    public function waitForResponse(string $requestId): Promise
+    public function waitForResponse($requestId): Promise
     {
         $deferred = new Deferred();
         $this->watchers[$requestId] = $deferred;
