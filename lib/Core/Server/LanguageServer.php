@@ -6,12 +6,14 @@ use Amp\Promise;
 use DateTimeImmutable;
 use Exception;
 use Generator;
+use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
 use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
@@ -72,16 +74,23 @@ final class LanguageServer implements StatProvider
      */
     private $dispatcherFactory;
 
+    /**
+     * @var Initializer
+     */
+    private $initializer;
+
     public function __construct(
         DispatcherFactory $dispatcherFactory,
         LoggerInterface $logger,
-        StreamProvider $streamProvider
+        StreamProvider $streamProvider,
+        Initializer $initializer
     ) {
         $this->logger = $logger;
         $this->streamProvider = $streamProvider;
 
         $this->created = new DateTimeImmutable();
         $this->dispatcherFactory = $dispatcherFactory;
+        $this->initializer = $initializer;
     }
 
     /**
@@ -156,9 +165,9 @@ final class LanguageServer implements StatProvider
         return \Amp\call(function () use ($connection) {
             $transmitter = new ConnectionMessageTransmitter($connection, $this->logger);
             $reader = new LspMessageReader($connection->stream());
+            $dispatcher = null;
 
-            $dispatcher = $this->dispatcherFactory->create($transmitter);
-
+            // wait for the next request
             while (null !== $request = yield $reader->wait()) {
                 $this->logger->info('IN:', $request->body());
                 $this->requestCount++;
@@ -171,6 +180,16 @@ final class LanguageServer implements StatProvider
                         [],
                     ));
                     continue;
+                }
+
+                // initialize the dispatcher with the initialize parameters (for
+                // example to allow a container to boot with the client
+                // capabilities)
+                if (null === $dispatcher) {
+                    $dispatcher = $this->dispatcherFactory->create(
+                        $transmitter,
+                        $this->initializer->provideInitializeParams($request)
+                    );
                 }
 
                 $this->dispatchRequest($transmitter, $dispatcher, $connection, $request);

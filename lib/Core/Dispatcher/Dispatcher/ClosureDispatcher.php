@@ -23,7 +23,7 @@ class ClosureDispatcher implements Dispatcher
     /**
      * {@inheritDoc}
      */
-    public function dispatch(RequestMessage $request): Promise
+    public function dispatch(Message $request): Promise
     {
         return $this->closure->__invoke($request);
     }

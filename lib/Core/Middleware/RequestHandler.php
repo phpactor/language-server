@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Middleware;
 
+use Amp\Promise;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -19,7 +20,10 @@ final class RequestHandler
         $this->queue = $queue;
     }
 
-    public function handle(Message $request): ResponseMessage
+    /**
+     * @return Promise<ResponseMessage|null>
+     */
+    public function handle(Message $request): Promise
     {
         $middleware = array_shift($this->queue);
 

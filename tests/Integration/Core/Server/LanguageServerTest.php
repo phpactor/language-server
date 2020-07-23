@@ -24,6 +24,7 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
+use Phpactor\LanguageServer\Core\Server\Initializer\PredefinedInitializer;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
@@ -79,7 +80,8 @@ class LanguageServerTest extends AsyncTestCase
                     return new ClosureDispatcher($handler);
                 }),
                 new NullLogger(),
-                new ResourceStreamProvider($stream, new NullLogger())
+                new ResourceStreamProvider($stream, new NullLogger()),
+                new PredefinedInitializer()
             );
 
 
