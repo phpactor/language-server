@@ -18,6 +18,7 @@ use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
+use Phpactor\LanguageServer\Core\Server\Initializer\RequestInitializer;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
@@ -116,7 +117,8 @@ class LanguageServerBuilder
         return new LanguageServer(
             $this->dispatcherFactory,
             $this->logger,
-            $provider
+            $provider,
+            new RequestInitializer()
         );
     }
 }

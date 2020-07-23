@@ -8,5 +8,6 @@ parameters:
         
     paths:
         - lib
-    includes:
-        - vendor/jangregor/phpstan-prophecy/extension.neon
+
+includes:
+    - vendor/jangregor/phpstan-prophecy/extension.neon

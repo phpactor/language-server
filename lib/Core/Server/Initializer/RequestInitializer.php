@@ -29,6 +29,6 @@ class RequestInitializer implements Initializer
             ));
         }
 
-        return InitializeParams::fromArray($request->params);
+        return InitializeParams::fromArray($request->params, true);
     }
 }

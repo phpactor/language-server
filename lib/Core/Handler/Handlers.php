@@ -4,9 +4,10 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use ArrayIterator;
 use Countable;
+use IteratorAggregate;
 use RuntimeException;
 
-final class Handlers implements Countable
+final class Handlers implements Countable, IteratorAggregate
 {
     /**
      * @var array

@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Handler\TextDocument;
 
+use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
@@ -45,9 +46,10 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
         ];
     }
 
-    public function didOpen(TextDocumentItem $textDocument): void
+    public function didOpen(array $params): void
     {
-        $this->dispatcher->dispatch(new TextDocumentOpened($textDocument));
+        $params = DidOpenTextDocumentParams::fromArray($params);
+        $this->dispatcher->dispatch(new TextDocumentOpened($params->textDocument));
     }
 
     public function didChange(VersionedTextDocumentIdentifier $textDocument, array $contentChanges): void
