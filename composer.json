@@ -13,7 +13,6 @@
     "require": {
         "php": "^7.2",
         "psr/log": "^1.0",
-        "dantleech/argument-resolver": "^1.1",
         "amphp/socket": "^1.1",
         "dantleech/invoke": "^1.0",
         "ramsey/uuid": "^4.0",

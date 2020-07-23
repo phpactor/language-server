@@ -7,17 +7,15 @@ use Countable;
 use IteratorAggregate;
 use RuntimeException;
 
+/**
+ * @implements IteratorAggregate<Handler>
+ */
 final class Handlers implements Countable, IteratorAggregate
 {
     /**
      * @var array
      */
     private $methods = [];
-
-    /**
-     * @var array
-     */
-    private $services = [];
 
     public function __construct(array $handlers = [])
     {
@@ -44,18 +42,6 @@ final class Handlers implements Countable, IteratorAggregate
         foreach (array_keys($handler->methods()) as $languageServerMethod) {
             $this->methods[$languageServerMethod] = $handler;
         }
-
-        if ($handler instanceof ServiceProvider) {
-            foreach ($handler->services() as $key => $serviceName) {
-                if (is_string($key)) {
-                    throw new RuntimeException(sprintf(
-                        'Got a string key for services "%s". The service list must be a list of method names only',
-                        $key
-                    ));
-                }
-                $this->services[$serviceName] = $handler;
-            }
-        }
     }
 
     /**
@@ -68,7 +54,7 @@ final class Handlers implements Countable, IteratorAggregate
 
     public function merge(Handlers $handlers): void
     {
-        foreach (array_merge($handlers->methods, $handlers->services) as $handler) {
+        foreach ($handlers->methods as $handler) {
             $this->add($handler);
         }
     }
@@ -83,14 +69,6 @@ final class Handlers implements Countable, IteratorAggregate
 
     public function count(): int
     {
-        return count($this->methods) + count($this->services);
-    }
-
-    /**
-     * @return Handler[]
-     */
-    public function services(): array
-    {
-        return $this->services;
+        return count($this->methods);
     }
 }

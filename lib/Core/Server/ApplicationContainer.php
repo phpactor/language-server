@@ -12,7 +12,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
-use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
+use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 
 final class ApplicationContainer implements Handler

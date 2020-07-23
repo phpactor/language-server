@@ -5,61 +5,38 @@ namespace Phpactor\LanguageServer\Core\Service;
 use Amp\CancellationTokenSource;
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
-use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
+use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
+use function Amp\asyncCall;
 
 class ServiceManager
 {
-    /**
-     * @var array
-     */
-    private $services = [];
-
-    /**
-     * @var HandlerMethodResolver
-     */
-    private $methodResolver;
-
-    /**
-     * @var MessageTransmitter
-     */
-    private $transmitter;
-
     /**
      * @var LoggerInterface
      */
     private $logger;
 
     /**
-     * @var ArgumentResolver
-     */
-    private $resolver;
-
-    /**
      * @var array
      */
     private $cancellations = [];
 
-    public function __construct(
-        MessageTransmitter $transmitter,
-        LoggerInterface $logger,
-        ArgumentResolver $resolver
-    ) {
-        $this->transmitter = $transmitter;
-        $this->logger = $logger;
-        $this->resolver = $resolver;
-    }
+    /**
+     * @var ServiceProviders
+     */
+    private $serviceProviders;
 
-    public function register(ServiceProvider $provider): void
-    {
-        foreach ($provider->services() as $serviceMethodName) {
-            $this->add($serviceMethodName, $provider);
-        }
+    public function __construct(
+        ServiceProviders $serviceProviders,
+        LoggerInterface $logger
+    ) {
+        $this->logger = $logger;
+        $this->serviceProviders = $serviceProviders;
     }
 
     /**
@@ -67,21 +44,18 @@ class ServiceManager
      */
     public function runningServices(): array
     {
-        return array_keys($this->services);
     }
 
     public function startAll(): void
     {
-        foreach (array_keys($this->services) as $serviceMethodName) {
-            $this->start($serviceMethodName);
+        foreach ($this->serviceProviders->names() as $serviceName) {
+            $this->start($serviceName);
         }
     }
 
     public function start(string $serviceName): void
     {
-        $this->assertServiceExists($serviceName);
-
-        $service = $this->services[$serviceName];
+        $provider = $this->serviceProviders->get($serviceName);
 
         if (isset($this->cancellations[$serviceName])) {
             throw new RuntimeException(sprintf(
@@ -90,12 +64,12 @@ class ServiceManager
             ));
         }
 
-        $this->logger->info(sprintf('Starting service: %s (%s)', $serviceName, get_class($service)));
+        $this->logger->info(sprintf('Starting service: %s (%s)', $serviceName, get_class($provider)));
         
-        if (!method_exists($service, $serviceName)) {
+        if (!method_exists($provider, $serviceName)) {
             throw new RuntimeException(sprintf(
-                'Handler "%s" has no service method "%s"',
-                get_class($service),
+                'Service provider "%s" has no service method "%s"',
+                get_class($provider),
                 $serviceName
             ));
         }
@@ -104,23 +78,13 @@ class ServiceManager
         $this->cancellations[$serviceName] = $cancel;
         $token = $cancel->getToken();
 
-        \Amp\asyncCall(function () use ($service, $serviceName, $token) {
-            $arguments = $this->resolver->resolveArguments(
-                $service,
-                $serviceName,
-                [],
-                [
-                    '_transmitter' => $this->transmitter,
-                    '_cancel' => $token,
-                ]
-            );
-
-            $promise = $service->$serviceName(...$arguments);
+        asyncCall(function () use ($provider, $serviceName, $token) {
+            $promise = $provider->$serviceName($token);
         
             if (!$promise instanceof Promise) {
                 throw new RuntimeException(sprintf(
                     'Service method "%s" must return a Promise, got "%s"',
-                    get_class($service) . '::' . $serviceName,
+                    get_class($provider) . '::' . $serviceName,
                     is_object($promise) ? get_class($promise) : gettype($promise)
                 ));
             }
@@ -131,7 +95,7 @@ class ServiceManager
                 $this->logger->error(sprintf(
                     'Error in service "%s" "%s:%s": %s',
                     $serviceName,
-                    get_class($service),
+                    get_class($provider),
                     __FUNCTION__,
                     $error->getMessage()
                 ));
@@ -141,7 +105,8 @@ class ServiceManager
 
     public function stop(string $serviceName): void
     {
-        $this->assertServiceExists($serviceName);
+        $this->serviceProviders->assertExists($serviceName);
+
         if (!isset($this->cancellations[$serviceName])) {
             throw new RuntimeException(sprintf(
                 'Cannot stop service "%s" it has not been started, running services: "%s"',
@@ -158,22 +123,8 @@ class ServiceManager
 
     public function isRunning(string $serviceName): bool
     {
+        $this->serviceProviders->assertExists($serviceName);
+
         return isset($this->cancellations[$serviceName]);
-    }
-
-    private function add(string $name, ServiceProvider $service): void
-    {
-        $this->services[$name] = $service;
-    }
-
-    private function assertServiceExists(string $serviceName): void
-    {
-        if (!isset($this->services[$serviceName])) {
-            throw new RuntimeException(sprintf(
-                'Service "%s" not known, known services: "%s"',
-                $serviceName,
-                implode('", "', array_keys($this->services))
-            ));
-        }
     }
 }

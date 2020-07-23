@@ -14,7 +14,7 @@ use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
+use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
