@@ -15,7 +15,7 @@ use Psr\Log\NullLogger;
 use RuntimeException;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
-final class HandlerMethodRunner
+final class HandlerMethodRunner implements MethodRunner
 {
     /**
      * @var Handlers

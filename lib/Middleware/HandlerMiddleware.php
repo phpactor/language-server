@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Middleware;
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Handler\MethodRunner;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Middleware\Middleware;
 use Phpactor\LanguageServer\Core\Rpc\Message;
@@ -16,13 +17,13 @@ use function Amp\call;
 class HandlerMiddleware implements Middleware
 {
     /**
-     * @var HandlerMethodDispatcher
+     * @var MethodRunner
      */
-    private $dispatcher;
+    private $runner;
 
-    public function __construct(HandlerMethodRunner $dispatcher)
+    public function __construct(MethodRunner $runner)
     {
-        $this->dispatcher = $dispatcher;
+        $this->runner = $runner;
     }
 
     /**
@@ -34,9 +35,9 @@ class HandlerMiddleware implements Middleware
             !$request instanceof RequestMessage &&
             !$request instanceof NotificationMessage
         ) {
-            return $handler->handle($request, $handler);
+            return $handler->handle($request);
         }
 
-        return $this->dispatcher->dispatch($request);
+        return $this->runner->dispatch($request);
     }
 }

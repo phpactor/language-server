@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Middleware;
 
 use Amp\Promise;
 use Amp\Success;
+use Phpactor\LanguageServer\Core\Handler\MethodRunner;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Middleware\Middleware;
@@ -16,11 +17,11 @@ class CancellationMiddleware implements Middleware
     const METHOD_CANCEL_REQUEST = '$/cancelRequest';
 
     /**
-     * @var HandlerMethodRunner
+     * @var MethodRunner
      */
     private $runner;
 
-    public function __construct(HandlerMethodRunner $runner)
+    public function __construct(MethodRunner $runner)
     {
         $this->runner = $runner;
     }
@@ -30,11 +31,12 @@ class CancellationMiddleware implements Middleware
      */
     public function process(Message $message, RequestHandler $handler): Promise
     {
-        if ($message instanceof RequestMessage) {
-            if ($message->method === self::METHOD_CANCEL_REQUEST) {
-                $this->runner->cancelRequest($message->id);
-                return new Success(null);
-            }
+        if (
+            $message instanceof RequestMessage && 
+            $message->method === self::METHOD_CANCEL_REQUEST
+        ) {
+            $this->runner->cancelRequest($message->id);
+            return new Success(null);
         }
 
         return $handler->handle($message);
