@@ -5,13 +5,15 @@ namespace Phpactor\LanguageServer\Core\Server\Initializer;
 use Amp\Promise;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Server\Initializer;
+use RuntimeException;
 use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use function Amp\call;
 
 class RequestInitializer implements Initializer
 {
-    public function provideInitializeParams(Message $message): InitializeParams
+    public function provideInitializeParams(Message $request): InitializeParams
     {
         if (!$request instanceof RequestMessage) {
             throw new RuntimeException(sprintf(
@@ -20,9 +22,9 @@ class RequestInitializer implements Initializer
             ));
         }
 
-        if (!$request->method === 'initialize') {
+        if ($request->method !== 'initialize') {
             throw new RuntimeException(sprintf(
-                'First request must be an "initialize" request, got "%s"',
+                'Method of first request must be "initialize", got "%s"',
                 $request->method
             ));
         }
