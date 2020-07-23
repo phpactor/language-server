@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
+use Amp\Loop;
 use Amp\Promise;
 use DateTimeImmutable;
 use Exception;
@@ -102,6 +103,16 @@ final class LanguageServer implements StatProvider
     {
         return call(function () {
             yield from $this->listenForConnections();
+        });
+    }
+
+    /**
+     * Run the langauge server (starts the event loop)
+     */
+    public function run(): void
+    {
+        Loop::run(function () {
+            yield $this->start();
         });
     }
 

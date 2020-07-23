@@ -7,9 +7,14 @@ use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\LanguageServer\Core\Connection\StreamConnection;
 use Phpactor\LanguageServer\Core\Connection\TcpServerConnection;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ClosureDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MiddlewareDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Factory\ClosureDispatcherFactory;
+use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
+use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Message;
@@ -35,6 +40,7 @@ use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
+use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
 use Psr\Log\AbstractLogger;
@@ -78,26 +84,31 @@ $logger = new class extends AbstractLogger {
 $logger->info('test language server starting');
 $logger->info('i am a demonstration server and provide no functionality');
 
-$builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
-    function (MessageTransmitter $transmitter, InitializeParams $params) {
+LanguageServerBuilder::create(new ClosureDispatcherFactory(
+    function (MessageTransmitter $transmitter, InitializeParams $params) use ($logger) {
 
-        $client = new ClientApi(new JsonRpcClient($transmitter, new TestResponseWatcher()));
         $handlers = new Handlers([
             new TextDocumentHandler(new NullEventDispatcher()),
             new ExitHandler(),
         ]);
-        $runner = new HandlerMethodRunner($handlers);
+
+        $runner = new HandlerMethodRunner(
+            $handlers,
+            new HandlerMethodResolver(),
+            new ChainArgumentResolver(
+                new LanguageSeverProtocolParamsResolver(),
+                new PassThroughArgumentResolver()
+            )
+        );
 
         return new MiddlewareDispatcher(
+            new ErrorHandlingMiddleware($logger),
             new InitializeMiddleware($handlers),
             new CancellationMiddleware($runner),
             new HandlerMiddleware($runner)
         );
     }
-), $logger);
-
-$builder->tcpServer($options['address']);
-Loop::run(function () use ($builder) {
-    $server = $builder->build();
-    $server->start();
-});
+), $logger)
+    ->tcpServer($options['address'])
+    ->build()
+    ->run();

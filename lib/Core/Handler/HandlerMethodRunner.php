@@ -82,7 +82,7 @@ final class HandlerMethodRunner
             }
 
             $promise = $handler->$method(...array_merge(
-                $this->argumentResolver->resolveArguments($handler, $method, $request->params),
+                array_values($this->argumentResolver->resolveArguments($handler, $method, $request->params)),
                 [
                     $cancellationTokenSource->getToken()
                 ]
@@ -105,7 +105,10 @@ final class HandlerMethodRunner
         });
     }
 
-    public function cancelRequest(int $id): void
+    /**
+     * @param string|int $id
+     */
+    public function cancelRequest($id): void
     {
         if (!isset($this->cancellations[$id])) {
             $this->logger->warning(sprintf(
