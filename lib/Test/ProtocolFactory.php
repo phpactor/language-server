@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Test;
 
+use Phpactor\LanguageServerProtocol\ClientCapabilities;
+use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
@@ -21,5 +23,10 @@ final class ProtocolFactory
     public static function textDocumentIdentifier(string $uri): TextDocumentIdentifier
     {
         return new TextDocumentIdentifier($uri);
+    }
+
+    public static function initializeParams(): InitializeParams
+    {
+        return new InitializeParams(new ClientCapabilities());
     }
 }

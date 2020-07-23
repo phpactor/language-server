@@ -4,11 +4,13 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Dispatcher\Factory;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
+use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ClosureDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Factory\ClosureDispatcherFactory;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;
+use Phpactor\LanguageServer\Test\ProtocolFactory;
 use RuntimeException;
 
 class ClosureDispatcherFactoryTest extends TestCase
@@ -17,7 +19,7 @@ class ClosureDispatcherFactoryTest extends TestCase
     {
         $dispatcher = $this->createDispatcherFactory(function () {
             return new ClosureDispatcher(function () {});
-        })->create(new NullMessageTransmitter());
+        })->create(new NullMessageTransmitter(), ProtocolFactory::initializeParams());
 
         $this->assertInstanceOf(Dispatcher::class, $dispatcher);
     }
@@ -27,7 +29,7 @@ class ClosureDispatcherFactoryTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->createDispatcherFactory(function () {
             return new \stdClass();
-        })->create(new NullMessageTransmitter());
+        })->create(new NullMessageTransmitter(), ProtocolFactory::initializeParams());
     }
 
     private function createDispatcherFactory(Closure $closure): ClosureDispatcherFactory

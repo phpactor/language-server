@@ -20,32 +20,10 @@ class LanguageSeverProtocolParamsResolverTest extends TestCase
             ],
             'rootUri' => 'file://tmp/foo',
         ];
-        $resolvedArgs = $resolver->resolveArguments($handler, 'initialize', $args, []);
+        $resolvedArgs = $resolver->resolveArguments($handler, 'initialize', $args);
 
         self::assertEquals([
             InitializeParams::fromArray($args),
-        ], $resolvedArgs);
-    }
-
-    public function testPassesCancellationToken(): void
-    {
-        $handler = new LspHandler();
-        $resolver = new LanguageSeverProtocolParamsResolver();
-        $args = [
-            'capabilities' => [
-            ],
-            'rootUri' => 'file://tmp/foo',
-        ];
-        $cancellationToken = (new CancellationTokenSource())->getToken();
-        $extraArgs = [
-            'cancel' => $cancellationToken
-        ];
-
-        $resolvedArgs = $resolver->resolveArguments($handler, 'initialize', $args, $extraArgs);
-
-        self::assertEquals([
-            InitializeParams::fromArray($args),
-            $cancellationToken
         ], $resolvedArgs);
     }
 
@@ -66,7 +44,7 @@ class LanguageSeverProtocolParamsResolverTest extends TestCase
             'cancel' => $cancellationToken
         ];
 
-        $resolvedArgs = $resolver->resolveArguments($handler, 'initializeWrongOrder', $args, $extraArgs);
+        $resolvedArgs = $resolver->resolveArguments($handler, 'initializeWrongOrder', $args);
 
         self::assertEquals([
             InitializeParams::fromArray($args),
