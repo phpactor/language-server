@@ -22,8 +22,11 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
+use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\TestResponseWatcher;
+use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
+use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Extension\Core\Initialize;
@@ -37,6 +40,7 @@ use Phpactor\LanguageServer\Handler\Example\PingHandler;
 use Phpactor\LanguageServer\Handler\Example\ProgressHandler;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
+use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
@@ -84,11 +88,15 @@ $logger = new class extends AbstractLogger {
 $logger->info('test language server starting');
 $logger->info('i am a demonstration server and provide no functionality');
 
+$stats = new ServerStats();
 LanguageServerBuilder::create(new ClosureDispatcherFactory(
-    function (MessageTransmitter $transmitter, InitializeParams $params) use ($logger) {
+    function (MessageTransmitter $transmitter, InitializeParams $params) use ($logger, $stats) {
+        $responseWatcher = new DeferredResponseWatcher();
+        $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
         $handlers = new Handlers([
             new TextDocumentHandler(new NullEventDispatcher()),
+            new SystemHandler($clientApi, $stats),
             new ExitHandler(),
         ]);
 
@@ -109,6 +117,7 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
         );
     }
 ), $logger)
+    ->withServerStats($stats)
     ->tcpServer($options['address'])
     ->build()
     ->run();

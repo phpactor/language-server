@@ -15,6 +15,7 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Exception\ServerControl;
 use Psr\Log\LoggerInterface;
 use Throwable;
+use function Amp\call;
 
 class ErrorHandlingMiddleware implements Middleware
 {
@@ -33,32 +34,34 @@ class ErrorHandlingMiddleware implements Middleware
      */
     public function process(Message $request, RequestHandler $handler): Promise
     {
-        try {
-            return $handler->handle($request);
-        } catch (ServerControl $exception) {
-            throw $exception;
-        } catch (Throwable $error) {
-            $message = sprintf('Exception [%s] %s', get_class($error), $error->getMessage());
-            if (!$request instanceof RequestMessage) {
-                $this->logger->error(sprintf(
-                    'Error when handling "%s" (%s): %s',
-                    get_class($request),
-                    json_encode($request),
-                    $message
-                ));
-                return new Success(null);
-            }
+        return call(function () use ($request, $handler) {
+            try {
+                return yield $handler->handle($request);
+            } catch (ServerControl $exception) {
+                throw $exception;
+            } catch (Throwable $error) {
+                $message = sprintf('Exception [%s] %s', get_class($error), $error->getMessage());
+                if (!$request instanceof RequestMessage) {
+                    $this->logger->error(sprintf(
+                        'Error when handling "%s" (%s): %s',
+                        get_class($request),
+                        json_encode($request),
+                        $message
+                    ));
+                    return new Success(null);
+                }
 
-            return new Success(new ResponseMessage(
-                $request->id,
-                null,
-                new ResponseError(
-                    $this->resolveErrorCode($error),
-                    $message,
-                    $error->getTraceAsString()
-                )
-            ));
-        }
+                return new Success(new ResponseMessage(
+                    $request->id,
+                    null,
+                    new ResponseError(
+                        $this->resolveErrorCode($error),
+                        $message,
+                        $error->getTraceAsString()
+                    )
+                ));
+            }
+        });
     }
 
     private function resolveErrorCode(Throwable $error): int

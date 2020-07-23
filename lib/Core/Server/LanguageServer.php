@@ -38,7 +38,7 @@ use Throwable;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use function Amp\call;
 
-final class LanguageServer implements StatProvider
+final class LanguageServer
 {
     /**
      * @var RequestReader

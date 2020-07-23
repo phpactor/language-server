@@ -22,6 +22,7 @@ use Phpactor\LanguageServer\Core\Server\Initializer\RequestInitializer;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
+use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\SessionServices;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
@@ -51,6 +52,11 @@ class LanguageServerBuilder
      * @var DispatcherFactory
      */
     private $dispatcherFactory;
+
+    /**
+     * @var ServerStats|null
+     */
+    private $stats = null;
 
     private function __construct(
         DispatcherFactory $dispatcherFactory,
@@ -118,7 +124,15 @@ class LanguageServerBuilder
             $this->dispatcherFactory,
             $this->logger,
             $provider,
-            new RequestInitializer()
+            new RequestInitializer(),
+            $this->stats ?: new ServerStats()
         );
+    }
+
+    public function withServerStats(ServerStats $stats): self
+    {
+        $this->stats = $stats;
+
+        return $this;
     }
 }

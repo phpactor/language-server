@@ -81,7 +81,7 @@ final class HandlerMethodRunner implements MethodRunner
                 $this->cancellations[$request->id] = $cancellationTokenSource;
             }
 
-            $args = array_values($this->argumentResolver->resolveArguments($handler, $method, $request->params));
+            $args = array_values($this->argumentResolver->resolveArguments($handler, $method, $request->params ?? []));
             $args[] = $cancellationTokenSource->getToken();
 
             $promise = $handler->$method(...$args) ?? new Success(null);
