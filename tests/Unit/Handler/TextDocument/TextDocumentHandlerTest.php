@@ -13,6 +13,7 @@ use Phpactor\LanguageServer\Event\TextDocumentSaved;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -43,9 +44,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testOpensDocument(): void
     {
-        $textDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
-        $textDocument->uri = 'foobar';
-
+        $textDocument = ProtocolFactory::textDocumentItem('foobar', 'foo');
         $this->dispatch('textDocument/didOpen', [
             'textDocument' => $textDocument
         ]);
@@ -55,8 +54,9 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testUpdatesDocument()
     {
-        $document = new TextDocumentItem('foobar', 'php', 1, 'foo');
-        $identifier = new VersionedTextDocumentIdentifier('foobar');
+        $textDocument = ProtocolFactory::textDocumentItem('foobar', 'foo');
+        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar');
+
         $this->dispatch('textDocument/didChange', [
             'textDocument' => $identifier,
             'contentChanges' => [

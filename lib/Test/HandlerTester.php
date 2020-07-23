@@ -5,10 +5,13 @@ namespace Phpactor\LanguageServer\Test;
 use Amp\CancellationTokenSource;
 use Amp\Promise;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MiddlewareDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
+use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
@@ -18,6 +21,7 @@ use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitterStack;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
+use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Psr\Log\NullLogger;
 
 class HandlerTester
@@ -64,21 +68,13 @@ class HandlerTester
      */
     public function dispatch(string $methodName, array $params): Promise
     {
-        $this->cancellationTokenSource = new CancellationTokenSource();
-
-        $extraArgs = [
-            '_token' => $this->cancellationTokenSource->getToken(),
-        ];
-
-        $dispatcher = new MethodDispatcher(
-            new DTLArgumentResolver()
+        $handlers = new Handlers([$this->handler]);
+        $request = new RequestMessage(1, $methodName, $params);
+        $middlewareDispatcher = new MiddlewareDispatcher(
+            new HandlerMiddleware(new HandlerMethodRunner($handlers))
         );
 
-        $handlers = new Handlers([$this->handler]);
-
-        $request = new RequestMessage(1, $methodName, $params);
-
-        return $dispatcher->dispatch($handlers, $request, $extraArgs);
+        return $middlewareDispatcher->dispatch($request);
     }
 
     public function dispatchAndWait(string $methodName, array $params)

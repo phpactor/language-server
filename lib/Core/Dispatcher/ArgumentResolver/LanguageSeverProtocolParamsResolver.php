@@ -14,7 +14,7 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
     /**
      * {@inheritDoc}
      */
-    public function resolveArguments(object $object, string $method, array $arguments, array $extraArgs): array
+    public function resolveArguments(object $object, string $method, array $arguments): array
     {
         $reflection = new ReflectionClass($object);
 
@@ -25,8 +25,6 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
                 $method
             ));
         }
-
-        $cancellationToken = $this->resolveCancellationToken($extraArgs);
 
         foreach ($reflection->getMethod($method)->getParameters() as $parameter) {
             if (!$parameter->getType()) {
@@ -43,7 +41,7 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
             $classFqn = $type->getName();
 
             if (preg_match('{^Phpactor\\\LanguageServerProtocol\\\.*Params$}', $classFqn)) {
-                return $this->doResolveArguments($classFqn, $parameter->getName(), $arguments, $extraArgs, $cancellationToken);
+                return $this->doResolveArguments($classFqn, $parameter->getName(), $arguments);
             }
 
             throw new CouldNotResolveArguments(sprintf(
@@ -63,7 +61,7 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
     /**
      * @param class-string $classFqn
      */
-    private function doResolveArguments(string $classFqn, string $paramName, array $arguments, array $extraArgs, ?CancellationToken $cancellationToken): array
+    private function doResolveArguments(string $classFqn, string $paramName, array $arguments): array
     {
         $reflection = new ReflectionClass($classFqn);
 
@@ -71,34 +69,6 @@ class LanguageSeverProtocolParamsResolver implements ArgumentResolver
             $reflection->getMethod('fromArray')->invoke(null, $arguments, true)
         ];
         
-        if ($cancellationToken) {
-            $args[] = $cancellationToken;
-        }
-
         return $args;
-    }
-
-    private function resolveCancellationToken(array $extraArgs): ?CancellationToken
-    {
-        if (!$extraArgs) {
-            return null;
-        }
-
-        if (count($extraArgs) > 1) {
-            throw new RuntimeException(
-                'LSP protocol parameter has > 1 extra argument, but only 1 argument (CancallationToken) is permitted',
-            );
-        }
-
-        $arg = reset($extraArgs);
-
-        if (!$arg instanceof CancellationToken) {
-            throw new RuntimeException(sprintf(
-                'Extra argument for LSP method must be cancellation token, got "%s"',
-                is_object($arg) ? get_class($arg) : gettype($arg)
-            ));
-        }
-
-        return $arg;
     }
 }

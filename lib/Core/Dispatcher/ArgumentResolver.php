@@ -9,5 +9,5 @@ interface ArgumentResolver
     /**
      * @throws CouldNotResolveArguments
      */
-    public function resolveArguments(object $object, string $method, array $arguments, array $extraArgs): array;
+    public function resolveArguments(object $object, string $method, array $arguments): array;
 }

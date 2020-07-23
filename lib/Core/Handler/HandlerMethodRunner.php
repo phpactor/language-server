@@ -5,8 +5,12 @@ namespace Phpactor\LanguageServer\Core\Handler;
 use Amp\CancellationTokenSource;
 use Amp\Promise;
 use Amp\Success;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
 use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -33,11 +37,22 @@ final class HandlerMethodRunner
      */
     private $logger;
 
-    public function __construct(Handlers $handlers, ?HandlerMethodResolver $resolver = null, ?LoggerInterface $logger = null)
+    /**
+     * @var ArgumentResolver|null
+     */
+    private $argumentResolver;
+
+    public function __construct(
+        Handlers $handlers,
+        ?HandlerMethodResolver $resolver = null,
+        ?ArgumentResolver $argumentResolver = null,
+        ?LoggerInterface $logger = null
+    )
     {
         $this->handlers = $handlers;
         $this->resolver = $resolver ?: new HandlerMethodResolver();
         $this->logger = $logger ?: new NullLogger();
+        $this->argumentResolver = $argumentResolver ?: new PassThroughArgumentResolver();
     }
 
     /**
@@ -45,6 +60,16 @@ final class HandlerMethodRunner
      */
     public function dispatch(Message $request): Promise
     {
+        if (
+            !$request instanceof NotificationMessage &&
+            !$request instanceof RequestMessage
+        ) {
+            throw new RuntimeException(sprintf(
+                'Message must either be a Notification or a Request, got "%s"',
+                get_class($request)
+            ));
+        }
+
         return \Amp\call(function () use ($request) {
             $handler = $this->handlers->get($request->method);
             $method = $this->resolver->resolveHandlerMethod($handler, $request->method);
@@ -57,7 +82,7 @@ final class HandlerMethodRunner
             }
 
             $promise = $handler->$method(
-                $request->params,
+                $this->argumentResolver->resolveArguments($handler, $method, $request->params),
                 $cancellationTokenSource->getToken()
             ) ?? new Success(null);
 

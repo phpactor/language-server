@@ -20,12 +20,27 @@ use function Amp\delay;
 
 class HandlerMethodRunnerTest extends AsyncTestCase
 {
+    public function testExceptionIfNotRequestOrNotification()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Message must either be a ');
+
+        $runner = $this->createRunner([
+            new ClosureHandler('foobar', function () {
+                return 'foobar';
+            })
+        ]);
+        yield $runner->dispatch(
+            new ResponseMessage(1, 'foobar')
+        );
+    }
+
     public function testThrowsExceptionIfHandlerNotReturnPromise()
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('must return instance of Amp\Promise');
 
-        $dispatcher = $this->createDispatcher([
+        $dispatcher = $this->createRunner([
             new ClosureHandler('foobar', function () {
                 return 'foobar';
             })
@@ -37,7 +52,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
 
     public function testReturnsNullIfMessageIsANotification()
     {
-        $dispatcher = $this->createDispatcher([
+        $dispatcher = $this->createRunner([
             new ClosureHandler('foobar', function () {
             })
         ]);
@@ -51,7 +66,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
 
     public function testReturnsValueFromHandler()
     {
-        $dispatcher = $this->createDispatcher([
+        $dispatcher = $this->createRunner([
             new ClosureHandler('foobar', function (array $params) {
                 return new Success('foobar: '.$params['bar']);
             })
@@ -68,7 +83,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
 
     public function testToleratesTryingToCancelNonRunningRequest()
     {
-        $dispatcher = $this->createDispatcher([
+        $dispatcher = $this->createRunner([
             new ClosureHandler('foobar', function () {
                 return call(function () {
                     yield delay(10);
@@ -90,7 +105,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
     {
         $this->expectException(CancelledException::class);
 
-        $dispatcher = $this->createDispatcher([
+        $dispatcher = $this->createRunner([
             new ClosureHandler('foobar', function (array $params, CancellationToken $token ) {
                 return call(function () use ($params, $token) {
                     yield delay(100);
@@ -108,7 +123,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
         yield $promise;
     }
 
-    private function createDispatcher(array $handlers): HandlerMethodRunner
+    private function createRunner(array $handlers): HandlerMethodRunner
     {
         return new HandlerMethodRunner(
             new Handlers($handlers),
