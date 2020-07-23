@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Middleware;
 
+use Amp\Success;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Middleware\Middleware;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
@@ -10,6 +11,7 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use RuntimeException;
+use function Amp\Promise\wait;
 
 class RequestHandlerTest extends TestCase
 {
@@ -28,13 +30,13 @@ class RequestHandlerTest extends TestCase
         $response = new ResponseMessage(1, []);
 
         $middleware = $this->prophesize(Middleware::class);
-        $middleware->process($request, Argument::type(RequestHandler::class))->willReturn($response);
+        $middleware->process($request, Argument::type(RequestHandler::class))->willReturn(new Success($response));
 
         $handledResponse = (new RequestHandler([
             $middleware->reveal()
         ]))->handle($request);
 
-        self::assertSame($response, $handledResponse);
+        self::assertSame($response, wait($handledResponse));
     }
 
     public function testMiddlewareDelegatesToNextMiddleware(): void
@@ -48,13 +50,13 @@ class RequestHandlerTest extends TestCase
 
         $response = new ResponseMessage(1, []);
         $middleware2 = $this->prophesize(Middleware::class);
-        $middleware2->process($request, Argument::type(RequestHandler::class))->willReturn($response);
+        $middleware2->process($request, Argument::type(RequestHandler::class))->willReturn(new Success($response));
 
         $handledResponse = (new RequestHandler([
             $middleware1->reveal(),
             $middleware2->reveal()
         ]))->handle($request);
 
-        self::assertSame($response, $handledResponse);
+        self::assertSame($response, wait($handledResponse));
     }
 }
