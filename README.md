@@ -22,16 +22,38 @@ for a list of methods which you can implement with this package.
 Example
 -------
 
-Create a dumb language server which can respond to the `initialize` command
-and nothing more:
+This is a _very_ simple example:
 
 ```php
-$server = LanguageServerBuilder::create()
-    ->tcpServer()
-    ->build();
+$builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
+    function (MessageTransmitter $transmitter, InitializeParams $initializeParams) {
 
+        return new ClosureDispatcher(function (Message $message) use ($transmitter) {
+             if ($message instanceof RequestMessage) {
+                 return new Success('Hello');
+             }
+
+             $transmitter->transmit(new NotificationMessage('window/showMessage', [
+                 'level' => MessageType::INFO,
+                 'message' => 'Hello World',
+             ]);
+        });
+    }
+);
+
+$builder->tcpServer()
+$server = $builder->build();
 $server->start();
 ```
+
+- We use the `LanguageServerBuilder` which will take care of creating the
+  necessary streams.
+- The `DispatcherFactory` is responsible for instantiating the "session". It
+  will be called when the client sends the `initialize` request.
+- The `Dispatcher` is the class responsible for handling all subsequent
+  messages.
+- The `MessageTransmitter` can send messages _to_ the client. It is a
+  low-level class, and you would use the `ClientApi` in your own classes.
 
 Add TextDocument Handling
 -------------------------

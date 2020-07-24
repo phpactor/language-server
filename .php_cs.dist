@@ -1,6 +1,7 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
+    ->in('bin')
     ->in('lib')
     ->in('tests')
     ->exclude([
