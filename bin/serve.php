@@ -2,6 +2,8 @@
 <?php
 
 use Amp\Loop;
+use Phly\EventDispatcher\EventDispatcher;
+use Phly\EventDispatcher\ListenerProvider\ListenerProviderAggregate;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
@@ -28,6 +30,7 @@ use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
+use Phpactor\LanguageServer\Core\Service\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
 use Phpactor\LanguageServer\Core\Session\Workspace;
@@ -106,6 +109,7 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
         ]);
 
         $serviceManager = new ServiceManager($serviceProviders, $logger);
+        $eventDispatcher = new EventDispatcher(new ServiceListener($serviceManager));
 
         $handlers = new Handlers([
             new TextDocumentHandler(new NullEventDispatcher()),
@@ -125,7 +129,7 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
 
         return new MiddlewareDispatcher(
             new ErrorHandlingMiddleware($logger),
-            new InitializeMiddleware($handlers),
+            new InitializeMiddleware($handlers, $eventDispatcher),
             new CancellationMiddleware($runner),
             new HandlerMiddleware($runner)
         );

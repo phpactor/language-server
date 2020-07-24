@@ -15,14 +15,28 @@ use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Event\Initialized;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
 
 class InitializeMiddlewareTest extends AsyncTestCase
 {
     use ProphecyTrait;
+
+    /**
+     * @var ObjectProphecy<EventDispatcherInterface>
+     */
+    private $dispatcher;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->dispatcher = $this->prophesize(EventDispatcherInterface::class);
+    }
 
     public function testReturnsOnInitializedNotification(): Generator
     {
@@ -32,6 +46,7 @@ class InitializeMiddlewareTest extends AsyncTestCase
                 new RequestHandler()
             )
         );
+        $this->dispatcher->dispatch(new Initialized())->shouldHaveBeenCalled();
     }
 
     public function testDelegatesToNextHandlerIfMessageIsNotRequest(): Generator
@@ -112,7 +127,8 @@ class InitializeMiddlewareTest extends AsyncTestCase
     private function createMiddleware(array $handlers = []): InitializeMiddleware
     {
         return new InitializeMiddleware(
-            new Handlers($handlers)
+            new Handlers($handlers),
+            $this->dispatcher->reveal()
         );
     }
 }
