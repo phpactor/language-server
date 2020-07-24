@@ -30,9 +30,9 @@ class ServiceHandler implements Handler
     public function methods(): array
     {
         return [
-            'service/start' => 'startService',
-            'service/stop' => 'stopService',
-            'service/running' => 'runningServices',
+            'phpactor/service/start' => 'startService',
+            'phpactor/service/stop' => 'stopService',
+            'phpactor/service/running' => 'runningServices',
         ];
     }
 

@@ -52,7 +52,7 @@ class ServiceHandlerTest extends HandlerTestCase
     {
         $this->serviceManager->start('foobar')->shouldBeCalled();
 
-        $this->dispatch('service/start', [
+        $this->dispatch('phpactor/service/start', [
             'name' => 'foobar'
         ]);
     }
@@ -60,7 +60,7 @@ class ServiceHandlerTest extends HandlerTestCase
     public function testItStopsAService()
     {
         $this->serviceManager->stop('foobar')->shouldBeCalled();
-        $this->dispatch('service/stop', [
+        $this->dispatch('phpactor/service/stop', [
             $this->serviceManager->reveal(),
             'name' => 'foobar'
         ]);
@@ -72,7 +72,7 @@ class ServiceHandlerTest extends HandlerTestCase
             'one', 'two'
         ]);
 
-        $this->dispatch('service/running', [
+        $this->dispatch('phpactor/service/running', [
             $this->serviceManager->reveal(),
             $this->api,
             'name' => 'foobar'

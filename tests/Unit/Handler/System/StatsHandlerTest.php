@@ -45,8 +45,8 @@ class StatsHandlerTest extends HandlerTestCase
         $tester = new HandlerTester($this->handler());
 
         $response = $tester->dispatchAndWait('phpactor/stats', []);
-        self::assertInstanceOf(ResponseMessage::class, $response);
 
+        self::assertInstanceOf(ResponseMessage::class, $response);
 
         $message = $this->client->transmitter()->shift();
 
