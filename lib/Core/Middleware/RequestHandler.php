@@ -5,9 +5,7 @@ namespace Phpactor\LanguageServer\Core\Middleware;
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Middleware\Exception\MiddlewareTerminated;
 use Phpactor\LanguageServer\Core\Rpc\Message;
-use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use RuntimeException;
 
 final class RequestHandler
 {

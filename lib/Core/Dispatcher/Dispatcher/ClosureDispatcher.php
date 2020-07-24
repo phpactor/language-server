@@ -6,7 +6,6 @@ use Amp\Promise;
 use Closure;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Rpc\Message;
-use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 class ClosureDispatcher implements Dispatcher
 {

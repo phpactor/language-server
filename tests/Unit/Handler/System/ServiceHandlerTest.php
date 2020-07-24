@@ -5,13 +5,10 @@ namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
-use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
-use Phpactor\LanguageServer\Tests\Unit\Core\Server\ClientApiTest;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
-use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class ServiceHandlerTest extends HandlerTestCase

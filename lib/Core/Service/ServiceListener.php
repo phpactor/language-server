@@ -3,11 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Service;
 
 use Phpactor\LanguageServer\Event\Initialized;
-use Phpactor\LanguageServer\Event\TextDocumentClosed;
-use Phpactor\LanguageServer\Event\TextDocumentOpened;
-use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Psr\EventDispatcher\ListenerProviderInterface;
-use Psr\Log\LoggerInterface;
 
 class ServiceListener implements ListenerProviderInterface
 {

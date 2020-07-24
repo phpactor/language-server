@@ -2,14 +2,12 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 
-use DateInterval;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
-use Phpactor\LanguageServer\Core\Server\StatProvider;
 use Phpactor\LanguageServer\Test\HandlerTester;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 

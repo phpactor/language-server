@@ -6,7 +6,6 @@ use Amp\CancellationToken;
 use Amp\CancelledException;
 use Amp\PHPUnit\AsyncTestCase;
 use Amp\Success;
-use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Handler\ClosureHandler;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
@@ -106,7 +105,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
         $this->expectException(CancelledException::class);
 
         $dispatcher = $this->createRunner([
-            new ClosureHandler('foobar', function (string $bar, CancellationToken $token ) {
+            new ClosureHandler('foobar', function (string $bar, CancellationToken $token) {
                 return call(function () use ($token) {
                     yield delay(100);
                     $token->throwIfRequested();

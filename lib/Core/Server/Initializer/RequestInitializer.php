@@ -2,14 +2,11 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Initializer;
 
-use Amp\Promise;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Server\Initializer;
 use RuntimeException;
-use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
-use function Amp\call;
 
 class RequestInitializer implements Initializer
 {

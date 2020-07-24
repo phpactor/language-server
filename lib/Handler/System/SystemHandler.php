@@ -4,14 +4,9 @@ namespace Phpactor\LanguageServer\Handler\System;
 
 use Amp\Promise;
 use Amp\Success;
-use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
-use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\ServerStatsReader;
-use Phpactor\LanguageServer\Core\Server\StatProvider;
-use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
-use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 
 class SystemHandler implements Handler
 {

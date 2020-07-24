@@ -2,12 +2,10 @@
 
 namespace Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 
-use Amp\CancellationToken;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
 use ReflectionClass;
 use ReflectionNamedType;
-use Symfony\Component\Process\Exception\RuntimeException;
 
 class LanguageSeverProtocolParamsResolver implements ArgumentResolver
 {

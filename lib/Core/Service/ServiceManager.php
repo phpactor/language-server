@@ -4,11 +4,7 @@ namespace Phpactor\LanguageServer\Core\Service;
 
 use Amp\CancellationTokenSource;
 use Amp\Promise;
-use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
-use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 
-use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
-use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;

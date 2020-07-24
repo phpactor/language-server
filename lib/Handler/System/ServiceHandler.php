@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Handler\System;
 
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
-use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
 class ServiceHandler implements Handler

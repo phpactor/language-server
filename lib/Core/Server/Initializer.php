@@ -2,12 +2,8 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
-use Amp\Promise;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Rpc\Message;
-use Phpactor\LanguageServer\Core\Rpc\RawMessage;
-use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
-use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 
 interface Initializer
 {

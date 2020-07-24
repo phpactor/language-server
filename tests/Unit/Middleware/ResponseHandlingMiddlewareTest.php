@@ -10,7 +10,6 @@ use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Middleware\ClosureMiddleware;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
-use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 use Phpactor\LanguageServer\Middleware\ResponseHandlingMiddleware;
 

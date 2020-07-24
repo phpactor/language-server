@@ -2,8 +2,6 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
-use Amp\CancellationToken;
-use Amp\Promise;
 use Closure;
 
 class ClosureHandler implements Handler

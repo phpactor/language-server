@@ -6,11 +6,8 @@ use Amp\CancellationToken;
 use Amp\CancelledException;
 use Amp\Delayed;
 use Amp\Promise;
-use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Service\ServiceProvider;
-use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
-use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 
 /**
  * Example service which shows a "ping" message every second.

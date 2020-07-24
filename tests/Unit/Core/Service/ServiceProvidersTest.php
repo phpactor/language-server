@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Service;
 
-use Amp\Promise;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Service\Exception\UnknownService;
 use Phpactor\LanguageServer\Core\Service\ServiceProvider;

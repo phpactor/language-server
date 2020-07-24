@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Core\Server;
 
 use DateInterval;
 use DateTimeImmutable;
-use Phpactor\LanguageServer\Core\Server\ServerStatsReader;
 
 class ServerStats implements ServerStatsReader
 {

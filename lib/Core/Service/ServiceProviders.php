@@ -7,9 +7,6 @@ use IteratorAggregate;
 
 use Countable;
 use Phpactor\LanguageServer\Core\Service\Exception\UnknownService;
-use Phpactor\LanguageServer\Core\Service\ServiceProvider;
-
-
 
 /**
  * @implements IteratorAggregate<ServiceProvider>

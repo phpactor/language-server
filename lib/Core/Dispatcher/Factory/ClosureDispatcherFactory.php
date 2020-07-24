@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\Factory;
 use Closure;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
-use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 use RuntimeException;

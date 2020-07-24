@@ -4,37 +4,15 @@ namespace Phpactor\LanguageServer;
 
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
-use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\CancellingMethodDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\RecordingDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ResponseDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Factory\ClosureDispatcherFactory;
-use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
-use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Handler\Handlers;
-use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
 use Phpactor\LanguageServer\Core\Server\Initializer\RequestInitializer;
-use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
-use Phpactor\LanguageServer\Core\Server\SessionServices;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
-use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;
-use Phpactor\LanguageServer\Core\Service\ServiceManager;
-use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
-use Phpactor\LanguageServer\Test\ServerTester;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RuntimeException;
 
 class LanguageServerBuilder
 {

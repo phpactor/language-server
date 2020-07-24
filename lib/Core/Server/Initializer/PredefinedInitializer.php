@@ -2,16 +2,10 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Initializer;
 
-use Amp\Promise;
-use Amp\Success;
 use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Server\Initializer;
-use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
-
-
-
 
 /**
  * Use pre-defined initialization parameters.

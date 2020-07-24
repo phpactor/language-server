@@ -47,8 +47,7 @@ final class HandlerMethodRunner implements MethodRunner
         ?HandlerMethodResolver $resolver = null,
         ?ArgumentResolver $argumentResolver = null,
         ?LoggerInterface $logger = null
-    )
-    {
+    ) {
         $this->handlers = $handlers;
         $this->resolver = $resolver ?: new HandlerMethodResolver();
         $this->logger = $logger ?: new NullLogger();

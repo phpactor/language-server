@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Core\Handler;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use RuntimeException;
 
 /**
  * @implements IteratorAggregate<Handler>

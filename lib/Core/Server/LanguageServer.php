@@ -4,25 +4,15 @@ namespace Phpactor\LanguageServer\Core\Server;
 
 use Amp\Loop;
 use Amp\Promise;
-use DateTimeImmutable;
 use Exception;
 use Generator;
-use Phpactor\LanguageServerProtocol\InitializeParams;
-use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
-use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
 use Phpactor\LanguageServer\Core\Rpc\Message;
-use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
-use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
-use Phpactor\LanguageServer\Handler\System\ExitHandler;
-use Phpactor\LanguageServer\Handler\System\SystemHandler;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
@@ -34,8 +24,6 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use RuntimeException;
-use Throwable;
-use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use function Amp\call;
 
 final class LanguageServer
@@ -84,8 +72,6 @@ final class LanguageServer
     ) {
         $this->logger = $logger;
         $this->streamProvider = $streamProvider;
-
-        $this->created = new DateTimeImmutable();
         $this->dispatcherFactory = $dispatcherFactory;
         $this->initializer = $initializer;
         $this->stats = $stats ?: new ServerStats();
@@ -143,6 +129,8 @@ final class LanguageServer
         // accept incoming connections (in the case of a TCP server this is
         // a connection, with a STDIO stream this just returns the stream
         // immediately)
+        //
+        // @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/3669
         while ($connection = yield $this->streamProvider->accept()) {
             $this->stats->incConnectionCount();
 

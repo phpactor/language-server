@@ -4,15 +4,11 @@ namespace Phpactor\LanguageServer\Tests\Unit\Middleware;
 
 use Amp\PHPUnit\AsyncTestCase;
 use Amp\Success;
-use Phpactor\LanguageServer\Core\Handler\ClosureHandler;
-use Phpactor\LanguageServer\Core\Handler\Handlers;
-use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Generator;
 use Phpactor\LanguageServer\Core\Handler\MethodRunner;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
-use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Middleware\ClosureMiddleware;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
@@ -37,7 +33,7 @@ class CancellationMiddlewareTest extends AsyncTestCase
     public function testDelegatesToNextHandlerIfMessageIsNotNotification(): Generator
     {
         $response = yield $this->createMiddleware()->process(
-            new NotificationMessage('foobar',[]),
+            new NotificationMessage('foobar', []),
             new RequestHandler([
                 new ClosureMiddleware(function () {
                     return new Success(new ResponseMessage(1, null));
@@ -52,7 +48,7 @@ class CancellationMiddlewareTest extends AsyncTestCase
     public function testDelegatesToNextHandlerIfMethodNotCancel(): Generator
     {
         $response = yield $this->createMiddleware()->process(
-            new RequestMessage(1, 'foobar',[]),
+            new RequestMessage(1, 'foobar', []),
             new RequestHandler([
                 new ClosureMiddleware(function () {
                     return new Success(new ResponseMessage(1, null));
@@ -69,7 +65,7 @@ class CancellationMiddlewareTest extends AsyncTestCase
         $this->runner->cancelRequest(1)->shouldBeCalled();
 
         $response = yield $this->createMiddleware()->process(
-            new RequestMessage(1, '$/cancelRequest',[]),
+            new RequestMessage(1, '$/cancelRequest', []),
             new RequestHandler([
             ])
         );
