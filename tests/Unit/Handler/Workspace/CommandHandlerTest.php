@@ -29,11 +29,10 @@ class CommandHandlerTest extends HandlerTestCase
 
     public function testRegistersCapabilities()
     {
-        $server = new ServerCapabilities();
-        $this->createHandler()->registerCapabiltiies($server);
+        $capabilities = new ServerCapabilities();
+        $this->createHandler()->registerCapabiltiies($capabilities);
 
-        /** @phpstan-ignore-next-line */
-        self::assertEquals(['foobar'], $server->executeCommandProvider['commands']);
+        self::assertEquals(['foobar'], $capabilities->executeCommandProvider->commands);
     }
 
     private function createHandler(): CommandHandler

@@ -41,6 +41,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
+use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\ServiceProvider\PingProvider;
 use Phpactor\LanguageServer\Handler\Example\ProgressHandler;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
@@ -52,6 +53,7 @@ use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
 use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
+use Phpactor\LanguageServer\Workspace\CommandDispatcher;
 use Psr\Log\AbstractLogger;
 use Webmozart\Assert\Assert;
 use function Amp\call;
@@ -115,6 +117,7 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
             new TextDocumentHandler(new NullEventDispatcher()),
             new SystemHandler($clientApi, $stats),
             new ServiceHandler($serviceManager, $clientApi),
+            new CommandHandler(new CommandDispatcher([])),
             new ExitHandler(),
         ]);
 
