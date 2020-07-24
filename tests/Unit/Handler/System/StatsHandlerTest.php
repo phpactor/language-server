@@ -6,12 +6,12 @@ use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
-use Phpactor\LanguageServer\Handler\System\SystemHandler;
+use Phpactor\LanguageServer\Handler\System\StatsHandler;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Test\HandlerTester;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 
-class SystemHandlerTest extends HandlerTestCase
+class StatsHandlerTest extends HandlerTestCase
 {
     /**
      * @var ServerStats
@@ -37,14 +37,14 @@ class SystemHandlerTest extends HandlerTestCase
 
     public function handler(): Handler
     {
-        return new SystemHandler($this->clientApi, $this->stats);
+        return new StatsHandler($this->clientApi, $this->stats);
     }
 
     public function testItReturnsTheCurrentSessionStatus()
     {
         $tester = new HandlerTester($this->handler());
 
-        $response = $tester->dispatchAndWait('system/status', []);
+        $response = $tester->dispatchAndWait('phpactor/stats', []);
         self::assertInstanceOf(ResponseMessage::class, $response);
 
 

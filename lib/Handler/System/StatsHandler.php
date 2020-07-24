@@ -8,9 +8,9 @@ use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\ServerStatsReader;
 
-class SystemHandler implements Handler
+class StatsHandler implements Handler
 {
-    const METHOD_STATUS = 'system/status';
+    const METHOD_STATUS = 'phpactor/stats';
 
     /**
      * @var ServerStatsReader

@@ -24,7 +24,7 @@ use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\ServiceProvider\PingProvider;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
-use Phpactor\LanguageServer\Handler\System\SystemHandler;
+use Phpactor\LanguageServer\Handler\System\StatsHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
@@ -91,7 +91,7 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
 
         $handlers = new Handlers([
             new TextDocumentHandler(new NullEventDispatcher()),
-            new SystemHandler($clientApi, $stats),
+            new StatsHandler($clientApi, $stats),
             new ServiceHandler($serviceManager, $clientApi),
             new CommandHandler(new CommandDispatcher([])),
             new ExitHandler(),
