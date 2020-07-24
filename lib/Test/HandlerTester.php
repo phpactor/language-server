@@ -52,7 +52,7 @@ class HandlerTester
         return $middlewareDispatcher->dispatch($request);
     }
 
-    public function dispatchAndWait(string $methodName, array $params)
+    public function dispatchAndWait(string $methodName, array $params): ResponseMessage
     {
         return \Amp\Promise\wait($this->dispatch($methodName, $params));
     }

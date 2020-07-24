@@ -34,7 +34,7 @@ class MessageSerializer
      *
      * @return mixed
      */
-    private function normalize($message)
+    public function normalize($message)
     {
         if (is_object($message)) {
             $message = (array) $message;

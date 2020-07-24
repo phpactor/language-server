@@ -7,6 +7,7 @@ use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 final class ProtocolFactory
 {
@@ -28,5 +29,10 @@ final class ProtocolFactory
     public static function initializeParams(): InitializeParams
     {
         return new InitializeParams(new ClientCapabilities());
+    }
+
+    public static function requestMessage(string $method, array $params): RequestMessage
+    {
+        return new RequestMessage(uniqid(), $method, $params);
     }
 }

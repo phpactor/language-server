@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer;
 
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
+use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 use Phpactor\LanguageServer\Core\Server\Initializer\RequestInitializer;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
@@ -11,6 +12,7 @@ use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
+use Phpactor\LanguageServer\Test\LanguageServerTester;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -105,6 +107,12 @@ class LanguageServerBuilder
             new RequestInitializer(),
             $this->stats ?: new ServerStats()
         );
+    }
+
+    public function tester(?ClientCapabilities $capabilities = null): LanguageServerTester
+    {
+        $capabilities = $capabilities ?: new ClientCapabilities();
+        return new LanguageServerTester($this->dispatcherFactory, $capabilities);
     }
 
     public function withServerStats(ServerStats $stats): self
