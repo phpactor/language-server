@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Handler\Example;
+namespace Phpactor\LanguageServer\ServiceProvider;
 
 use Amp\CancellationToken;
 use Amp\CancelledException;
@@ -12,7 +12,10 @@ use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 
-class PingHandler implements ServiceProvider
+/**
+ * Example service which shows a "ping" message every second.
+ */
+class PingProvider implements ServiceProvider
 {
     /**
      * @var ClientApi

@@ -14,7 +14,9 @@ use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Event\Initialized;
 use RuntimeException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class InitializeMiddleware implements Middleware
 {
@@ -31,9 +33,15 @@ class InitializeMiddleware implements Middleware
      */
     private $initialized = false;
 
-    public function __construct(Handlers $handlers)
+    /**
+     * @var EventDispatcher
+     */
+    private $dispatcher;
+
+    public function __construct(Handlers $handlers, EventDispatcher $dispatcher)
     {
         $this->handlers = $handlers;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -42,7 +50,9 @@ class InitializeMiddleware implements Middleware
     public function process(Message $request, RequestHandler $handler): Promise
     {
         if ($request instanceof NotificationMessage && $request->method === self::METHOD_INITIALIZED) {
+            $this->dispatcher->dispatch(new Initialized());
             return new Success(null);
+Assert::string($address);
         }
 
         if (!$request instanceof RequestMessage) {

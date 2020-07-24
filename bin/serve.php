@@ -38,7 +38,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
 use Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Session\SessionManager;
-use Phpactor\LanguageServer\Handler\Example\PingHandler;
+use Phpactor\LanguageServer\ServiceProvider\PingProvider;
 use Phpactor\LanguageServer\Handler\Example\ProgressHandler;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
@@ -50,6 +50,7 @@ use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
 use Psr\Log\AbstractLogger;
+use Webmozart\Assert\Assert;
 use function Amp\call;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -60,6 +61,10 @@ $options = [
 ];
 
 $options = array_merge($options, getopt('t::a::', ['type::', 'address::']));
+$address = $options['address'];
+if (!is_string($address)) {
+    throw new RuntimeException('Address should be a string');
+}
 
 $in = fopen('php://stdin', 'r');
 $out = fopen('php://stdout', 'w');
@@ -97,13 +102,15 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
         $serviceProviders = new ServiceProviders([
-            new PingHandler($clientApi)
+            new PingProvider($clientApi)
         ]);
+
+        $serviceManager = new ServiceManager($serviceProviders, $logger);
 
         $handlers = new Handlers([
             new TextDocumentHandler(new NullEventDispatcher()),
             new SystemHandler($clientApi, $stats),
-            new ServiceHandler(new ServiceManager($serviceProviders, $logger), $clientApi),
+            new ServiceHandler($serviceManager, $clientApi),
             new ExitHandler(),
         ]);
 
@@ -125,6 +132,6 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
     }
 ), $logger)
     ->withServerStats($stats)
-    ->tcpServer($options['address'])
+    ->tcpServer($address)
     ->build()
     ->run();
