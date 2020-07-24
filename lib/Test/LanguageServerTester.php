@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Test;
 
 use Amp\Promise;
-use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentNotification;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\InitializeParams;
@@ -34,10 +33,10 @@ final class LanguageServerTester
      */
     private $messageSerializer;
 
-    public function __construct(DispatcherFactory $factory, ClientCapabilities $capabilities)
+    public function __construct(DispatcherFactory $factory, InitializeParams $params)
     {
         $this->transmitter = new TestMessageTransmitter();
-        $this->dispatcher = $factory->create($this->transmitter, new InitializeParams($capabilities));
+        $this->dispatcher = $factory->create($this->transmitter, $params);
         $this->messageSerializer = new MessageSerializer();
     }
 

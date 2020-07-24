@@ -26,9 +26,12 @@ final class ProtocolFactory
         return new TextDocumentIdentifier($uri);
     }
 
-    public static function initializeParams(): InitializeParams
+    public static function initializeParams(?string $rootUri = null): InitializeParams
     {
-        return new InitializeParams(new ClientCapabilities());
+        $params = new InitializeParams(new ClientCapabilities());
+        $params->rootUri = $rootUri;
+
+        return $params;
     }
 
     public static function requestMessage(string $method, array $params): RequestMessage

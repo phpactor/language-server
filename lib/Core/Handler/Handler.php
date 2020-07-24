@@ -19,33 +19,25 @@ interface Handler
      *     {
      *         return [
      *             'textDocument/didOpen' => 'didOpen'
+     *             'textDocument/completion' => 'complete'
      *         ];
      *     }
      *
-     *     public function didOpen(TextDocumentItem $item): Promise
+     *     public function didOpen(DidOpenTextDocumentParams $params): Promise
      *     {
-     *         yield new SomeRespose();
+     *         return new Success(null);
+     *     }
+     *
+     *     public function complete(CompletionParams $params, CancellationToken $cancel): Promise
+     *     {
+     *         return new Success(new CompletionList(// ...));
      *     }
      * ```
      *
      * Each method MUST return an `Amp\Promise`.
      *
-     * The arguments passed by the RPC call are automatically resolved.
-     *
-     * LSP params
-     * ----------
-     *
-     * If you implement the LSP `*Params` object, e.g. `initialize(InitializeParams $params)`
-     * then the RPC arguments will be coerced into a `Phpactor\LanguageServerProtocol\InitializeParams` object.
-     *
-     * You can also have a second parameter with hte `Amp\CancellationToken` which will
-     * allow you to cancel your subrouting.
-     *
-     * RPC params
-     * ----------
-     *
-     * If no LSP parameter type is defined, then the arguments will be mapped directly to
-     * your parameters.
+     * The arguments passed by the RPC call depend on the `ArgumentResolver`
+     * implementation used by the `HandlerMethodRunner`.
      */
     public function methods(): array;
 }

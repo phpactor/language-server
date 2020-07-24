@@ -4,7 +4,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Test;
 
 use Amp\Success;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ClosureDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Factory\ClosureDispatcherFactory;
@@ -80,9 +79,9 @@ class LanguageServerTesterTest extends TestCase
         $this->assertNotifysTransmission($tester);
     }
 
-    private function createTester(?ClientCapabilities $capabilties = null): LanguageServerTester
+    private function createTester(?InitializeParams $params = null): LanguageServerTester
     {
-        $capabilties = $capabilties ?: new ClientCapabilities();
+        $params = $params ?: ProtocolFactory::initializeParams();
 
         return new LanguageServerTester(new ClosureDispatcherFactory(function (MessageTransmitter $transmitter, InitializeParams $params) {
             return new ClosureDispatcher(function (Message $message) use ($transmitter) {
@@ -96,7 +95,7 @@ class LanguageServerTesterTest extends TestCase
 
                 return new Success(null);
             });
-        }), $capabilties);
+        }), $params);
     }
 
     private function assertSuccessResponse(ResponseMessage $response): void
