@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Handler\System;
 
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
@@ -14,11 +15,11 @@ class ServiceHandler implements Handler
     private $manager;
 
     /**
-     * @var RpcClient
+     * @var ClientApi
      */
     private $client;
 
-    public function __construct(ServiceManager $manager, RpcClient $client)
+    public function __construct(ServiceManager $manager, ClientApi $client)
     {
         $this->manager = $manager;
         $this->client = $client;
@@ -46,14 +47,11 @@ class ServiceHandler implements Handler
         $this->manager->stop($name);
     }
 
-    public function runningServices(ServiceManager $manager): void
+    public function runningServices(): void
     {
-        $this->client->notification('window/showMessage', [
-            'type' => 'info',
-            'message' => sprintf(
-                'Running services: "%s"',
-                implode('", "', $manager->runningServices())
-            )
-        ]);
+        $this->client->window()->showMessage()->info(sprintf(
+            'Running services: "%s"',
+            implode('", "', $this->manager->runningServices())
+        ));
     }
 }

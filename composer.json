@@ -28,7 +28,8 @@
         "friendsofphp/php-cs-fixer": "^2.15.0",
         "phpactor/test-utils": "^1.1",
         "phpspec/prophecy-phpunit": "^2.0",
-        "jangregor/phpstan-prophecy": "^0.8.0"
+        "jangregor/phpstan-prophecy": "^0.8.0",
+        "symfony/var-dumper": "^5.1"
     },
     "autoload": {
         "psr-4": {

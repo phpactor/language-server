@@ -28,6 +28,8 @@ use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
+use Phpactor\LanguageServer\Core\Service\ServiceManager;
+use Phpactor\LanguageServer\Core\Service\ServiceProviders;
 use Phpactor\LanguageServer\Core\Session\Workspace;
 use Phpactor\LanguageServer\Extension\Core\Initialize;
 use Phpactor\LanguageServer\Core\IO\StreamIO;
@@ -94,9 +96,14 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $responseWatcher = new DeferredResponseWatcher();
         $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
+        $serviceProviders = new ServiceProviders([
+            new PingHandler($clientApi)
+        ]);
+
         $handlers = new Handlers([
             new TextDocumentHandler(new NullEventDispatcher()),
             new SystemHandler($clientApi, $stats),
+            new ServiceHandler(new ServiceManager($serviceProviders, $logger), $clientApi),
             new ExitHandler(),
         ]);
 

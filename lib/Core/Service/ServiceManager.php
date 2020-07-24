@@ -44,6 +44,7 @@ class ServiceManager
      */
     public function runningServices(): array
     {
+        return array_keys($this->cancellations);
     }
 
     public function startAll(): void

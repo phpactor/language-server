@@ -7,6 +7,7 @@ use Amp\CancelledException;
 use Amp\Delayed;
 use Amp\Promise;
 use Phpactor\LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
@@ -14,12 +15,13 @@ use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 class PingHandler implements ServiceProvider
 {
     /**
-     * {@inheritDoc}
+     * @var ClientApi
      */
-    public function methods(): array
+    private $client;
+
+    public function __construct(ClientApi $client)
     {
-        return [
-        ];
+        $this->client = $client;
     }
 
     /**
@@ -35,9 +37,9 @@ class PingHandler implements ServiceProvider
     /**
      * @return Promise<null>
      */
-    public function ping(MessageTransmitter $transmitter, CancellationToken $cancel): Promise
+    public function ping(CancellationToken $cancel): Promise
     {
-        return \Amp\call(function () use ($transmitter, $cancel) {
+        return \Amp\call(function () use ($cancel) {
             while (true) {
                 try {
                     $cancel->throwIfRequested();
@@ -45,10 +47,7 @@ class PingHandler implements ServiceProvider
                     break;
                 }
                 yield new Delayed(1000);
-                $transmitter->transmit(new NotificationMessage('window/logMessage', [
-                    'type' => MessageType::INFO,
-                    'message' => 'ping',
-                ]));
+                $this->client->window()->showMessage()->info('ping');
             }
         });
     }
