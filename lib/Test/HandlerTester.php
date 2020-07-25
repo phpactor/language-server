@@ -14,18 +14,42 @@ use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 
 class HandlerTester
 {
+    const REQUEST_ID = 1;
+
     /**
      * @var Handler
      */
     private $handler;
 
+    /**
+     * @var MiddlewareDispatcher
+     */
+    private $middlewareDispatcher;
+
+
     public function __construct(Handler $handler)
     {
         $this->handler = $handler;
+
+        $handlers = new Handlers([$this->handler]);
+        $runner = new HandlerMethodRunner(
+            $handlers,
+            new HandlerMethodResolver(),
+            new ChainArgumentResolver(
+                new LanguageSeverProtocolParamsResolver(),
+                new DTLArgumentResolver(),
+                new PassThroughArgumentResolver()
+            )
+        );
+        $this->middlewareDispatcher = new MiddlewareDispatcher(
+            new CancellationMiddleware($runner),
+            new HandlerMiddleware($runner)
+        );
     }
 
     /**
@@ -33,27 +57,18 @@ class HandlerTester
      */
     public function dispatch(string $methodName, array $params): Promise
     {
-        $handlers = new Handlers([$this->handler]);
-        $request = new RequestMessage(1, $methodName, $params);
-        $middlewareDispatcher = new MiddlewareDispatcher(
-            new HandlerMiddleware(
-                new HandlerMethodRunner(
-                    $handlers,
-                    new HandlerMethodResolver(),
-                    new ChainArgumentResolver(
-                        new LanguageSeverProtocolParamsResolver(),
-                        new DTLArgumentResolver(),
-                        new PassThroughArgumentResolver()
-                    )
-                )
-            )
-        );
-
-        return $middlewareDispatcher->dispatch($request);
+        return $this->middlewareDispatcher->dispatch(new RequestMessage(self::REQUEST_ID, $methodName, $params));
     }
 
-    public function dispatchAndWait(string $methodName, array $params): ResponseMessage
+    public function dispatchAndWait(string $methodName, array $params): ?ResponseMessage
     {
         return \Amp\Promise\wait($this->dispatch($methodName, $params));
+    }
+
+    public function cancel(): void
+    {
+        $this->dispatchAndWait('$/cancelRequest', [
+            'id' => self::REQUEST_ID
+        ]);
     }
 }
