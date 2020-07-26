@@ -45,6 +45,7 @@ class ServiceManager
 
     public function startAll(): void
     {
+
         foreach ($this->serviceProviders->names() as $serviceName) {
             $this->start($serviceName);
         }

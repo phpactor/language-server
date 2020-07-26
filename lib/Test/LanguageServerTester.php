@@ -117,6 +117,22 @@ final class LanguageServerTester
         $this->notifyAndWait('initialized', []);
     }
 
+    public function servicesRunning(): array
+    {
+        $response = $this->requestAndWait('phpactor/service/running', []);
+        return $response->result;
+    }
+
+    public function serviceStop(string $name): void
+    {
+        $this->notifyAndWait('phpactor/service/stop', ['name' => $name]);
+    }
+
+    public function serviceStart(string $name): void
+    {
+        $this->notifyAndWait('phpactor/service/start', ['name' => $name]);
+    }
+
     /**
      * @param array|object $params
      * @return array<string,mixed>

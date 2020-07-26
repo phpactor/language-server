@@ -2,12 +2,13 @@
 
 namespace Phpactor\LanguageServer\Core\Server\Transmitter;
 
+use Countable;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use RuntimeException;
 
-class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitterStack
+class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitterStack, Countable
 {
     /**
      * @var Message[]
@@ -63,5 +64,13 @@ class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitt
     public function clear(): void
     {
         $this->buffer = [];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function count(): int
+    {
+        return count($this->buffer);
     }
 }

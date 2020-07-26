@@ -10,6 +10,7 @@ use Phpactor\LanguageServer\Core\Session\WorkspaceListener;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
+use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -33,11 +34,11 @@ class WorkspaceListenerTest extends TestCase
 
     public function testClosed(): void
     {
-        $this->workspace->remove(new TextDocumentIdentifier('file://test'))->shouldBeCalled();
+        $this->workspace->remove(ProtocolFactory::textDocumentIdentifier('file://test'))->shouldBeCalled();
 
         $this->dispatch(
             new TextDocumentClosed(
-                new TextDocumentIdentifier('file://test')
+                ProtocolFactory::textDocumentIdentifier('file://test')
             )
         );
     }
@@ -74,6 +75,6 @@ class WorkspaceListenerTest extends TestCase
 
     private function createDocument(string $uri): TextDocumentItem
     {
-        return new TextDocumentItem($uri, 'php', 1, 'text');
+        return ProtocolFactory::textDocumentItem($uri, 'text');
     }
 }
