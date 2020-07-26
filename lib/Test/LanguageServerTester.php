@@ -3,8 +3,6 @@
 namespace Phpactor\LanguageServer\Test;
 
 use Amp\Promise;
-use Phpactor\LanguageServerProtocol\DidOpenTextDocumentNotification;
-use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServerProtocol\InitializeResult;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
@@ -15,6 +13,8 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
+use Phpactor\LanguageServer\Test\LanguageServerTester\ServicesTester;
+use Phpactor\LanguageServer\Test\LanguageServerTester\TextDocumentTester;
 use RuntimeException;
 use function Amp\Promise\wait;
 
@@ -104,13 +104,6 @@ final class LanguageServerTester
         return $this->transmitter;
     }
 
-    public function textDocumentOpen(string $url, string $content): void
-    {
-        $this->notifyAndWait(DidOpenTextDocumentNotification::METHOD, new DidOpenTextDocumentParams(
-            ProtocolFactory::textDocumentItem($url, $content)
-        ));
-    }
-
     /**
      * Initialize the server using the initialization parameters provided when
      * this class was instantiated and return the processed ServerCapabilties.
@@ -124,29 +117,14 @@ final class LanguageServerTester
         return $response->result;
     }
 
-    /**
-     * Return running services
-     */
-    public function serviceListRunning(): array
+    public function services(): ServicesTester
     {
-        $response = $this->requestAndWait('phpactor/service/running', []);
-        return $response->result;
+        return new ServicesTester($this);
     }
 
-    /**
-     * Stop the named service
-     */
-    public function serviceStop(string $name): void
+    public function textDocument(): TextDocumentTester
     {
-        $this->notifyAndWait('phpactor/service/stop', ['name' => $name]);
-    }
-
-    /**
-     * Start the named service
-     */
-    public function serviceStart(string $name): void
-    {
-        $this->notifyAndWait('phpactor/service/start', ['name' => $name]);
+        return new TextDocumentTester($this);
     }
 
     /**

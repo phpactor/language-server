@@ -98,7 +98,7 @@ class LanguageServerTesterTest extends TestCase
     public function testOpenTextDocument(): void
     {
         $tester = $this->createTester();
-        $tester->textDocumentOpen('file://foobar', 'content');
+        $tester->textDocument()->open('file://foobar', 'content');
         $this->addToAssertionCount(1);
     }
 
@@ -106,7 +106,15 @@ class LanguageServerTesterTest extends TestCase
     {
         $tester = $this->createTester();
         $tester->initialize();
-        $services = $tester->serviceListRunning();
+        $services = $tester->services()->listRunning();
+        self::assertContains('ping', $services);
+
+        $tester->services()->stop('ping');
+        $services = $tester->services()->listRunning();
+        self::assertNotContains('ping', $services);
+
+        $tester->services()->start('ping');
+        $services = $tester->services()->listRunning();
         self::assertContains('ping', $services);
     }
 
