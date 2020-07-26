@@ -41,8 +41,9 @@ $options = [
 ];
 
 $options = array_merge($options, getopt('t::a::', ['type::', 'address::']));
+$type = $options['type'];
 $address = $options['address'];
-if (!is_string($address)) {
+if ($type === 'tcp' && !is_string($address)) {
     throw new RuntimeException('Address should be a string');
 }
 
@@ -76,7 +77,7 @@ $logger->info('test language server starting');
 $logger->info('i am a demonstration server and provide no functionality');
 
 $stats = new ServerStats();
-LanguageServerBuilder::create(new ClosureDispatcherFactory(
+$builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
     function (MessageTransmitter $transmitter, InitializeParams $params) use ($logger, $stats) {
         $responseWatcher = new DeferredResponseWatcher();
         $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
@@ -113,8 +114,11 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
             new HandlerMiddleware($runner)
         );
     }
-), $logger)
+), $logger);
+if ($type === 'tcp') {
+    $builder->tcpServer((string)$address);
+}
+$builder
     ->withServerStats($stats)
-    ->tcpServer($address)
     ->build()
     ->run();
