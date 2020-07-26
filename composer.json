@@ -1,6 +1,6 @@
 {
     "name": "phpactor/language-server",
-    "description": "Phpactor Language Server",
+    "description": "Generic Language Server Platform",
     "license": "MIT",
     "minimum-stability": "dev",
     "prefer-stable": true,
