@@ -44,9 +44,9 @@ final class HandlerMethodRunner implements MethodRunner
 
     public function __construct(
         Handlers $handlers,
-        ?HandlerMethodResolver $resolver = null,
         ?ArgumentResolver $argumentResolver = null,
-        ?LoggerInterface $logger = null
+        ?LoggerInterface $logger = null,
+        ?HandlerMethodResolver $resolver = null
     ) {
         $this->handlers = $handlers;
         $this->resolver = $resolver ?: new HandlerMethodResolver();

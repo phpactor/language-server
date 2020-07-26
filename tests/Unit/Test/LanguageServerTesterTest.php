@@ -13,7 +13,6 @@ use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtoc
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\LanguageServer\Core\Handler\ClosureHandler;
-use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
@@ -156,7 +155,6 @@ class LanguageServerTesterTest extends TestCase
 
             $runner = new HandlerMethodRunner(
                 $handlers,
-                new HandlerMethodResolver(),
                 new ChainArgumentResolver(
                     new LanguageSeverProtocolParamsResolver(),
                     new PassThroughArgumentResolver()

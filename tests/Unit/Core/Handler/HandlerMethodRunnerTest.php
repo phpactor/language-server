@@ -8,7 +8,6 @@ use Amp\PHPUnit\AsyncTestCase;
 use Amp\Success;
 use Phpactor\LanguageServer\Core\Handler\ClosureHandler;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
-use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
@@ -125,8 +124,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
     private function createRunner(array $handlers): HandlerMethodRunner
     {
         return new HandlerMethodRunner(
-            new Handlers($handlers),
-            new HandlerMethodResolver()
+            new Handlers($handlers)
         );
     }
 }
