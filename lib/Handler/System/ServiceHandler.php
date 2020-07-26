@@ -48,6 +48,9 @@ class ServiceHandler implements Handler
         $this->manager->stop($name);
     }
 
+    /**
+     * @return Promise<array>
+     */
     public function runningServices(): Promise
     {
         $this->client->window()->showMessage()->info(sprintf(

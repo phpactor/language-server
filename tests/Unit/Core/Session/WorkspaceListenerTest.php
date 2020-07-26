@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
 
-use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Session\Workspace;

@@ -6,6 +6,7 @@ use Amp\Promise;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentNotification;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServerProtocol\InitializeResult;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 use Phpactor\LanguageServer\Core\Rpc\Message;
@@ -103,34 +104,65 @@ final class LanguageServerTester
         return $this->transmitter;
     }
 
-    public function openTextDocument(string $url, string $content): void
+    public function textDocumentOpen(string $url, string $content): void
     {
         $this->notifyAndWait(DidOpenTextDocumentNotification::METHOD, new DidOpenTextDocumentParams(
             ProtocolFactory::textDocumentItem($url, $content)
         ));
     }
 
-    public function initialize(): void
+    /**
+     * Initialize the server using the initialization parameters provided when
+     * this class was instantiated and return the processed ServerCapabilties.
+     */
+    public function initialize(): InitializeResult
     {
         $response = $this->requestAndWait('initialize', $this->initializeParams);
         $this->assertSuccess($response);
         $this->notifyAndWait('initialized', []);
+
+        return $response->result;
     }
 
-    public function servicesRunning(): array
+    /**
+     * Return running services
+     */
+    public function serviceListRunning(): array
     {
         $response = $this->requestAndWait('phpactor/service/running', []);
         return $response->result;
     }
 
+    /**
+     * Stop the named service
+     */
     public function serviceStop(string $name): void
     {
         $this->notifyAndWait('phpactor/service/stop', ['name' => $name]);
     }
 
+    /**
+     * Start the named service
+     */
     public function serviceStart(string $name): void
     {
         $this->notifyAndWait('phpactor/service/start', ['name' => $name]);
+    }
+
+    /**
+     * Assert the the response is successful.
+     *
+     * @throws RuntimeException if not successful.
+     */
+    public function assertSuccess(ResponseMessage $response): void
+    {
+        if ($response->error) {
+            throw new RuntimeException(sprintf(
+                'Response has error: %s'."\n".'%s',
+                $response->error->message,
+                is_string($response->error->data) ? $response->error->data : json_encode($response->error->data, JSON_PRETTY_PRINT)
+            ));
+        }
     }
 
     /**
@@ -144,16 +176,5 @@ final class LanguageServerTester
         }
 
         return $this->messageSerializer->normalize($params);
-    }
-
-    public function assertSuccess(ResponseMessage $response): void
-    {
-        if ($response->error) {
-            throw new RuntimeException(sprintf(
-                'Response has error: %s'."\n".'%s',
-                $response->error->message,
-                is_string($response->error->data) ? $response->error->data : json_encode($response->error->data, JSON_PRETTY_PRINT)
-            ));
-        }
     }
 }
