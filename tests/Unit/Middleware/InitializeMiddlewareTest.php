@@ -82,7 +82,9 @@ class InitializeMiddlewareTest extends AsyncTestCase
 
     public function testReturnsInitializedResponse(): Generator
     {
-        $middleware = $this->createMiddleware();
+        $middleware = $this->createMiddleware([], [
+            'server_info' => 'please',
+        ]);
 
         $response = yield $middleware->process(
             new RequestMessage(1, 'initialize', [
@@ -92,6 +94,9 @@ class InitializeMiddlewareTest extends AsyncTestCase
         );
         self::assertInstanceOf(ResponseMessage::class, $response);
         self::assertInstanceOf(InitializeResult::class, $response->result);
+        self::assertEquals([
+            'server_info' => 'please',
+        ], $response->result->serverInfo);
     }
 
     public function testHandlersCanRegisterCapabiltiies(): Generator
@@ -123,11 +128,12 @@ class InitializeMiddlewareTest extends AsyncTestCase
         self::assertTrue($response->result->capabilities->hoverProvider);
     }
 
-    private function createMiddleware(array $handlers = []): InitializeMiddleware
+    private function createMiddleware(array $handlers = [], array $serverInfo = []): InitializeMiddleware
     {
         return new InitializeMiddleware(
             new Handlers($handlers),
-            $this->dispatcher->reveal()
+            $this->dispatcher->reveal(),
+            $serverInfo
         );
     }
 }

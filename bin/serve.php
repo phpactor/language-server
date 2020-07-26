@@ -9,7 +9,6 @@ use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtoc
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MiddlewareDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Factory\ClosureDispatcherFactory;
-use Phpactor\LanguageServer\Core\Handler\HandlerMethodResolver;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
@@ -99,16 +98,17 @@ LanguageServerBuilder::create(new ClosureDispatcherFactory(
 
         $runner = new HandlerMethodRunner(
             $handlers,
-            new HandlerMethodResolver(),
             new ChainArgumentResolver(
                 new LanguageSeverProtocolParamsResolver(),
                 new PassThroughArgumentResolver()
-            )
+            ),
         );
 
         return new MiddlewareDispatcher(
             new ErrorHandlingMiddleware($logger),
-            new InitializeMiddleware($handlers, $eventDispatcher),
+            new InitializeMiddleware($handlers, $eventDispatcher, [
+                'version' => 1,
+            ]),
             new CancellationMiddleware($runner),
             new HandlerMiddleware($runner)
         );

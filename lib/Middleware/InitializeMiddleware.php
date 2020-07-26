@@ -38,10 +38,16 @@ class InitializeMiddleware implements Middleware
      */
     private $dispatcher;
 
-    public function __construct(Handlers $handlers, EventDispatcherInterface $dispatcher)
+    /**
+     * @var array
+     */
+    private $serverInfo;
+
+    public function __construct(Handlers $handlers, EventDispatcherInterface $dispatcher, array $serverInfo = [])
     {
         $this->handlers = $handlers;
         $this->dispatcher = $dispatcher;
+        $this->serverInfo = $serverInfo;
     }
 
     /**
@@ -82,7 +88,7 @@ class InitializeMiddleware implements Middleware
         return new Success(
             new ResponseMessage(
                 $request->id,
-                new InitializeResult($serverCapabilities)
+                new InitializeResult($serverCapabilities, $this->serverInfo)
             )
         );
     }
