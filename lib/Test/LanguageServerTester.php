@@ -14,6 +14,7 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
+use RuntimeException;
 use function Amp\Promise\wait;
 
 final class LanguageServerTester
@@ -33,8 +34,14 @@ final class LanguageServerTester
      */
     private $messageSerializer;
 
+    /**
+     * @var InitializeParams
+     */
+    private $initializeParams;
+
     public function __construct(DispatcherFactory $factory, InitializeParams $params)
     {
+        $this->initializeParams = $params;
         $this->transmitter = new TestMessageTransmitter();
         $this->dispatcher = $factory->create($this->transmitter, $params);
         $this->messageSerializer = new MessageSerializer();
@@ -103,6 +110,12 @@ final class LanguageServerTester
         ));
     }
 
+    public function initialize(): void
+    {
+        $response = $this->requestAndWait('initialize', $this->initializeParams);
+        $this->assertSuccess($response);
+    }
+
     /**
      * @param array|object $params
      * @return array<string,mixed>
@@ -114,5 +127,16 @@ final class LanguageServerTester
         }
 
         return $this->messageSerializer->normalize($params);
+    }
+
+    public function assertSuccess(ResponseMessage $response): void
+    {
+        if ($response->error) {
+            throw new RuntimeException(sprintf(
+                'Response has error: %s'."\n".'%s',
+                $response->error->message,
+                is_string($response->error->data) ? $response->error->data : json_encode($response->error->data, JSON_PRETTY_PRINT)
+            ));
+        }
     }
 }
