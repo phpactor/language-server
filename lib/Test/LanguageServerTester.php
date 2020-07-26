@@ -114,6 +114,7 @@ final class LanguageServerTester
     {
         $response = $this->requestAndWait('initialize', $this->initializeParams);
         $this->assertSuccess($response);
+        $this->notifyAndWait('initialized', []);
     }
 
     /**
