@@ -78,6 +78,19 @@ class LanguageServerBuilder
         return $this;
     }
 
+    public function tester(?InitializeParams $params = null): LanguageServerTester
+    {
+        $params = $params ?: new InitializeParams(new ClientCapabilities());
+        return new LanguageServerTester($this->dispatcherFactory, $params);
+    }
+
+    public function withServerStats(ServerStats $stats): self
+    {
+        $this->stats = $stats;
+
+        return $this;
+    }
+
     /**
      * Build the language server.
      *
@@ -108,18 +121,5 @@ class LanguageServerBuilder
             new RequestInitializer(),
             $this->stats ?: new ServerStats()
         );
-    }
-
-    public function tester(?InitializeParams $params = null): LanguageServerTester
-    {
-        $params = $params ?: new InitializeParams(new ClientCapabilities());
-        return new LanguageServerTester($this->dispatcherFactory, $params);
-    }
-
-    public function withServerStats(ServerStats $stats): self
-    {
-        $this->stats = $stats;
-
-        return $this;
     }
 }

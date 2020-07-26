@@ -24,6 +24,8 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use RuntimeException;
+use Throwable;
+use function Amp\Promise\any;
 use function Amp\call;
 
 final class LanguageServer
@@ -78,6 +80,8 @@ final class LanguageServer
     }
 
     /**
+     * Start the language server only. Event loop is not started.
+     *
      * Return a promise which resolves when the language server stops
      *
      * @return Promise<void>
@@ -90,10 +94,20 @@ final class LanguageServer
     }
 
     /**
-     * Run the langauge server (starts the event loop)
+     * Register signal handlers and run the language server in the event loop.
      */
     public function run(): void
     {
+        Loop::onSignal(SIGINT, function (string $watcherId) {
+            Loop::cancel($watcherId);
+            yield $this->shutdown();
+        });
+
+        Loop::setErrorHandler(function (Throwable $error) {
+            $this->logger->critical($error->getMessage());
+            throw $error;
+        });
+
         Loop::run(function () {
             yield $this->start();
         });
@@ -219,8 +233,10 @@ final class LanguageServer
 
             $promises = [];
             foreach ($this->connections as $connection) {
-                yield $connection->stream()->end();
+                $promises[] = $connection->stream()->end();
             }
+
+            yield any($promises);
 
             $this->streamProvider->close();
         });
