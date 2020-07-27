@@ -53,19 +53,19 @@ class HandlerTester
     /**
      * @return Promise<ResponseMessage|null>
      */
-    public function dispatch(string $methodName, array $params): Promise
+    public function request(string $methodName, array $params): Promise
     {
         return $this->middlewareDispatcher->dispatch(new RequestMessage(self::REQUEST_ID, $methodName, $params));
     }
 
-    public function dispatchAndWait(string $methodName, array $params): ?ResponseMessage
+    public function requestAndWait(string $methodName, array $params): ?ResponseMessage
     {
-        return \Amp\Promise\wait($this->dispatch($methodName, $params));
+        return \Amp\Promise\wait($this->request($methodName, $params));
     }
 
     public function cancel(): void
     {
-        $this->dispatchAndWait('$/cancelRequest', [
+        $this->requestAndWait('$/cancelRequest', [
             'id' => self::REQUEST_ID
         ]);
     }
