@@ -3,7 +3,6 @@
 
 use Phly\EventDispatcher\EventDispatcher;
 use Phpactor\LanguageServerProtocol\InitializeParams;
-use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
