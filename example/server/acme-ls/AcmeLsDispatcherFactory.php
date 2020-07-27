@@ -3,10 +3,13 @@
 namespace AcmeLs;
 
 use Phly\EventDispatcher\EventDispatcher;
+use Phly\EventDispatcher\ListenerProvider\ListenerProviderAggregate;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
+use Phpactor\LanguageServer\Core\Workspace\Workspace;
+use Phpactor\LanguageServer\Listener\WorkspaceListener;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
 use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
@@ -16,6 +19,7 @@ use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
+use Phpactor\LanguageServer\Middleware\ResponseHandlingMiddleware;
 use Phpactor\LanguageServer\Workspace\CommandDispatcher;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
@@ -54,10 +58,17 @@ class AcmeLsDispatcherFactory implements DispatcherFactory
         );
 
         $serviceManager = new ServiceManager($serviceProviders, $this->logger);
-        $eventDispatcher = new EventDispatcher(new ServiceListener($serviceManager));
+        $workspace = new Workspace();
+
+        // some PSR-14 event dispatcher ...
+        $aggregate = new ListenerProviderAggregate();
+        $aggregate->attach(new ServiceListener($serviceManager));
+        $aggregate->attach(new WorkspaceListener($workspace));
+        $eventDispatcher = new EventDispatcher($aggregate);
+        // ... finish event dispatcher
 
         $handlers = new Handlers(
-            new TextDocumentHandler(new NullEventDispatcher()),
+            new TextDocumentHandler($eventDispatcher),
             new ServiceHandler($serviceManager, $clientApi),
             new CommandHandler(new CommandDispatcher([])),
             new ExitHandler()
@@ -76,6 +87,7 @@ class AcmeLsDispatcherFactory implements DispatcherFactory
             new InitializeMiddleware($handlers, $eventDispatcher, [
                 'version' => 1,
             ]),
+            new ResponseHandlingMiddleware($responseWatcher),
             new CancellationMiddleware($runner),
             new HandlerMiddleware($runner)
         );
