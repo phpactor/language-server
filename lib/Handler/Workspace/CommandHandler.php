@@ -3,7 +3,9 @@
 namespace Phpactor\LanguageServer\Handler\Workspace;
 
 use Amp\Promise;
-use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServerProtocol\ExecuteCommandOptions;
+use Phpactor\LanguageServerProtocol\ExecuteCommandParams;
+use Phpactor\LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Workspace\CommandDispatcher;
@@ -33,18 +35,15 @@ class CommandHandler implements Handler, CanRegisterCapabilities
     /**
      * @return Promise<mixed|null>
      */
-    public function executeCommand(string $command, array $arguments): Promise
+    public function executeCommand(ExecuteCommandParams $params): Promise
     {
-        return $this->dispatcher->dispatch($command, $arguments);
+        return $this->dispatcher->dispatch($params->command, $params->arguments);
     }
 
-    public function registerCapabiltiies(ServerCapabilities $capabilities)
+    public function registerCapabiltiies(ServerCapabilities $capabilities): void
     {
-        // The protocol library is not up-to-date so
-        // we are writing to undefined properties.
-        // @phpstan-ignore-next-line
-        $capabilities->executeCommandProvider = [
-            'commands' => $this->dispatcher->registeredCommands(),
-        ];
+        $capabilities->executeCommandProvider = new ExecuteCommandOptions(
+            $this->dispatcher->registeredCommands(),
+        );
     }
 }

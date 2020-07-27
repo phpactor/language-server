@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\Workspace;
 
 use Amp\Success;
-use LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
@@ -29,11 +29,10 @@ class CommandHandlerTest extends HandlerTestCase
 
     public function testRegistersCapabilities()
     {
-        $server = new ServerCapabilities();
-        $this->createHandler()->registerCapabiltiies($server);
+        $capabilities = new ServerCapabilities();
+        $this->createHandler()->registerCapabiltiies($capabilities);
 
-        /** @phpstan-ignore-next-line */
-        self::assertEquals(['foobar'], $server->executeCommandProvider['commands']);
+        self::assertEquals(['foobar'], $capabilities->executeCommandProvider->commands);
     }
 
     private function createHandler(): CommandHandler

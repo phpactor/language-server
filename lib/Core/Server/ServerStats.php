@@ -3,28 +3,62 @@
 namespace Phpactor\LanguageServer\Core\Server;
 
 use DateInterval;
+use DateTimeImmutable;
 
-class ServerStats
+/**
+ * Class which can be passed _to_ the server in order to collect statistics.
+ */
+class ServerStats implements ServerStatsReader
 {
     /**
-     * @var DateInterval
+     * @var DateTimeImmutable
      */
-    public $uptime;
+    private $created;
 
     /**
      * @var int
      */
-    public $connectionCount;
+    private $connectionCount;
 
     /**
      * @var int
      */
-    public $requestCount;
+    private $requestCount;
 
-    public function __construct(DateInterval $uptime, int $connectionCount, int $requestCount)
+    public function __construct()
     {
-        $this->uptime = $uptime;
-        $this->connectionCount = $connectionCount;
-        $this->requestCount = $requestCount;
+        $this->created = new DateTimeImmutable();
+        $this->connectionCount = 0;
+        $this->requestCount = 0;
+    }
+
+    public function incConnectionCount(): void
+    {
+        $this->connectionCount++;
+    }
+
+    public function decConnectionCount(): void
+    {
+        $this->connectionCount--;
+    }
+
+    public function incRequestCount(): void
+    {
+        $this->requestCount++;
+    }
+
+    public function uptime(): DateInterval
+    {
+        return $this->created->diff(new DateTimeImmutable());
+    }
+
+    public function connectionCount(): int
+    {
+        return $this->connectionCount;
+    }
+
+    public function requestCount(): int
+    {
+        return $this->requestCount;
     }
 }

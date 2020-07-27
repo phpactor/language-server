@@ -46,7 +46,7 @@ class TestResponseWatcher implements ResponseWatcher
     /**
      * {@inheritDoc}
      */
-    public function waitForResponse(string $requestId): Promise
+    public function waitForResponse($requestId): Promise
     {
         $this->requestIds[] = $requestId;
         return $this->innerWatcher->waitForResponse($requestId);

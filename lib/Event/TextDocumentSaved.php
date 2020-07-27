@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Event;
 
-use LanguageServerProtocol\TextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 
 class TextDocumentSaved
 {

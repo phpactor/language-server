@@ -2,6 +2,11 @@
 
 namespace Phpactor\LanguageServer\Core\Handler;
 
+/**
+ * Language Server Handler
+ *
+ * See documentation for the `methods` method for more details.
+ */
 interface Handler
 {
     /**
@@ -14,14 +19,25 @@ interface Handler
      *     {
      *         return [
      *             'textDocument/didOpen' => 'didOpen'
+     *             'textDocument/completion' => 'complete'
      *         ];
      *     }
      *
-     *     public function didOpen(): Generator
+     *     public function didOpen(DidOpenTextDocumentParams $params): Promise
      *     {
-     *         yield new SomeRespose();
+     *         return new Success(null);
+     *     }
+     *
+     *     public function complete(CompletionParams $params, CancellationToken $cancel): Promise
+     *     {
+     *         return new Success(new CompletionList(// ...));
      *     }
      * ```
+     *
+     * Each method MUST return an `Amp\Promise`.
+     *
+     * The arguments passed by the RPC call depend on the `ArgumentResolver`
+     * implementation used by the `HandlerMethodRunner`.
      */
     public function methods(): array;
 }

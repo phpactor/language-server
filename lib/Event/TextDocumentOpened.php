@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Event;
 
-use LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServerProtocol\TextDocumentItem;
 
 class TextDocumentOpened
 {

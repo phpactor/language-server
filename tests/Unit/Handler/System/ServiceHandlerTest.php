@@ -3,46 +3,56 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\System;
 
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Server\RpcClient;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Server\ClientApi;
+use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
-use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 
 class ServiceHandlerTest extends HandlerTestCase
 {
     /**
-     * @var ObjectProphecy
+     * @var ObjectProphecy<ServiceManager>
      */
     private $serviceManager;
 
     /**
-     * @var RpcClient
+     * @var ClientApi
      */
-    private $serverClient;
+    private $api;
 
     /**
      * @var ServiceHandler
      */
     private $serviceHandler;
 
+    /**
+     * @var TestRpcClient
+     */
+    private $client;
+
     protected function setUp(): void
     {
         $this->serviceManager = $this->prophesize(ServiceManager::class);
-        $this->serverClient = $this->prophesize(RpcClient::class);
-        $this->serviceHandler = new ServiceHandler();
+        $this->client = TestRpcClient::create();
+        $this->api = new ClientApi($this->client);
     }
 
     public function handler(): Handler
     {
-        return new ServiceHandler();
+        return new ServiceHandler(
+            $this->serviceManager->reveal(),
+            $this->api
+        );
     }
 
-    public function testItStartsAService()
+    public function testItStartsAService(): void
     {
         $this->serviceManager->start('foobar')->shouldBeCalled();
-        $this->dispatch('service/start', [
-            $this->serviceManager->reveal(),
+
+        $this->dispatch('phpactor/service/start', [
             'name' => 'foobar'
         ]);
     }
@@ -50,7 +60,7 @@ class ServiceHandlerTest extends HandlerTestCase
     public function testItStopsAService()
     {
         $this->serviceManager->stop('foobar')->shouldBeCalled();
-        $this->dispatch('service/stop', [
+        $this->dispatch('phpactor/service/stop', [
             $this->serviceManager->reveal(),
             'name' => 'foobar'
         ]);
@@ -61,12 +71,15 @@ class ServiceHandlerTest extends HandlerTestCase
         $this->serviceManager->runningServices()->willReturn([
             'one', 'two'
         ]);
-        $this->serverClient->notification('window/showMessage', Argument::cetera())->shouldBeCalled();
 
-        $this->dispatch('service/running', [
+        $this->dispatch('phpactor/service/running', [
             $this->serviceManager->reveal(),
-            $this->serverClient->reveal(),
+            $this->api,
             'name' => 'foobar'
         ]);
+
+        $message = $this->client->transmitter()->shift();
+
+        self::assertInstanceOf(NotificationMessage::class, $message);
     }
 }

@@ -2,23 +2,17 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
-use Amp\Coroutine;
 use Amp\Loop;
 use Amp\Promise;
-use DateTimeImmutable;
 use Exception;
 use Generator;
-use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
-use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
-use Phpactor\LanguageServer\Core\Service\ServiceManager;
-use Phpactor\LanguageServer\Handler\System\ExitHandler;
-use Phpactor\LanguageServer\Handler\System\SystemHandler;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
+use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Core\Server\Exception\ShutdownServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
@@ -31,9 +25,10 @@ use Psr\Log\LoggerInterface;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use RuntimeException;
 use Throwable;
-use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
+use function Amp\Promise\any;
+use function Amp\call;
 
-final class LanguageServer implements StatProvider
+final class LanguageServer
 {
     /**
      * @var RequestReader
@@ -46,19 +41,9 @@ final class LanguageServer implements StatProvider
     private $logger;
 
     /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
-
-    /**
      * @var StreamProvider
      */
     private $streamProvider;
-
-    /**
-     * @var bool
-     */
-    private $enableEventLoop;
 
     /**
      * @var Connection[]
@@ -66,61 +51,66 @@ final class LanguageServer implements StatProvider
     private $connections = [];
 
     /**
-     * @var Handlers
+     * @var DispatcherFactory
      */
-    private $systemHandlers;
+    private $dispatcherFactory;
 
     /**
-     * @var DateTimeImmutable
+     * @var Initializer
      */
-    private $created;
+    private $initializer;
 
     /**
-     * @var HandlerLoader
+     * @var ServerStats
      */
-    private $handlerLoader;
-
-    /**
-     * @var int
-     */
-    private $requestCount = 0;
-
-    /**
-     * @var ResponseWatcher
-     */
-    private $responseWatcher;
+    private $stats;
 
     public function __construct(
-        Dispatcher $dispatcher,
-        Handlers $systemHandlers,
-        HandlerLoader $handlerLoader,
+        DispatcherFactory $dispatcherFactory,
         LoggerInterface $logger,
         StreamProvider $streamProvider,
-        ResponseWatcher $responseWatcher,
-        bool $enableEventLoop = true
+        Initializer $initializer,
+        ?ServerStats $stats = null
     ) {
         $this->logger = $logger;
-        $this->dispatcher = $dispatcher;
-        $this->handlerLoader = $handlerLoader;
-
         $this->streamProvider = $streamProvider;
-        $this->enableEventLoop = $enableEventLoop;
-
-        $this->created = new DateTimeImmutable();
-
-        $this->systemHandlers = $this->addSystemHandlers($systemHandlers);
-        $this->responseWatcher = $responseWatcher;
+        $this->dispatcherFactory = $dispatcherFactory;
+        $this->initializer = $initializer;
+        $this->stats = $stats ?: new ServerStats();
     }
 
     /**
-     * Start the server in an event loop
+     * Start the language server only. Event loop is not started.
+     *
+     * Return a promise which resolves when the language server stops
+     *
+     * @return Promise<void>
      */
-    public function start(): void
+    public function start(): Promise
     {
-        try {
-            $this->doStart();
-        } catch (ShutdownServer $e) {
-        }
+        return call(function () {
+            yield from $this->listenForConnections();
+        });
+    }
+
+    /**
+     * Register signal handlers and run the language server in the event loop.
+     */
+    public function run(): void
+    {
+        Loop::onSignal(SIGINT, function (string $watcherId) {
+            Loop::cancel($watcherId);
+            yield $this->shutdown();
+        });
+
+        Loop::setErrorHandler(function (Throwable $error) {
+            $this->logger->critical($error->getMessage());
+            throw $error;
+        });
+
+        Loop::run(function () {
+            yield $this->start();
+        });
     }
 
     /**
@@ -141,70 +131,32 @@ final class LanguageServer implements StatProvider
         return $this->streamProvider->address();
     }
 
-    public function stats(): ServerStats
+    private function listenForConnections(): Generator
     {
-        return new ServerStats(
-            $this->created->diff(new DateTimeImmutable()),
-            count($this->connections),
-            $this->requestCount
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    private function doStart(): void
-    {
-        $this->logger->info(sprintf('Process ID: %s', getmypid()));
-        
-        Loop::onSignal(SIGINT, function (string $watcherId) {
-            Loop::cancel($watcherId);
-            yield $this->shutdown();
-        });
-        
-        if (false === $this->enableEventLoop) {
-            $this->listenForConnections();
-            return;
+        if ($this->streamProvider instanceof SocketStreamProvider) {
+            $this->logger->info(sprintf(
+                'Listening on %s',
+                $this->streamProvider->address()
+            ));
         }
-        
-        Loop::setErrorHandler(function (Throwable $error) {
-            $this->logger->critical($error->getMessage());
-            throw $error;
-        });
 
-        Loop::run(function () {
-            $this->listenForConnections();
-        });
-    }
+        // accept incoming connections (in the case of a TCP server this is
+        // a connection, with a STDIO stream this just returns the stream
+        // immediately)
+        //
+        // @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/3669
+        while ($connection = yield $this->streamProvider->accept()) {
+            $this->stats->incConnectionCount();
 
-    private function listenForConnections(): void
-    {
-        \Amp\asyncCall(function () {
-            if ($this->streamProvider instanceof SocketStreamProvider) {
-                $this->logger->info(sprintf(
-                    'Listening on %s',
-                    $this->streamProvider->address()
-                ));
-            }
+            // create a reference to the connection so that we can later
+            // terminate it if necessary
+            $this->connections[$connection->id()] = $connection;
 
-            // accept incoming connections (in the case of a TCP server this is
-            // a connection, with a STDIO stream this just returns the stream
-            // immediately.)
-            while ($connection = yield $this->streamProvider->accept()) {
-
-                // create a reference to the connection so that we can later
-                // terminate it if necessary
-                $this->connections[$connection->id()] = $connection;
-
-                // handle the request as a co-routine. If the handler throws an
-                // ExitSession and this is a TCP server then end then continue,
-                // otherewise this is a STDIO session so re-throw a Shutdown
-                // exception and exit the process.
-                \Amp\asyncCall(function () use ($connection) {
-                    yield $this->handle($connection);
-                });
-            }
-        });
+            \Amp\asyncCall(function () use ($connection) {
+                yield $this->handle($connection);
+                $this->stats->decConnectionCount();
+            });
+        }
     }
 
     /**
@@ -214,20 +166,13 @@ final class LanguageServer implements StatProvider
     {
         return \Amp\call(function () use ($connection) {
             $transmitter = new ConnectionMessageTransmitter($connection, $this->logger);
-            $serverClient = new JsonRpcClient($transmitter, $this->responseWatcher);
-            $serviceManager = new ServiceManager($transmitter, $this->logger, new DTLArgumentResolver());
-            $container = new ApplicationContainer(
-                $this->dispatcher,
-                $this->systemHandlers,
-                $this->handlerLoader,
-                new SessionServices($transmitter, $serviceManager, $serverClient)
-            );
-
             $reader = new LspMessageReader($connection->stream());
+            $dispatcher = null;
 
+            // wait for the next request
             while (null !== $request = yield $reader->wait()) {
-                $this->logger->info('IN :', $request->body());
-                $this->requestCount++;
+                $this->logger->info('IN:', $request->body());
+                $this->stats->incRequestCount();
 
                 try {
                     $request = RequestMessageFactory::fromRequest($request);
@@ -239,63 +184,61 @@ final class LanguageServer implements StatProvider
                     continue;
                 }
 
-                \Amp\asyncCall(function () use ($serviceManager, $request, $container, $transmitter, $connection, $serverClient) {
-                    try {
-                        $response = yield $container->dispatch($request, [
-                            '_transmitter' => $transmitter,
-                            '_serverClient' => $serverClient,
-                            '_serviceManager' => $serviceManager,
-                        ]);
-                    } catch (ExitSession $e) {
-                        $connection->stream()->end();
+                // initialize the dispatcher with the initialize parameters
+                // (for example to allow a container to boot with the client
+                // capabilities)
+                if (null === $dispatcher) {
+                    $dispatcher = $this->dispatcherFactory->create(
+                        $transmitter,
+                        $this->initializer->provideInitializeParams($request)
+                    );
+                }
 
-                        if ($this->streamProvider instanceof ResourceStreamProvider) {
-                            throw new ShutdownServer(
-                                'Exit called on STDIO connection, exiting the server'
-                            );
-                        }
-                        return;
-                    }
-
-                    if (null === $response) {
-                        return;
-                    }
-
-                    $transmitter->transmit($response);
-                });
+                $this->dispatchRequest($transmitter, $dispatcher, $connection, $request);
             };
+        });
+    }
+
+    private function dispatchRequest(MessageTransmitter $transmitter, Dispatcher $dispatcher, Connection $connection, Message $request): void
+    {
+        \Amp\asyncCall(function () use ($transmitter, $request, $dispatcher, $connection) {
+            try {
+                $response = yield $dispatcher->dispatch($request);
+            } catch (ExitSession $e) {
+                $connection->stream()->end();
+
+                if ($this->streamProvider instanceof ResourceStreamProvider) {
+                    throw new ShutdownServer(
+                        'Exit called on STDIO connection, exiting the server'
+                    );
+                }
+                return;
+            }
+
+            if (null === $response) {
+                return;
+            }
+
+            $transmitter->transmit($response);
         });
     }
 
     /**
      * @return Promise<void>
      */
-    private function shutdown(): Promise
+    public function shutdown(): Promise
     {
-        return new Coroutine($this->doShutdown());
-    }
+        return call(function () {
+            $this->logger->info('Shutting down');
 
-    private function doShutdown(): Generator
-    {
-        $this->logger->info('Shutting down');
+            $promises = [];
+            foreach ($this->connections as $connection) {
+                $promises[] = $connection->stream()->end();
+            }
 
-        $promises = [];
-        foreach ($this->connections as $connection) {
-            $promises[] = $connection->stream()->end();
-        }
+            yield any($promises);
 
-        \Amp\Promise\wait(\Amp\Promise\any($promises));
-
-        $this->streamProvider->close();
-
-        throw new ShutdownServer('shutdown server invoked');
-    }
-
-    private function addSystemHandlers(Handlers $handlers): Handlers
-    {
-        $handlers->add(new SystemHandler($this));
-        $handlers->add(new ExitHandler());
-
-        return $handlers;
+            $this->streamProvider->close();
+        });
     }
 }

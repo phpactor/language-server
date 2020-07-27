@@ -9,14 +9,13 @@ use Amp\PHPUnit\AsyncTestCase;
 use Amp\Promise;
 use Amp\Success;
 use Exception;
-use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
+use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
-use Phpactor\LanguageServer\Core\Handler\ServiceProvider;
-use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;
+use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
-use Prophecy\Argument;
+use Phpactor\LanguageServer\Core\Service\ServiceProviders;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use RuntimeException;
 
 class ServiceManagerTest extends AsyncTestCase
@@ -29,32 +28,29 @@ class ServiceManagerTest extends AsyncTestCase
     private $argumentResolver;
 
     /**
-     * @var LoggerInterface
+     * @var TestLogger
      */
     private $logger;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->argumentResolver = new DTLArgumentResolver();
-        $this->logger = $this->prophesize(LoggerInterface::class);
+        $this->logger = new TestLogger();
     }
 
-    public function testStartAllServices()
+    public function testStartAllServices(): void
     {
-        $serviceManager = $this->createServiceManager();
         $service = new PingService();
-        $serviceManager->register($service);
+        $serviceManager = $this->createServiceManager($service);
         $serviceManager->startAll();
 
         self::assertTrue($service->called);
     }
 
-    public function testStartService()
+    public function testStartService(): void
     {
-        $serviceManager = $this->createServiceManager();
         $service = new PingService();
-        $serviceManager->register($service);
+        $serviceManager = $this->createServiceManager($service);
         self::assertFalse($service->called);
         $serviceManager->start('ping');
         self::assertTrue($serviceManager->isRunning('ping'));
@@ -62,31 +58,41 @@ class ServiceManagerTest extends AsyncTestCase
         self::assertTrue($service->called);
     }
 
-    public function testExceptionWhenTryingToStartRunningService()
+    public function testListRunningServices(): void
+    {
+        $service = new PingService();
+        $serviceManager = $this->createServiceManager($service);
+        self::assertEmpty($serviceManager->runningServices());
+        $serviceManager->start('ping');
+        self::assertEquals(['ping'], $serviceManager->runningServices());
+        $serviceManager->stop('ping');
+        self::assertEquals([], $serviceManager->runningServices());
+    }
+
+    public function testExceptionWhenTryingToStartRunningService(): void
     {
         $this->expectExceptionMessage('Service "ping" is already running');
-        $serviceManager = $this->createServiceManager();
         $service = new PingService();
-        $serviceManager->register($service);
+        $serviceManager = $this->createServiceManager($service);
         $serviceManager->start('ping');
         $serviceManager->start('ping');
     }
 
-    public function testHandlesExceptionsFromServices()
+    public function testHandlesExceptionsFromServices(): void
     {
-        $serviceManager = $this->createServiceManager();
         $service = new ExceptionThrowingService();
-        $serviceManager->register($service);
+        $serviceManager = $this->createServiceManager($service);
         $serviceManager->start('exception');
-        $this->logger->error(Argument::containingString('No'))->shouldHaveBeenCalled();
+        self::assertTrue($this->logger->hasErrorThatContains('No'));
     }
 
-    public function testStopService()
+    public function testStopService(): Generator
     {
-        $serviceManager = $this->createServiceManager();
         $service = new DaemonService();
-        $serviceManager->register($service);
+        $serviceManager = $this->createServiceManager($service);
+
         self::assertFalse($service->called);
+
         $serviceManager->start('daemon');
 
         yield \Amp\call(function () use ($serviceManager) {
@@ -98,40 +104,37 @@ class ServiceManagerTest extends AsyncTestCase
         self::assertTrue($service->called);
     }
 
-    public function testExceptionOnNonExistingService()
+    public function testExceptionOnNonExistingService(): void
     {
         $this->expectExceptionMessage('Service "daemon" not known, known services: "ping"');
-        $serviceManager = $this->createServiceManager();
         $service = new PingService();
-        $serviceManager->register($service);
+        $serviceManager = $this->createServiceManager($service);
         self::assertFalse($service->called);
         $serviceManager->start('ping');
         $serviceManager->stop('daemon');
     }
 
-    public function testThrowExceptionIfServiceDoesNotHaveMethod()
+    public function testThrowExceptionIfServiceDoesNotHaveMethod(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Service method');
-        $serviceManager = $this->createServiceManager();
         $service = new PingServiceNoPromise();
-        $serviceManager->register($service);
+        $serviceManager = $this->createServiceManager($service);
         $serviceManager->startAll();
     }
 
-    public function testThrowExceptionIfServiceNotReturnPromise()
+    public function testThrowExceptionIfServiceNotReturnPromise(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('has no service method');
-        $serviceManager = $this->createServiceManager();
         $service = new PingServiceMissingMethod();
-        $serviceManager->register($service);
+        $serviceManager = $this->createServiceManager($service);
         $serviceManager->startAll();
     }
 
-    private function createServiceManager(): ServiceManager
+    private function createServiceManager(ServiceProvider ...$services): ServiceManager
     {
-        return new ServiceManager(new NullMessageTransmitter(), $this->logger->reveal(), $this->argumentResolver);
+        return new ServiceManager(new ServiceProviders(...$services), $this->logger);
     }
 }
 

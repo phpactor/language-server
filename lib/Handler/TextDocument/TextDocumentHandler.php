@@ -2,14 +2,16 @@
 
 namespace Phpactor\LanguageServer\Handler\TextDocument;
 
-use LanguageServerProtocol\ServerCapabilities;
-use LanguageServerProtocol\TextDocumentIdentifier;
-use LanguageServerProtocol\TextDocumentItem;
-use LanguageServerProtocol\TextDocumentSyncKind;
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\DidChangeTextDocumentParams;
+use Phpactor\LanguageServerProtocol\DidCloseTextDocumentParams;
+use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
+use Phpactor\LanguageServerProtocol\DidSaveTextDocumentParams;
+use Phpactor\LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServerProtocol\TextDocumentSyncKind;
+use Phpactor\LanguageServerProtocol\WillSaveTextDocumentParams;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\LanguageServer\Event\TextDocumentSaved;
@@ -45,33 +47,33 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
         ];
     }
 
-    public function didOpen(TextDocumentItem $textDocument): void
+    public function didOpen(DidOpenTextDocumentParams $params): void
     {
-        $this->dispatcher->dispatch(new TextDocumentOpened($textDocument));
+        $this->dispatcher->dispatch(new TextDocumentOpened($params->textDocument));
     }
 
-    public function didChange(VersionedTextDocumentIdentifier $textDocument, array $contentChanges): void
+    public function didChange(DidChangeTextDocumentParams $params): void
     {
-        foreach ($contentChanges as $contentChange) {
-            $this->dispatcher->dispatch(new TextDocumentUpdated($textDocument, $contentChange['text']));
+        foreach ($params->contentChanges as $contentChange) {
+            $this->dispatcher->dispatch(new TextDocumentUpdated($params->textDocument, $contentChange['text']));
         }
     }
 
-    public function didClose(TextDocumentIdentifier $textDocument): void
+    public function didClose(DidCloseTextDocumentParams $params): void
     {
-        $this->dispatcher->dispatch(new TextDocumentClosed($textDocument));
+        $this->dispatcher->dispatch(new TextDocumentClosed($params->textDocument));
     }
 
-    public function didSave(TextDocumentIdentifier $textDocument, string $text = null): void
+    public function didSave(DidSaveTextDocumentParams $params): void
     {
-        $this->dispatcher->dispatch(new TextDocumentSaved($textDocument, $text));
+        $this->dispatcher->dispatch(new TextDocumentSaved($params->textDocument, $params->text));
     }
 
-    public function willSave(TextDocumentIdentifier $identifier, int $reason): void
+    public function willSave(WillSaveTextDocumentParams $params): void
     {
     }
 
-    public function willSaveWaitUntil(TextDocumentIdentifier $identifier, int $reason): void
+    public function willSaveWaitUntil(WillSaveTextDocumentParams $params): void
     {
     }
 

@@ -4,8 +4,8 @@ namespace Phpactor\LanguageServer\Core\Server\Client;
 
 use Amp\Promise;
 use DTL\Invoke\Invoke;
-use LanguageServerProtocol\MessageActionItem;
-use LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServerProtocol\MessageActionItem;
+use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 
 class MessageRequestClient

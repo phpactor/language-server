@@ -19,6 +19,7 @@ class RequestMessage extends Message
      */
     public $params;
 
+
     /**
      * @param string|int $id
      */

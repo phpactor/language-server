@@ -4,8 +4,8 @@ namespace Phpactor\LanguageServer\Core\Server\Client;
 
 use Amp\Promise;
 use DTL\Invoke\Invoke;
-use LanguageServerProtocol\ApplyWorkspaceEditResponse;
-use LanguageServerProtocol\WorkspaceEdit;
+use Phpactor\LanguageServerProtocol\ApplyWorkspaceEditResponse;
+use Phpactor\LanguageServerProtocol\WorkspaceEdit;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 
 class WorkspaceClient

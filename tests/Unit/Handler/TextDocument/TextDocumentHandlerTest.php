@@ -2,9 +2,8 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\TextDocument;
 
-use LanguageServerProtocol\TextDocumentIdentifier;
-use LanguageServerProtocol\TextDocumentItem;
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
@@ -12,7 +11,8 @@ use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\LanguageServer\Event\TextDocumentSaved;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
-use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Core\Workspace\Workspace;
+use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -43,9 +43,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testOpensDocument(): void
     {
-        $textDocument = new TextDocumentItem();
-        $textDocument->uri = 'foobar.html';
-
+        $textDocument = ProtocolFactory::textDocumentItem('foobar', 'foo');
         $this->dispatch('textDocument/didOpen', [
             'textDocument' => $textDocument
         ]);
@@ -55,9 +53,9 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testUpdatesDocument()
     {
-        $document = new TextDocumentItem();
-        $document->uri = 'foobar';
-        $identifier = new VersionedTextDocumentIdentifier('foobar');
+        $textDocument = ProtocolFactory::textDocumentItem('foobar', 'foo');
+        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar');
+
         $this->dispatch('textDocument/didChange', [
             'textDocument' => $identifier,
             'contentChanges' => [
@@ -70,10 +68,10 @@ class TextDocumentHandlerTest extends HandlerTestCase
         $this->dispatcher->dispatch(new TextDocumentUpdated($identifier, 'asd'))->shouldHaveBeenCalled();
     }
 
-    public function testWillSave()
+    public function testWillSave(): void
     {
         $response = $this->dispatch('textDocument/willSave', [
-            'identifier' => new TextDocumentIdentifier('foobar'),
+            'textDocument' => ProtocolFactory::textDocumentIdentifier('foobar'),
             'reason' => 1
         ]);
         self::assertInstanceOf(ResponseMessage::class, $response);
@@ -82,7 +80,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testClosesDocument()
     {
-        $document = new TextDocumentItem();
+        $document = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $document->uri = 'foobar';
         $identifier = new TextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didClose', [
@@ -99,7 +97,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testSavesDocument()
     {
-        $identifier = new TextDocumentIdentifier('foobar');
+        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didSave', [
             'textDocument' => $identifier,
             'text' => 'hello',

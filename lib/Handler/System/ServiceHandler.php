@@ -2,42 +2,62 @@
 
 namespace Phpactor\LanguageServer\Handler\System;
 
+use Amp\Promise;
+use Amp\Success;
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Server\RpcClient;
+use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
 class ServiceHandler implements Handler
 {
+    /**
+     * @var ServiceManager
+     */
+    private $manager;
+
+    /**
+     * @var ClientApi
+     */
+    private $client;
+
+    public function __construct(ServiceManager $manager, ClientApi $client)
+    {
+        $this->manager = $manager;
+        $this->client = $client;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function methods(): array
     {
         return [
-            'service/start' => 'startService',
-            'service/stop' => 'stopService',
-            'service/running' => 'runningServices',
+            'phpactor/service/start' => 'startService',
+            'phpactor/service/stop' => 'stopService',
+            'phpactor/service/running' => 'runningServices',
         ];
     }
 
-    public function startService(ServiceManager $manager, string $name): void
+    public function startService(string $name): void
     {
-        $manager->start($name);
+        $this->manager->start($name);
     }
 
-    public function stopService(ServiceManager $manager, string $name): void
+    public function stopService(string $name): void
     {
-        $manager->stop($name);
+        $this->manager->stop($name);
     }
 
-    public function runningServices(ServiceManager $manager, RpcClient $client): void
+    /**
+     * @return Promise<array>
+     */
+    public function runningServices(): Promise
     {
-        $client->notification('window/showMessage', [
-            'type' => 'info',
-            'message' => sprintf(
-                'Running services: "%s"',
-                implode('", "', $manager->runningServices())
-            )
-        ]);
+        $this->client->window()->showMessage()->info(sprintf(
+            'Running services: "%s"',
+            implode('", "', $this->manager->runningServices())
+        ));
+
+        return new Success($this->manager->runningServices());
     }
 }

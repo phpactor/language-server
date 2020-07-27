@@ -4,33 +4,18 @@ namespace Phpactor\LanguageServer;
 
 use Amp\ByteStream\ResourceInputStream;
 use Amp\ByteStream\ResourceOutputStream;
-use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\CancellingMethodDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ErrorCatchingDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\RecordingDispatcher;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ResponseDispatcher;
-use Phpactor\LanguageServer\Core\Handler\AggregateHandlerLoader;
-use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Handler\HandlerLoader;
-use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MethodDispatcher;
-use Phpactor\LanguageServer\Core\Handler\Handlers;
-use Phpactor\LanguageServer\Core\Server\ApplicationContainer;
-use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
-use Phpactor\LanguageServer\Core\Server\SessionServices;
+use Phpactor\LanguageServerProtocol\ClientCapabilities;
+use Phpactor\LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
+use Phpactor\LanguageServer\Core\Server\Initializer\RequestInitializer;
+use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\SocketStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\LanguageServer;
-use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;
-use Phpactor\LanguageServer\Core\Service\ServiceManager;
-use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
-use Phpactor\LanguageServer\Test\ServerTester;
+use Phpactor\LanguageServer\Test\LanguageServerTester;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RuntimeException;
 
 class LanguageServerBuilder
 {
@@ -40,100 +25,39 @@ class LanguageServerBuilder
     private $logger;
 
     /**
-     * @var Handler[]
-     */
-    private $handlers = [];
-
-    /**
-     * @var bool
-     */
-    private $catchExceptions = true;
-
-    /**
      * @var string|null
      */
     private $tcpAddress = null;
 
     /**
-     * @var bool
+     * @var DispatcherFactory
      */
-    private $eventLoop = true;
+    private $dispatcherFactory;
 
     /**
-     * @var array
+     * @var ServerStats|null
      */
-    private $handlerLoaders = [];
-
-    /**
-     * @var string
-     */
-    private $recordTo;
+    private $stats = null;
 
     private function __construct(
+        DispatcherFactory $dispatcherFactory,
         LoggerInterface $logger
     ) {
         $this->logger = $logger;
+        $this->dispatcherFactory = $dispatcherFactory;
     }
 
     /**
      * Create a new instance of the builder \o/
      */
     public static function create(
+        DispatcherFactory $dispatcherFactory,
         LoggerInterface $logger = null
     ): self {
         return new self(
+            $dispatcherFactory,
             $logger ?: new NullLogger()
         );
-    }
-
-    /**
-     * Log any exceptions are thrown when handling requests and continue.
-     */
-    public function catchExceptions(bool $enabled = true): self
-    {
-        $this->catchExceptions = $enabled;
-
-        return $this;
-    }
-
-    /**
-     * Start the event loop when the server starts.
-     */
-    public function eventLoop(bool $enabled = true): self
-    {
-        $this->eventLoop = $enabled;
-
-        return $this;
-    }
-
-    /**
-     * Add a handler that will be registered at the system (server) level.
-     * Such handlers will be general to all connections made to the server and
-     * are not connection (session) specific.
-     *
-     * For session specific handlers. See LanguageBuilder#addHandlerLoader.
-     */
-    public function addSystemHandler(Handler $handler): self
-    {
-        $this->handlers[] = $handler;
-
-        return $this;
-    }
-
-    /**
-     * Handler loaders are used to instantiate handlers for a new
-     * connection/session.
-     *
-     * Such handlers include the TextDocumentHandler which requires a clean
-     * workspace when a new connection/session is started. Another example
-     * might be the CompletionHandler which has dependencies which in turn
-     * depend on the initialized project root directory.
-     */
-    public function addHandlerLoader(HandlerLoader $loader): self
-    {
-        $this->handlerLoaders[] = $loader;
-
-        return $this;
     }
 
     /**
@@ -154,9 +78,15 @@ class LanguageServerBuilder
         return $this;
     }
 
-    public function recordTo(string $filename): self
+    public function tester(?InitializeParams $params = null): LanguageServerTester
     {
-        $this->recordTo = $filename;
+        $params = $params ?: new InitializeParams(new ClientCapabilities());
+        return new LanguageServerTester($this->dispatcherFactory, $params);
+    }
+
+    public function withServerStats(ServerStats $stats): self
+    {
+        $this->stats = $stats;
 
         return $this;
     }
@@ -169,9 +99,6 @@ class LanguageServerBuilder
      */
     public function build(): LanguageServer
     {
-        $watcher = new DeferredResponseWatcher();
-        $dispatcher = $this->buildDispatcher($watcher);
-
         if ($this->tcpAddress) {
             $provider = new SocketStreamProvider(
                 \Amp\Socket\listen($this->tcpAddress),
@@ -187,93 +114,12 @@ class LanguageServerBuilder
             );
         }
 
-        $handlers = $this->buildHandlers();
-
         return new LanguageServer(
-            $dispatcher,
-            $handlers,
-            $this->buildHandlerLoader(),
+            $this->dispatcherFactory,
             $this->logger,
             $provider,
-            $watcher,
-            $this->eventLoop
+            new RequestInitializer(),
+            $this->stats ?: new ServerStats()
         );
-    }
-
-    public function buildServerTester(): ServerTester
-    {
-        return new ServerTester(
-            new ApplicationContainer(
-                $this->buildDispatcher(new DeferredResponseWatcher()),
-                $this->buildHandlers(),
-                $this->buildHandlerLoader(),
-                new SessionServices(
-                    new NullMessageTransmitter(),
-                    new ServiceManager(
-                        new NullMessageTransmitter(),
-                        $this->logger,
-                        $this->buildArgumentResolver()
-                    ),
-                    TestRpcClient::create()
-                )
-            )
-        );
-    }
-
-    private function buildDispatcher(ResponseWatcher $watcher): Dispatcher
-    {
-        $dispatcher = new MethodDispatcher(
-            $this->buildArgumentResolver()
-        );
-
-        $dispatcher = new ResponseDispatcher(
-            $dispatcher,
-            $watcher,
-        );
-
-        $dispatcher = new CancellingMethodDispatcher(
-            $dispatcher,
-            $this->logger
-        );
-
-        if ($this->catchExceptions) {
-            $dispatcher = new ErrorCatchingDispatcher(
-                $dispatcher,
-                $this->logger
-            );
-        }
-
-        if ($this->recordTo) {
-            $recordResource = fopen($this->recordTo, 'w');
-
-            if (false === $recordResource) {
-                throw new RuntimeException(sprintf(
-                    'Could not open recording file "%s"',
-                    $this->recordTo
-                ));
-            }
-
-            $dispatcher = new RecordingDispatcher(
-                $dispatcher,
-                new ResourceOutputStream($recordResource)
-            );
-        }
-
-        return $dispatcher;
-    }
-
-    private function buildHandlerLoader(): AggregateHandlerLoader
-    {
-        return new AggregateHandlerLoader($this->handlerLoaders);
-    }
-
-    private function buildHandlers(): Handlers
-    {
-        return new Handlers($this->handlers);
-    }
-
-    private function buildArgumentResolver(): DTLArgumentResolver
-    {
-        return new DTLArgumentResolver();
     }
 }

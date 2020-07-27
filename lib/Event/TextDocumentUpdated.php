@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Event;
 
-use LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 
 class TextDocumentUpdated
 {

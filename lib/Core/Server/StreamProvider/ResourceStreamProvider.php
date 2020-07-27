@@ -30,6 +30,9 @@ class ResourceStreamProvider implements StreamProvider
         $this->logger = $logger;
     }
 
+    /**
+     * @return Success<null|Connection>
+     */
     public function accept(): Promise
     {
         // resource connections are valid only for
@@ -47,5 +50,6 @@ class ResourceStreamProvider implements StreamProvider
 
     public function close(): void
     {
+        $this->duplexStream->close();
     }
 }

@@ -1,7 +1,9 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
+    ->in('bin')
     ->in('lib')
+    ->in('example')
     ->in('tests')
     ->exclude([
         'tests/Workspace'
