@@ -134,7 +134,7 @@ class ServiceManagerTest extends AsyncTestCase
 
     private function createServiceManager(ServiceProvider ...$services): ServiceManager
     {
-        return new ServiceManager(new ServiceProviders($services), $this->logger);
+        return new ServiceManager(new ServiceProviders(...$services), $this->logger);
     }
 }
 

@@ -15,7 +15,7 @@ class ServiceProvidersTest extends TestCase
     public function testExceptionGettingUnknownService(): void
     {
         $this->expectException(UnknownService::class);
-        (new ServiceProviders([]))->get('foobar');
+        (new ServiceProviders())->get('foobar');
     }
 
     public function testGetService(): void
@@ -27,9 +27,9 @@ class ServiceProvidersTest extends TestCase
             }
         };
 
-        $found = (new ServiceProviders([
+        $found = (new ServiceProviders(
             $provider
-        ]))->get('service');
+        ))->get('service');
         self::assertSame($found, $provider);
     }
 }

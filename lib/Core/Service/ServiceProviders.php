@@ -11,17 +11,14 @@ use Phpactor\LanguageServer\Core\Service\Exception\UnknownService;
 /**
  * @implements IteratorAggregate<ServiceProvider>
  */
-class ServiceProviders implements Countable, IteratorAggregate
+final class ServiceProviders implements Countable, IteratorAggregate
 {
     /**
      * @var array<string,ServiceProvider>
      */
     private $services = [];
 
-    /**
-     * @param array<ServiceProvider> $serviceProviders
-     */
-    public function __construct(array $serviceProviders = [])
+    public function __construct(ServiceProvider ...$serviceProviders)
     {
         foreach ($serviceProviders as $serviceProvider) {
             foreach ($serviceProvider->services() as $methodName) {

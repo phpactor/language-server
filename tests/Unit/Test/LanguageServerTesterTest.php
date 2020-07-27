@@ -133,9 +133,9 @@ class LanguageServerTesterTest extends TestCase
             $logger = new NullLogger();
             $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
-            $serviceProviders = new ServiceProviders([
+            $serviceProviders = new ServiceProviders(
                 new PingProvider($clientApi)
-            ]);
+            );
 
             $serviceManager = new ServiceManager($serviceProviders, $logger);
             $eventDispatcher = new EventDispatcher(new ServiceListener($serviceManager));
