@@ -4,7 +4,7 @@ Getting Started
 Below is an example which will run a language server which will
 respond to any request with a response "Hello world!":
 
-.. literalinclude:: ../example/server/minimal.php
+.. literalinclude:: ../../example/server/minimal.php
    :language: php
    :linenos:
 
@@ -27,9 +27,14 @@ respond to any request with a response "Hello world!":
   you'd normally do). The ``Message`` is the incoming message
   (``Request``, ``Notification`` or ``Response``) from the client, the
   ``RequestHandler`` is used to delegate to the *next* ``Middleware``.
-- We return a ``ResponseMessage`` - we only return a ``Response`` for
-  ``Request`` messages, and the ``Response`` must reference the request's ID.
+- We return a ``ResponseMessage`` wrapped in a ``Promise``. We only return a
+  ``Response`` for ``Request`` messages, and the ``Response`` must reference
+  the request's ID.
+- The ``Success`` class is a ``Promise`` which resolves immediately. Returning
+  a ``Promise`` allows us to run non-blocking
+  co-routines_.
 - Then finally build and run the server. It will listen on STDIO by default.
+  
 
 If you run this example, you should be able to connect to the language server
 and it should respond (incorrectly) to all requests with "Hello World!".
@@ -58,3 +63,5 @@ wouldn't do very much.
 
 In the next chapter we'll try and introduce some more
 concepts and add some language server functionality.
+
+.. _co-routines: https://amphp.org/amp/coroutines/

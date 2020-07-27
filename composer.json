@@ -42,7 +42,7 @@
     "autoload-dev": {
         "psr-4": {
             "Phpactor\\LanguageServer\\Tests\\": "tests/",
-            "Phpactor\\Extension\\LanguageServer\\Tests\\": "language-server-extension/tests/"
+            "AcmeLs\\": "example/server/acme-ls/"
         }
     },
     "scripts": {
