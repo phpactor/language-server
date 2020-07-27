@@ -6,15 +6,14 @@ Phpactor Language Server
 This package provides a platform for *building* a Language Server according to
 the [Language Server Specification](https://microsoft.github.io/language-server-protocol/specification)
 
-- :tick: Can run as either a TCP server (accepting many connections) or a STDIO
-  server (invoked by the client).
-- :tick: Multiple sessions.
-- :tick: Text document synchronization.
-- :tick: Background services.
-- :tick: Bi-directional requests.
-- :tick: Commands.
-- :tick: Request cancellation.
-- :tick: Initialization handling.
+- :heavy_check_mark: Can run as either a TCP server or on STDIO.
+- :heavy_check_mark: Multiple connections.
+- :heavy_check_mark: Text document synchronization.
+- :heavy_check_mark: Background services.
+- :heavy_check_mark: Bi-directional requests.
+- :heavy_check_mark: Commands.
+- :heavy_check_mark: Request cancellation.
+- :heavy_check_mark: Initialization handling.
 
 See the [Language Server
 Specification](https://microsoft.github.io/language-server-protocol/specification)
@@ -51,17 +50,12 @@ $ ./vendor/bin/php-cs-fixer fix
 Built With
 ----------
 
-- [Amphp](https://amphp.org/): Event-driver concurrency framework.
+- [Amphp](https://amphp.org/): Event-driven concurrency framework.
 
 Contributing
 ------------
 
 Contributions are welcome.
-
-Versioning
-----------
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
 License
 -------
