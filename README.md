@@ -14,6 +14,7 @@ the [Language Server Specification](https://microsoft.github.io/language-server-
 - :heavy_check_mark: Commands.
 - :heavy_check_mark: Request cancellation.
 - :heavy_check_mark: Initialization handling.
+- :heavy_check_mark: Up-to-date and self-instantiating [protocol classes](https://github.com/phpactor/language-server-protocol).
 
 See the [Language Server
 Specification](https://microsoft.github.io/language-server-protocol/specification)
