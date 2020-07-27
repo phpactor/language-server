@@ -19,8 +19,9 @@ Reference
 .. toctree::
    :maxdepth: 2
 
-   reference/service-providers
+   reference/builder
    reference/handlers
+   reference/service-providers
    reference/commands
 
 Guide

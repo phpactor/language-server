@@ -1,8 +1,7 @@
 Testing
 =======
 
-One of the aims of this package was to try and make it relatively easy to test
-the language server as a whole and with individual components.
+This package includes some tools to make testing easier.
 
 Protocol Factory
 ----------------
@@ -32,6 +31,8 @@ The ``HandlerTester`` is a wrapper to make unit testing handlers easier:
 
     $tester = new HandlerTester(new ExitHandler());
     $result = $tester->requestAndWait('exit', []);
+
+.. _LanguageServerTester:
 
 Language Server Tester
 ----------------------

@@ -16,9 +16,13 @@ A full example of a service provider:
    :language: php
    :linenos:
 
-This is similar to :doc:`method handlers <handlers>` with the exception that
-the method is called when the LS is initialized with no arguments except the
-``CancellationToken``.
+This is similar to :doc:`method handlers <handlers>` with the exception that:
+
+- The ``services`` method provides only an array of method names. The name
+  doubles as both the method and service name.
+- The method is called when the Language Server is initialized (or when it is
+  started via. the service manager).
+- Services are passed only a ``CancellationToken``.
 
 Usage
 -----

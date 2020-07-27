@@ -22,8 +22,7 @@ for a list of methods which you can implement with this package.
 Documentation
 -------------
 
-Documentation can be found on
-[readthedocs](https://language-server-platform.readthedocs.io/en/latest/).
+Documentation can be found on [readthedocs](https://language-server-platform.readthedocs.io/en/latest/).
 
 Installing
 ----------

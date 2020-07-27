@@ -9,8 +9,9 @@ respond to any request with a response "Hello world!":
    :linenos:
 
 - ``LanguageServerBuilder`` abstracts the creation of streams and
-  builds the Language Server. It accepts an instance of ``DispatcherFactory``
-- ``ClosureDispatcherFactory`` is a ``DispatcherFactory``. This
+  :doc:`builds the Language Server <../reference/builder>`. It accepts an
+  instance of ``DispatcherFactory`` - ``ClosureDispatcherFactory`` is a
+  ``DispatcherFactory``. This
   class has the responsibility initializing the session. It is invoked when
   the Language Server client sends ``initialize`` method, providing its
   capabilities.

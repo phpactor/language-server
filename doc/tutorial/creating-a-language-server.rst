@@ -4,7 +4,7 @@ Creating a Language Server
 In the previous tutorial we used the ``ClosureDispatcherFactory``. This is
 fine, but let's now implement our own application - ``AcmeLS`` and give it a
 dedicated dispatcher factory ``AcmeLsDispatcherFactory``. This will be the
-ingress for our new application:
+ingress for a new session:
 
 .. literalinclude:: ../../example/server/acme-ls.php
    :language: php
@@ -27,7 +27,7 @@ Let's just jump in at the deep end:
 
 - ``MessageTransmitter``: This class is provided by the Language Server and
   allows you to send messages to the connected client. This is quite
-  low-level, instead you should use the:
+  low-level, instead you should use the ``ClientApi``.
 - ``InitializeParams``: The initialization parameters provided by the client.
 - ``ResponseWatcher``: Class which tracks requests made by the server *to* the
   client and can resolve responses, used as a dependency for...
@@ -85,5 +85,5 @@ handle the request:
 - ``HandlerMiddleware``: The final destination - will forward the request to
   the handler runner which will dispatch our :doc:`handlers <../reference/handlers>`
 
-Easy right? In your application you might choose to connect all of this magic
-in a dependency injection container.
+In your application you might choose to connect all of this magic in a
+dependency injection container.
