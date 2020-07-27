@@ -89,13 +89,13 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $serviceManager = new ServiceManager($serviceProviders, $logger);
         $eventDispatcher = new EventDispatcher(new ServiceListener($serviceManager));
 
-        $handlers = new Handlers([
+        $handlers = new Handlers(
             new TextDocumentHandler($eventDispatcher),
             new StatsHandler($clientApi, $stats),
             new ServiceHandler($serviceManager, $clientApi),
             new CommandHandler(new CommandDispatcher([])),
-            new ExitHandler(),
-        ]);
+            new ExitHandler()
+        );
 
         $runner = new HandlerMethodRunner(
             $handlers,

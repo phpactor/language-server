@@ -55,6 +55,6 @@ class HandlersTest extends TestCase
 
     private function create(array $handlers): Handlers
     {
-        return new Handlers($handlers);
+        return new Handlers(...$handlers);
     }
 }

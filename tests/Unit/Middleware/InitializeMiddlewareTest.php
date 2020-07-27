@@ -131,7 +131,7 @@ class InitializeMiddlewareTest extends AsyncTestCase
     private function createMiddleware(array $handlers = [], array $serverInfo = []): InitializeMiddleware
     {
         return new InitializeMiddleware(
-            new Handlers($handlers),
+            new Handlers(...$handlers),
             $this->dispatcher->reveal(),
             $serverInfo
         );

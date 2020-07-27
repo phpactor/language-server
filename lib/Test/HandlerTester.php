@@ -35,7 +35,7 @@ class HandlerTester
     {
         $this->handler = $handler;
 
-        $handlers = new Handlers([$this->handler]);
+        $handlers = new Handlers($this->handler);
         $runner = new HandlerMethodRunner(
             $handlers,
             new ChainArgumentResolver(

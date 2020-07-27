@@ -5,6 +5,9 @@ namespace Phpactor\LanguageServer\Core\Server;
 use DateInterval;
 use DateTimeImmutable;
 
+/**
+ * Class which can be passed _to_ the server in order to collect statistics.
+ */
 class ServerStats implements ServerStatsReader
 {
     /**

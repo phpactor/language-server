@@ -124,7 +124,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
     private function createRunner(array $handlers): HandlerMethodRunner
     {
         return new HandlerMethodRunner(
-            new Handlers($handlers)
+            new Handlers(...$handlers)
         );
     }
 }

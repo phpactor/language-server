@@ -16,7 +16,7 @@ final class Handlers implements Countable, IteratorAggregate
      */
     private $methods = [];
 
-    public function __construct(array $handlers = [])
+    public function __construct(Handler ...$handlers)
     {
         foreach ($handlers as $handler) {
             $this->add($handler);

@@ -140,7 +140,7 @@ class LanguageServerTesterTest extends TestCase
             $serviceManager = new ServiceManager($serviceProviders, $logger);
             $eventDispatcher = new EventDispatcher(new ServiceListener($serviceManager));
 
-            $handlers = new Handlers([
+            $handlers = new Handlers(
                 new TextDocumentHandler(new NullEventDispatcher()),
                 new ServiceHandler($serviceManager, $clientApi),
                 new CommandHandler(new CommandDispatcher([])),
@@ -151,7 +151,7 @@ class LanguageServerTesterTest extends TestCase
 
                     return new Success(self::SUCCESS);
                 })
-            ]);
+            );
 
             $runner = new HandlerMethodRunner(
                 $handlers,
