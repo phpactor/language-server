@@ -31,6 +31,7 @@ use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
 use Phpactor\LanguageServer\Workspace\CommandDispatcher;
 use Psr\Log\AbstractLogger;
+use function Safe\fopen;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -50,7 +51,9 @@ $in = fopen('php://stdin', 'r');
 $out = fopen('php://stdout', 'w');
 
 $logger = new class extends AbstractLogger {
+    /** @var resource */
     private $err;
+    /** @var resource */
     private $log;
     public function __construct()
     {
@@ -114,7 +117,9 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         );
     }
 ), $logger);
+
 if ($type === 'tcp') {
+    /** @phpstan-ignore-next-line */
     $builder->tcpServer((string)$address);
 }
 $builder

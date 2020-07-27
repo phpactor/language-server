@@ -5,7 +5,9 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use AcmeLs\AcmeLsDispatcherFactory;
 use Phpactor\LanguageServer\LanguageServerBuilder;
+use Psr\Log\NullLogger;
 
-$builder = LanguageServerBuilder::create(new AcmeLsDispatcherFactory())
+$logger = new NullLogger();
+LanguageServerBuilder::create(new AcmeLsDispatcherFactory($logger))
     ->build()
     ->run();

@@ -8,6 +8,8 @@ parameters:
         
     paths:
         - lib
+        - example
+        - bin
 
 includes:
     - vendor/jangregor/phpstan-prophecy/extension.neon
