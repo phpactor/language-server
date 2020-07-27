@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Session;
+namespace Phpactor\LanguageServer\Core\Workspace;
 
 use ArrayIterator;
 use Countable;
@@ -8,7 +8,7 @@ use IteratorAggregate;
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
+use Phpactor\LanguageServer\Core\Workspace\Exception\UnknownDocument;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 

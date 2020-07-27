@@ -1,13 +1,13 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Workspace;
 
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Phpactor\LanguageServer\Core\Session\Exception\UnknownDocument;
-use Phpactor\LanguageServer\Core\Session\Workspace;
+use Phpactor\LanguageServer\Core\Workspace\Exception\UnknownDocument;
+use Phpactor\LanguageServer\Core\Workspace\Workspace;
 
 class WorkspaceTest extends TestCase
 {

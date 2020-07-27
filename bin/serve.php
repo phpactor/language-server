@@ -16,7 +16,7 @@ use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
-use Phpactor\LanguageServer\Core\Service\ServiceListener;
+use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
@@ -90,7 +90,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $eventDispatcher = new EventDispatcher(new ServiceListener($serviceManager));
 
         $handlers = new Handlers([
-            new TextDocumentHandler(new NullEventDispatcher()),
+            new TextDocumentHandler($eventDispatcher),
             new StatsHandler($clientApi, $stats),
             new ServiceHandler($serviceManager, $clientApi),
             new CommandHandler(new CommandDispatcher([])),

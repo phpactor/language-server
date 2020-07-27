@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Session\Exception;
+namespace Phpactor\LanguageServer\Core\Workspace\Exception;
 
 use Exception;
 

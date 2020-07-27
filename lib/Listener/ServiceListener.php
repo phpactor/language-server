@@ -1,7 +1,8 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Service;
+namespace Phpactor\LanguageServer\Listener;
 
+use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Event\Initialized;
 use Psr\EventDispatcher\ListenerProviderInterface;
 

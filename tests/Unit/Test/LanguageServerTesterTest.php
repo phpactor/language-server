@@ -26,7 +26,7 @@ use Phpactor\LanguageServer\Workspace\CommandDispatcher;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
-use Phpactor\LanguageServer\Core\Service\ServiceListener;
+use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\ServiceProvider\PingProvider;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;

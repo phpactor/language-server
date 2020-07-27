@@ -1,7 +1,8 @@
 <?php
 
-namespace Phpactor\LanguageServer\Core\Session;
+namespace Phpactor\LanguageServer\Listener;
 
+use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;

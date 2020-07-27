@@ -1,11 +1,11 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Session;
+namespace Phpactor\LanguageServer\Tests\Unit\Listener;
 
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
-use Phpactor\LanguageServer\Core\Session\Workspace;
-use Phpactor\LanguageServer\Core\Session\WorkspaceListener;
+use Phpactor\LanguageServer\Core\Workspace\Workspace;
+use Phpactor\LanguageServer\Listener\WorkspaceListener;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Core\Service;
+namespace Phpactor\LanguageServer\Tests\Unit\Listener;
 
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Core\Service\ServiceListener;
+use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Event\Initialized;
 use Prophecy\PhpUnit\ProphecyTrait;
