@@ -33,7 +33,7 @@ class CancellationMiddlewareTest extends AsyncTestCase
     public function testDelegatesToNextHandlerIfMessageIsNotNotification(): Generator
     {
         $response = yield $this->createMiddleware()->process(
-            new NotificationMessage('foobar', []),
+            new RequestMessage(1, 'foobar', []),
             new RequestHandler([
                 new ClosureMiddleware(function () {
                     return new Success(new ResponseMessage(1, null));
@@ -48,7 +48,7 @@ class CancellationMiddlewareTest extends AsyncTestCase
     public function testDelegatesToNextHandlerIfMethodNotCancel(): Generator
     {
         $response = yield $this->createMiddleware()->process(
-            new RequestMessage(1, 'foobar', []),
+            new NotificationMessage('foobar', []),
             new RequestHandler([
                 new ClosureMiddleware(function () {
                     return new Success(new ResponseMessage(1, null));
@@ -65,7 +65,9 @@ class CancellationMiddlewareTest extends AsyncTestCase
         $this->runner->cancelRequest(1)->shouldBeCalled();
 
         $response = yield $this->createMiddleware()->process(
-            new RequestMessage(1, '$/cancelRequest', []),
+            new NotificationMessage('$/cancelRequest', [
+                'id' => 1,
+            ]),
             new RequestHandler([
             ])
         );

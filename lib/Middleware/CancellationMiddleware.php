@@ -9,7 +9,7 @@ use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Middleware\Middleware;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
-use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use RuntimeException;
 
 class CancellationMiddleware implements Middleware
 {
@@ -34,7 +34,15 @@ class CancellationMiddleware implements Middleware
             $message instanceof NotificationMessage &&
             $message->method === self::METHOD_CANCEL_REQUEST
         ) {
-            $this->runner->cancelRequest($message->params['id']);
+            $id = $message->params['id'] ?? null;
+
+            if (null === $id) {
+                throw new RuntimeException(
+                    'ID parameter not present in cancel request'
+                );
+            }
+
+            $this->runner->cancelRequest($id);
             return new Success(null);
         }
 
