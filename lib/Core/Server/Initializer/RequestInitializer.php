@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Server\Initializer;
 use RuntimeException;
 
-class RequestInitializer implements Initializer
+final class RequestInitializer implements Initializer
 {
     public function provideInitializeParams(Message $request): InitializeParams
     {

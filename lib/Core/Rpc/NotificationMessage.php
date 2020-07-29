@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
-class NotificationMessage extends Message
+final class NotificationMessage extends Message
 {
     /**
      * @var string

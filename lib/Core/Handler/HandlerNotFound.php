@@ -4,6 +4,6 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use RuntimeException;
 
-class HandlerNotFound extends RuntimeException
+final class HandlerNotFound extends RuntimeException
 {
 }

@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Server\Client;
 
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 
-class WindowClient
+final class WindowClient
 {
     /**
      * @var RpcClient

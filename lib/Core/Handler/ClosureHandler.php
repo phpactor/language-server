@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Handler;
 
 use Closure;
 
-class ClosureHandler implements Handler
+final class ClosureHandler implements Handler
 {
     /**
      * @var string

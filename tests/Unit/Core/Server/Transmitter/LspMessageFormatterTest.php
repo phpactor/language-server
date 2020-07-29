@@ -2,12 +2,13 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Transmitter;
 
+use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageFormatter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
-class MessageFormatterTest extends TestCase
+class LspMessageFormatterTest extends TestCase
 {
     /**
      * @dataProvider provideFormat
@@ -15,13 +16,13 @@ class MessageFormatterTest extends TestCase
     public function testFormat(string $serialized, int $expectedContentLength)
     {
         $serializer = $this->prophesize(MessageSerializer::class);
-        $writer = new MessageFormatter($serializer->reveal());
+        $formatter = new LspMessageFormatter($serializer->reveal());
         $message = new ResponseMessage(1, [
             'hello' => 'goodbye'
         ]);
         $serializer->serialize($message)->willReturn($serialized);
 
-        $result = $writer->write($message);
+        $result = $formatter->format($message);
 
         $this->assertEquals(implode([
             'Content-Type: application/vscode-jsonrpc; charset=utf8',

@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
-class ResponseError
+final class ResponseError
 {
     /**
      * @var int

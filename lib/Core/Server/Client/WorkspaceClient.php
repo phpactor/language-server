@@ -8,7 +8,7 @@ use Phpactor\LanguageServerProtocol\ApplyWorkspaceEditResponse;
 use Phpactor\LanguageServerProtocol\WorkspaceEdit;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 
-class WorkspaceClient
+final class WorkspaceClient
 {
     /**
      * @var RpcClient

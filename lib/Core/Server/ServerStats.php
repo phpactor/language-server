@@ -8,7 +8,7 @@ use DateTimeImmutable;
 /**
  * Class which can be passed _to_ the server in order to collect statistics.
  */
-class ServerStats implements ServerStatsReader
+final class ServerStats implements ServerStatsReader
 {
     /**
      * @var DateTimeImmutable

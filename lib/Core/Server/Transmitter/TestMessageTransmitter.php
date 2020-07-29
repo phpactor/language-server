@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use RuntimeException;
 
-class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitterStack, Countable
+final class TestMessageTransmitter implements MessageTransmitter, TestMessageTransmitterStack, Countable
 {
     /**
      * @var Message[]

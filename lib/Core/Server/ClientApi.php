@@ -6,7 +6,7 @@ use Phpactor\LanguageServer\Core\Server\Client\DiagnosticsClient;
 use Phpactor\LanguageServer\Core\Server\Client\WindowClient;
 use Phpactor\LanguageServer\Core\Server\Client\WorkspaceClient;
 
-class ClientApi
+final class ClientApi
 {
     /**
      * @var RpcClient

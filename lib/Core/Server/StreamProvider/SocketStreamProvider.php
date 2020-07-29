@@ -9,7 +9,7 @@ use Amp\Socket\Socket;
 use Phpactor\LanguageServer\Core\Server\Stream\SocketDuplexStream;
 use Psr\Log\LoggerInterface;
 
-class SocketStreamProvider implements StreamProvider
+final class SocketStreamProvider implements StreamProvider
 {
     /**
      * @var Server

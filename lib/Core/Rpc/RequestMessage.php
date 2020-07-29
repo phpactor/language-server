@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
-class RequestMessage extends Message
+final class RequestMessage extends Message
 {
     /**
      * @var string|int

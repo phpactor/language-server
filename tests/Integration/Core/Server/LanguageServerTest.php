@@ -22,7 +22,7 @@ use Phpactor\LanguageServer\Core\Server\LanguageServer;
 use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
-use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
+use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageFormatter;
 use Psr\Log\NullLogger;
 use function Amp\Iterator\fromIterable;
 use function Amp\call;
@@ -53,8 +53,8 @@ class LanguageServerTest extends AsyncTestCase
         return call(function () use ($handler, $request) {
             $this->setTimeout(100);
 
-            $formatter = new MessageFormatter();
-            $message = $formatter->write($request);
+            $formatter = new LspMessageFormatter();
+            $message = $formatter->format($request);
 
             $output = new OutputBuffer();
             $stream = new ResourceDuplexStream(

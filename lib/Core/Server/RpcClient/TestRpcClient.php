@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\Server\ResponseWatcher\TestResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 
-class TestRpcClient implements RpcClient
+final class TestRpcClient implements RpcClient
 {
     /**
      * @var JsonRpcClient

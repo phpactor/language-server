@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Rpc;
 
 use JsonSerializable;
 
-class ResponseMessage extends Message implements JsonSerializable
+final class ResponseMessage extends Message implements JsonSerializable
 {
     /**
      * @var int|string

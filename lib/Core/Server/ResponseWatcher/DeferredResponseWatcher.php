@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 use RuntimeException;
 
-class DeferredResponseWatcher implements ResponseWatcher
+final class DeferredResponseWatcher implements ResponseWatcher
 {
     /**
      * @var array<string|int, Deferred<ResponseMessage>>

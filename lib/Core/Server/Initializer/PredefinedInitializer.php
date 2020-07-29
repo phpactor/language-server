@@ -11,7 +11,7 @@ use Phpactor\LanguageServer\Core\Server\Initializer;
  * Use pre-defined initialization parameters.
  * This is useful for testing.
  */
-class PredefinedInitializer implements Initializer
+final class PredefinedInitializer implements Initializer
 {
     /**
      * @var InitializeParams

@@ -7,7 +7,7 @@ use Amp\ByteStream\OutputStream;
 use Amp\ByteStream\ResourceInputStream;
 use Amp\Promise;
 
-class ResourceDuplexStream implements DuplexStream
+final class ResourceDuplexStream implements DuplexStream
 {
     /**
      * @var InputStream

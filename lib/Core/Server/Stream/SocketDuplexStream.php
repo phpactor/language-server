@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Core\Server\Stream;
 use Amp\Promise;
 use Amp\Socket\Socket;
 
-class SocketDuplexStream implements DuplexStream
+final class SocketDuplexStream implements DuplexStream
 {
     /**
      * @var Socket

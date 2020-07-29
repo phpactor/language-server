@@ -6,7 +6,7 @@ use DTL\Invoke\Invoke;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
 use RuntimeException;
 
-class RequestMessageFactory
+final class RequestMessageFactory
 {
     public static function fromRequest(RawMessage $request): Message
     {

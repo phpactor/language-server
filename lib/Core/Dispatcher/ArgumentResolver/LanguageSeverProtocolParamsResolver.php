@@ -7,7 +7,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
 use ReflectionClass;
 use ReflectionNamedType;
 
-class LanguageSeverProtocolParamsResolver implements ArgumentResolver
+final class LanguageSeverProtocolParamsResolver implements ArgumentResolver
 {
     /**
      * {@inheritDoc}

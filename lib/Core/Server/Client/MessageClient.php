@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Core\Server\Client;
 use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 
-class MessageClient
+final class MessageClient
 {
     /**
      * @var RpcClient

@@ -9,7 +9,7 @@ use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 use RuntimeException;
 
-class ClosureDispatcherFactory implements DispatcherFactory
+final class ClosureDispatcherFactory implements DispatcherFactory
 {
     /**
      * @var Closure

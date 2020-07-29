@@ -7,7 +7,7 @@ use Amp\Success;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Psr\Log\LoggerInterface;
 
-class ResourceStreamProvider implements StreamProvider
+final class ResourceStreamProvider implements StreamProvider
 {
     /**
      * @var ResourceDuplexStream

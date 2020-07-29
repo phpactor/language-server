@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Server\StreamProvider;
 
 use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
 
-class Connection
+final class Connection
 {
     /**
      * @var string

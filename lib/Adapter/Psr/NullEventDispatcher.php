@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Adapter\Psr;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-class NullEventDispatcher implements EventDispatcherInterface
+final class NullEventDispatcher implements EventDispatcherInterface
 {
     public function dispatch(object $event)
     {

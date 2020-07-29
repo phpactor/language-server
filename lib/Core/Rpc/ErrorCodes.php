@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Rpc;
 
-class ErrorCodes
+final class ErrorCodes
 {
     // defined by JSON RPC
     const ParseError = -32700;

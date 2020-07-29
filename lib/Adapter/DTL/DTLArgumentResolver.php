@@ -6,7 +6,7 @@ use DTL\ArgumentResolver\ArgumentResolver as UpstreamArgumentResolver;
 use DTL\ArgumentResolver\ParamConverter\RecursiveInstantiator;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 
-class DTLArgumentResolver implements ArgumentResolver
+final class DTLArgumentResolver implements ArgumentResolver
 {
     /**
      * @var UpstreamArgumentResolver

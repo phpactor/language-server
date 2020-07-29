@@ -8,7 +8,7 @@ use Phpactor\LanguageServer\Core\Middleware\Middleware;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 
-class MiddlewareDispatcher implements Dispatcher
+final class MiddlewareDispatcher implements Dispatcher
 {
     /**
      * @var array

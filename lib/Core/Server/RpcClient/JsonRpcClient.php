@@ -11,7 +11,7 @@ use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Ramsey\Uuid\Uuid;
 
-class JsonRpcClient implements RpcClient
+final class JsonRpcClient implements RpcClient
 {
     /**
      * @var MessageTransmitter

@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
 
-class ChainArgumentResolver implements ArgumentResolver
+final class ChainArgumentResolver implements ArgumentResolver
 {
     /**
      * @var array<ArgumentResolver>

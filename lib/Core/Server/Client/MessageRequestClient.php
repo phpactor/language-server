@@ -8,7 +8,7 @@ use Phpactor\LanguageServerProtocol\MessageActionItem;
 use Phpactor\LanguageServerProtocol\MessageType;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 
-class MessageRequestClient
+final class MessageRequestClient
 {
     /**
      * @var RpcClient

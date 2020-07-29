@@ -7,7 +7,7 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 use RuntimeException;
 
-class TestResponseWatcher implements ResponseWatcher
+final class TestResponseWatcher implements ResponseWatcher
 {
     /**
      * @var ResponseWatcher

@@ -4,6 +4,6 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\Exception;
 
 use RuntimeException;
 
-class CouldNotResolveArguments extends RuntimeException
+final class CouldNotResolveArguments extends RuntimeException
 {
 }

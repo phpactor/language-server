@@ -7,7 +7,7 @@ use Closure;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 
-class ClosureDispatcher implements Dispatcher
+final class ClosureDispatcher implements Dispatcher
 {
     /**
      * @var Closure

@@ -7,10 +7,10 @@ use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
+use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageSerializer;
 use RuntimeException;
 
-class MessageSerializerTest extends TestCase
+class LspMessageSerializerTest extends TestCase
 {
     public function testExceptionCouldNotEncodeJson()
     {
@@ -62,6 +62,6 @@ class MessageSerializerTest extends TestCase
 
     private function serialize(Message $message): string
     {
-        return (new MessageSerializer())->serialize($message);
+        return (new LspMessageSerializer())->serialize($message);
     }
 }

@@ -11,6 +11,7 @@ use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageSerializer;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\Test\LanguageServerTester\ServicesTester;
@@ -45,7 +46,7 @@ final class LanguageServerTester
         $this->initializeParams = $params;
         $this->transmitter = new TestMessageTransmitter();
         $this->dispatcher = $factory->create($this->transmitter, $params);
-        $this->messageSerializer = new MessageSerializer();
+        $this->messageSerializer = new LspMessageSerializer();
     }
 
     /**
