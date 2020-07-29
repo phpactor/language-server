@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Core\Server\Transmitter;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\Connection;
 use Psr\Log\LoggerInterface;
-use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageFormatter;
 
 final class ConnectionMessageTransmitter implements MessageTransmitter
 {

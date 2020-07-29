@@ -13,7 +13,7 @@ final class LanguageServerMessageFormatter implements MessageFormatter
 
     public function __construct(?MessageSerializer $serializer = null)
     {
-        $this->serializer = $serializer ?: new MessageSerializer();
+        $this->serializer = $serializer ?: new LspMessageSerializer();
     }
 
     public function format(Message $message): string

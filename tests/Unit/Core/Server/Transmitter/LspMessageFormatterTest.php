@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Transmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageFormatter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
 class LspMessageFormatterTest extends TestCase
