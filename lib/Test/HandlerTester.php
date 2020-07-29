@@ -68,14 +68,14 @@ class HandlerTester
     /**
      * @return Promise<ResponseMessage|null>
      */
-    function notify(string $methodName, array $params): Promise
+    public function notify(string $methodName, array $params): Promise
     {
         return $this->middlewareDispatcher->dispatch(
             new NotificationMessage($methodName, $params)
         );
     }
 
-    function notifyAndWait(string $methodName, array $params): void
+    public function notifyAndWait(string $methodName, array $params): void
     {
         wait($this->middlewareDispatcher->dispatch(
             new NotificationMessage($methodName, $params)
