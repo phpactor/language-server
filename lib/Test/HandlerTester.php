@@ -11,10 +11,12 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MiddlewareDispatcher;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
+use function Amp\Promise\wait;
 
 class HandlerTester
 {
@@ -63,9 +65,26 @@ class HandlerTester
         return \Amp\Promise\wait($this->request($methodName, $params));
     }
 
+    /**
+     * @return Promise<ResponseMessage|null>
+     */
+    function notify(string $methodName, array $params): Promise
+    {
+        return $this->middlewareDispatcher->dispatch(
+            new NotificationMessage($methodName, $params)
+        );
+    }
+
+    function notifyAndWait(string $methodName, array $params): void
+    {
+        wait($this->middlewareDispatcher->dispatch(
+            new NotificationMessage($methodName, $params)
+        ));
+    }
+
     public function cancel(): void
     {
-        $this->requestAndWait('$/cancelRequest', [
+        $this->notifyAndWait('$/cancelRequest', [
             'id' => self::REQUEST_ID
         ]);
     }
