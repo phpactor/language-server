@@ -4,6 +4,8 @@ namespace Phpactor\LanguageServer\Test;
 
 use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServerProtocol\Position;
+use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
@@ -37,5 +39,18 @@ final class ProtocolFactory
     public static function requestMessage(string $method, array $params): RequestMessage
     {
         return new RequestMessage(uniqid(), $method, $params);
+    }
+
+    public static function range(int $line1, int $col1, int $line2, int $col2): Range
+    {
+        return new Range(
+            self::position($line1, $col1),
+            self::position($line2, $col2)
+        );
+    }
+
+    private static function position(int $lineNb, int $colNb): Position
+    {
+        return new Position($lineNb, $colNb);
     }
 }

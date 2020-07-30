@@ -6,5 +6,5 @@ use Phpactor\LanguageServerProtocol\ServerCapabilities;
 
 interface CanRegisterCapabilities
 {
-    public function registerCapabiltiies(ServerCapabilities $capabilities);
+    public function registerCapabiltiies(ServerCapabilities $capabilities): void;
 }
