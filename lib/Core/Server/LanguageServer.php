@@ -143,8 +143,6 @@ final class LanguageServer
         // accept incoming connections (in the case of a TCP server this is
         // a connection, with a STDIO stream this just returns the stream
         // immediately)
-        //
-        // @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/3669
         while ($connection = yield $this->streamProvider->accept()) {
             $this->stats->incConnectionCount();
 
