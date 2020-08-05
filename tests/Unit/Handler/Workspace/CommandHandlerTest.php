@@ -4,10 +4,11 @@ namespace Phpactor\LanguageServer\Tests\Unit\Handler\Workspace;
 
 use Amp\Success;
 use Phpactor\LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServer\Core\Command\Command;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
-use Phpactor\LanguageServer\Workspace\CommandDispatcher;
+use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 
 class CommandHandlerTest extends HandlerTestCase
 {
@@ -38,7 +39,7 @@ class CommandHandlerTest extends HandlerTestCase
     private function createHandler(): CommandHandler
     {
         return new CommandHandler(new CommandDispatcher([
-            'foobar' => new class {
+            'foobar' => new class implements Command {
                 public function __invoke(string $arg)
                 {
                     return new Success($arg);

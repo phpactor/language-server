@@ -1,10 +1,11 @@
 <?php
 
-namespace Phpactor\LanguageServer\Tests\Unit\Workspace;
+namespace Phpactor\LanguageServer\Tests\Unit\Core\Command;
 
 use Amp\Success;
 use PHPUnit\Framework\TestCase;
-use Phpactor\LanguageServer\Workspace\CommandDispatcher;
+use Phpactor\LanguageServer\Core\Command\Command;
+use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use RuntimeException;
 
 class CommandDispatcherTest extends TestCase
@@ -12,7 +13,7 @@ class CommandDispatcherTest extends TestCase
     public function testDispatchesRequest(): void
     {
         $result = $this->createDispatcher([
-            'foobar' => new class {
+            'foobar' => new class implements Command {
                 public function __invoke(string $foobar)
                 {
                     return new Success($foobar);
@@ -31,7 +32,7 @@ class CommandDispatcherTest extends TestCase
         $this->expectExceptionMessage('Command "barfoo" not found');
 
         $this->createDispatcher([
-            'foobar' => new class {
+            'foobar' => new class implements Command {
                 public function __invoke(string $foobar)
                 {
                 }
@@ -44,20 +45,20 @@ class CommandDispatcherTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('not invokable');
         $this->createDispatcher([
-            'command' => new \stdClass(),
+            'command' => new class implements Command {},
         ]);
     }
 
     public function testReturnsRegisteredCommands(): void
     {
         $result = $this->createDispatcher([
-            'foobar' => new class {
+            'foobar' => new class implements Command {
                 public function __invoke(string $foobar)
                 {
                     return $foobar;
                 }
             },
-            'barfoo' => new class {
+            'barfoo' => new class implements Command {
                 public function __invoke(string $foobar)
                 {
                     return $foobar;

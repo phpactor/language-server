@@ -8,7 +8,7 @@ use Phpactor\LanguageServerProtocol\ExecuteCommandParams;
 use Phpactor\LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Workspace\CommandDispatcher;
+use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 
 class CommandHandler implements Handler, CanRegisterCapabilities
 {

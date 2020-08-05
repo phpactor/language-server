@@ -22,7 +22,7 @@ use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
-use Phpactor\LanguageServer\Workspace\CommandDispatcher;
+use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;

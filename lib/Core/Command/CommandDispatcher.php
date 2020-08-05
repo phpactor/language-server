@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\Workspace;
+namespace Phpactor\LanguageServer\Core\Command;
 
 use Amp\Promise;
 use RuntimeException;
@@ -16,7 +16,7 @@ class CommandDispatcher
     private $commandMap = [];
 
     /**
-     * @param array<string,object> $commandMap Map of command names to invokable objects
+     * @param array<string,Command> $commandMap Map of command names to invokable objects
      */
     public function __construct(array $commandMap)
     {
@@ -31,18 +31,6 @@ class CommandDispatcher
     public function registeredCommands(): array
     {
         return array_keys($this->commandMap);
-    }
-
-    private function addCommand(string $id, object $invokable): void
-    {
-        if (!is_callable($invokable)) {
-            throw new RuntimeException(sprintf(
-                'Object "%s" is not invokable',
-                get_class($invokable)
-            ));
-        }
-
-        $this->commandMap[$id] = $invokable;
     }
 
     /**
@@ -61,5 +49,17 @@ class CommandDispatcher
         }
 
         return $this->commandMap[$command]->__invoke(...$args);
+    }
+
+    private function addCommand(string $id, Command $invokable): void
+    {
+        if (!is_callable($invokable)) {
+            throw new RuntimeException(sprintf(
+                'Object "%s" is not invokable',
+                get_class($invokable)
+            ));
+        }
+
+        $this->commandMap[$id] = $invokable;
     }
 }

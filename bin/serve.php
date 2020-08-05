@@ -29,7 +29,7 @@ use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
 use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
-use Phpactor\LanguageServer\Workspace\CommandDispatcher;
+use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use Psr\Log\AbstractLogger;
 use function Safe\fopen;
 
