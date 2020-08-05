@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Test;
 
+use Amp\CancellationToken;
+use Amp\CancelledException;
 use Amp\Success;
 use PHPUnit\Framework\TestCase;
 use Phly\EventDispatcher\EventDispatcher;
@@ -13,6 +15,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtoc
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Psr\NullEventDispatcher;
 use Phpactor\LanguageServer\Core\Handler\ClosureHandler;
+use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
@@ -35,8 +38,11 @@ use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Test\LanguageServerTester;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
+use Phpactor\LanguageServer\Tests\Unit\Core\Service\PingService;
 use Psr\Log\NullLogger;
 use function Amp\Promise\wait;
+use function Amp\call;
+use function Amp\delay;
 
 class LanguageServerTesterTest extends TestCase
 {
@@ -78,6 +84,15 @@ class LanguageServerTesterTest extends TestCase
         $tester = $this->createTester();
         $response = $tester->requestAndWait('foobar', ['foobar' => 'Barfoo']);
         $this->assertSuccessResponse($response);
+    }
+
+    public function testCancel(): void
+    {
+        $this->expectException(CancelledException::class);
+        $tester = $this->createTester();
+        $responsePromise = $tester->request('delay_and_check_cancellation', [], 1);
+        $tester->cancel(1);
+        wait($responsePromise);
     }
 
     public function testNotify(): void
@@ -127,46 +142,32 @@ class LanguageServerTesterTest extends TestCase
     private function createTester(?InitializeParams $params = null): LanguageServerTester
     {
         $params = $params ?: ProtocolFactory::initializeParams();
+        $builder = LanguageServerTesterBuilder::create();
+        $builder->setInitializeParams($params);
+        $builder->enableTextDocuments();
+        $builder->addServiceProvider(new PingProvider($builder->clientApi()));
+        $builder->addHandler(
+            new ClosureHandler('foobar', function (CancellationToken $token) use ($builder) {
+                $builder->transmitter()->transmit(new NotificationMessage(self::SUCCESS, [
+                    'message' => self::SUCCESS
+                ]));
 
-        return new LanguageServerTester(new ClosureDispatcherFactory(function (MessageTransmitter $transmitter, InitializeParams $params) {
-            $responseWatcher = new DeferredResponseWatcher();
-            $logger = new NullLogger();
-            $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
-            $serviceProviders = new ServiceProviders(
-                new PingProvider($clientApi)
-            );
+                return new Success(self::SUCCESS);
+            })
+        );
+        $builder->addHandler(
+            new ClosureHandler('delay_and_check_cancellation', function (CancellationToken $token) {
+                return call(function () use ($token) {
+                    yield delay(10);
+                    $token->throwIfRequested();
 
-            $serviceManager = new ServiceManager($serviceProviders, $logger);
-            $eventDispatcher = new EventDispatcher(new ServiceListener($serviceManager));
+                    return self::SUCCESS;
+                });
+            })
+        );
 
-            $handlers = new Handlers(
-                new TextDocumentHandler(new NullEventDispatcher()),
-                new ServiceHandler($serviceManager, $clientApi),
-                new CommandHandler(new CommandDispatcher([])),
-                new ClosureHandler('foobar', function ($args) use ($transmitter) {
-                    $transmitter->transmit(new NotificationMessage(self::SUCCESS, [
-                        'message' => self::SUCCESS
-                    ]));
-
-                    return new Success(self::SUCCESS);
-                })
-            );
-
-            $runner = new HandlerMethodRunner(
-                $handlers,
-                new ChainArgumentResolver(
-                    new LanguageSeverProtocolParamsResolver(),
-                    new PassThroughArgumentResolver()
-                )
-            );
-
-            return new MiddlewareDispatcher(
-                new InitializeMiddleware($handlers, $eventDispatcher),
-                new CancellationMiddleware($runner),
-                new HandlerMiddleware($runner)
-            );
-        }), $params);
+        return $builder->build();
     }
 
     private function assertSuccessResponse(ResponseMessage $response): void
@@ -177,7 +178,7 @@ class LanguageServerTesterTest extends TestCase
     private function assertNotifysTransmission(LanguageServerTester $tester): void
     {
         $notification = $tester->transmitter()->shift();
-        self::assertNotNull($notification);
+        self::assertNotNull($notification, 'Notication was sent');
         self::assertInstanceOf(NotificationMessage::class, $notification);
         assert($notification instanceof NotificationMessage);
         self::assertEquals(self::SUCCESS, $notification->params['message']);

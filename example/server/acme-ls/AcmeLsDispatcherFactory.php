@@ -19,7 +19,7 @@ use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Middleware\ResponseHandlingMiddleware;
-use Phpactor\LanguageServer\Workspace\CommandDispatcher;
+use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;

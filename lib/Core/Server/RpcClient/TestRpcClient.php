@@ -25,7 +25,7 @@ final class TestRpcClient implements RpcClient
      */
     private $responseWatcher;
 
-    private function __construct(TestMessageTransmitter $transmitter, TestResponseWatcher $responseWatcher)
+    public function __construct(TestMessageTransmitter $transmitter, TestResponseWatcher $responseWatcher)
     {
         $this->transmitter = $transmitter;
         $this->responseWatcher = $responseWatcher;

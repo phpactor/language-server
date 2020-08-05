@@ -41,10 +41,10 @@ final class LanguageServerTester
      */
     private $initializeParams;
 
-    public function __construct(DispatcherFactory $factory, InitializeParams $params)
+    public function __construct(DispatcherFactory $factory, InitializeParams $params, ?TestMessageTransmitter $transmitter = null)
     {
         $this->initializeParams = $params;
-        $this->transmitter = new TestMessageTransmitter();
+        $this->transmitter = $transmitter ?: new TestMessageTransmitter();
         $this->dispatcher = $factory->create($this->transmitter, $params);
         $this->messageSerializer = new LspMessageSerializer();
     }
@@ -57,28 +57,30 @@ final class LanguageServerTester
         return $this->dispatcher->dispatch($message);
     }
 
-    public function dispatchAndWait(RequestMessage $message): ?ResponseMessage
+    public function dispatchAndWait(Message $message): ?ResponseMessage
     {
         return wait($this->dispatcher->dispatch($message));
     }
 
     /**
      * @param array|object $params
+     * @param int|string $id
      * @return Promise<ResponseMessage|null>
      */
-    public function request(string $method, $params): Promise
+    public function request(string $method, $params, $id = null): Promise
     {
-        $requestMessage = new RequestMessage(uniqid(), $method, $this->normalizeParams($params));
+        $requestMessage = new RequestMessage($id ?: uniqid(), $method, $this->normalizeParams($params));
 
         return $this->dispatch($requestMessage);
     }
 
     /**
      * @param array|object $params
+     * @param int|string $id
      */
-    public function requestAndWait(string $method, $params): ?ResponseMessage
+    public function requestAndWait(string $method, $params, $id = null): ?ResponseMessage
     {
-        return wait($this->request($method, $this->normalizeParams($params)));
+        return wait($this->request($method, $this->normalizeParams($params), $id));
     }
 
     /**
@@ -155,5 +157,10 @@ final class LanguageServerTester
         }
 
         return $this->messageSerializer->normalize($params);
+    }
+
+    public function cancel(int $requestId): void
+    {
+        $this->dispatchAndWait(new NotificationMessage('$/cancelRequest', ['id' => $requestId]));
     }
 }

@@ -38,7 +38,7 @@ class CancellationMiddleware implements Middleware
 
             if (null === $id) {
                 throw new RuntimeException(
-                    'ID parameter not present in cancel request'
+                    'ID parameter not present in cancel notification'
                 );
             }
 

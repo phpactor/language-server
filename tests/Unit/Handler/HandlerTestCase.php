@@ -12,7 +12,7 @@ abstract class HandlerTestCase extends TestCase
 
     public function dispatch(string $method, array $params)
     {
-        $tester = LanguageServerTesterBuilder::create()->addHandler($this->handler())->build();
+        $tester = LanguageServerTesterBuilder::createBare()->addHandler($this->handler())->build();
 
         return $tester->requestAndWait($method, $params);
     }
