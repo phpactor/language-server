@@ -17,7 +17,7 @@ use Phpactor\LanguageServer\Test\LanguageServerTester;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class LanguageServerBuilder
+final class LanguageServerBuilder
 {
     /**
      * @var LoggerInterface
@@ -78,6 +78,11 @@ class LanguageServerBuilder
         return $this;
     }
 
+    /**
+     * Return a language server tester based on the current dispatcher.
+     *
+     * This is useful for integration testing scenarios.
+     */
     public function tester(?InitializeParams $params = null): LanguageServerTester
     {
         $params = $params ?: new InitializeParams(new ClientCapabilities());

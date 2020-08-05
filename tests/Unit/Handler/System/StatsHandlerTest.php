@@ -8,6 +8,7 @@ use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Handler\System\StatsHandler;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
+use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Test\HandlerTester;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 
@@ -42,7 +43,7 @@ class StatsHandlerTest extends HandlerTestCase
 
     public function testItReturnsTheCurrentSessionStatus()
     {
-        $tester = new HandlerTester($this->handler());
+        $tester = LanguageServerTesterBuilder::create()->addHandler($this->handler())->build();
 
         $response = $tester->requestAndWait('phpactor/stats', []);
 
