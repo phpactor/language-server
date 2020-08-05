@@ -13,10 +13,8 @@ use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolv
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
-use Phpactor\LanguageServer\Core\Server\ResponseWatcher\TestResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
-use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
@@ -111,6 +109,9 @@ final class LanguageServerTesterBuilder
         $this->workspace = new Workspace();
     }
 
+    /**
+     * Create a new tester with optional services enabled.
+     */
     public static function create(): self
     {
         $tester = new self();
@@ -120,11 +121,17 @@ final class LanguageServerTesterBuilder
         return $tester;
     }
 
+    /**
+     * Return a minimum tester without optional services.
+     */
     public static function createBare(): self
     {
         return new self();
     }
 
+    /**
+     * Set the initialization parameters whcih will be used by the tester
+     */
     public function setInitializeParams(InitializeParams $params): self
     {
         $this->initializeParams = $params;
@@ -132,6 +139,9 @@ final class LanguageServerTesterBuilder
         return $this;
     }
 
+    /**
+     * Add a method handler
+     */
     public function addHandler(Handler $handler): self
     {
         $this->handlers[] = $handler;
@@ -139,6 +149,9 @@ final class LanguageServerTesterBuilder
         return $this;
     }
 
+    /**
+     * Add a service provider
+     */
     public function addServiceProvider(ServiceProvider $serviceProvider): self
     {
         $this->serviceProviders[] = $serviceProvider;
@@ -146,6 +159,9 @@ final class LanguageServerTesterBuilder
         return $this;
     }
 
+    /**
+     * Add an command
+     */
     public function addCommand(string $commandId, Command $command): self
     {
         $this->commands[$commandId] = $command;
@@ -153,6 +169,9 @@ final class LanguageServerTesterBuilder
         return $this;
     }
 
+    /**
+     * Enable the text document service (enabled by default with ::create)
+     */
     public function enableTextDocuments(): self
     {
         $this->enableTextDocuments = true;
@@ -160,11 +179,47 @@ final class LanguageServerTesterBuilder
         return $this;
     }
 
+    /**
+     * Enable the services (enabled by default with ::create)
+     */
     public function enableServices(): self
     {
         $this->enableServices = true;
 
         return $this;
+    }
+
+    /**
+     * Test Transmitter service: can be used to check which
+     * messages have been sent.
+     */
+    public function transmitter(): TestMessageTransmitter
+    {
+        return $this->transmitter;
+    }
+
+    /**
+     * ClientApi service
+     */
+    public function clientApi(): ClientApi
+    {
+        return $this->clientApi;
+    }
+
+    /**
+     * RPC client service
+     */
+    public function rpcClient(): RpcClient
+    {
+        return $this->rpcClient;
+    }
+
+    /**
+     * Workspace service (access to text documents)
+     */
+    public function workspace(): Workspace
+    {
+        return $this->workspace;
     }
 
     public function build(): LanguageServerTester
@@ -214,22 +269,6 @@ final class LanguageServerTesterBuilder
             }
         );
     }
-
-    public function transmitter(): TestMessageTransmitter
-    {
-        return $this->transmitter;
-    }
-
-    public function clientApi(): ClientApi
-    {
-        return $this->clientApi;
-    }
-
-    public function rpcClient(): RpcClient
-    {
-        return $this->rpcClient;
-    }
-
     private function buildEventDispatcher(ServiceManager $serviceManager): AggregateEventDispatcher
     {
         $listeners = [];
@@ -243,10 +282,5 @@ final class LanguageServerTesterBuilder
         }
         
         return new AggregateEventDispatcher(...$listeners);
-    }
-
-    public function workspace(): Workspace
-    {
-        return $this->workspace;
     }
 }
