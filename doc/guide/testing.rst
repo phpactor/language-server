@@ -20,27 +20,33 @@ The ``ProtocolFactory`` is a utility class for creating LSP protocol objects:
 This is useful as the LSP objects can be complicated and we can assume some
 defaults using the factory.
 
-Handler Testing
----------------
+Unit Testing Handlers, Services etc.
+------------------------------------
 
-The ``HandlerTester`` is a wrapper to make unit testing handlers easier:
+You can use the :ref:`LanguageServerTester` to test your handlers, services,
+commands etc as follows:
 
 .. code-block:: php
 
     <?php
 
-    $tester = new HandlerTester(new ExitHandler());
-    $result = $tester->requestAndWait('exit', []);
+    $tester = LanguageServerTesterBuilder::create()
+        ->addHanlder($myHandler)
+        ->addServiceProvider($myServiceProvider)
+        ->addCommand($myCommand)
+        ->build();
 
-.. _LanguageServerTester:
+    $result = $tester->requestAndWait('soMyThing', []);
 
-Language Server Tester
-----------------------
+Lean more about the :ref:`LanguageServerTester <LanguageServerTester>`
 
-The ``LanguageServerTester`` is for integration testing.
+Integration Testing
+-------------------
 
-Below we assume that you have the ``LanguageServerBuilder`` in your 
-dependency injection container, we can get the tester as follows:
+If you are using the ``LanguageServerBuilder`` to manage the instantiation of
+your ``LanguageServer`` then, assuming you are using some kind of dependency
+injection container, you can use the ``tester`` method to get the
+:ref:`LanguageServerTester`.
 
 .. code-block:: php
 
@@ -51,6 +57,13 @@ dependency injection container, we can get the tester as follows:
     $tester = $builder->tester();
     $response = $tester->requestAndWait('foobar', ['bar' => 'foo']);
     $response = $tester->notifyAndWait('foobar', ['bar' => 'foo']);
+
+This will provide the :ref:`LanguageServerTester` with the "real" dispatcher.
+
+.. _LanguageServerTester:
+
+Language Server Tester
+----------------------
 
 The tester provides access to a test transmitter from which you can access any
 message sent by the server:
