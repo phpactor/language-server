@@ -49,7 +49,7 @@ final class ProtocolFactory
         );
     }
 
-    private static function position(int $lineNb, int $colNb): Position
+    public static function position(int $lineNb, int $colNb): Position
     {
         return new Position($lineNb, $colNb);
     }
