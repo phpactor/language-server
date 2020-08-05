@@ -35,6 +35,7 @@ use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
 use Phpactor\LanguageServer\Test\LanguageServerTester;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\NullLogger;
 
 final class LanguageServerTesterBuilder
@@ -269,7 +270,7 @@ final class LanguageServerTesterBuilder
             }
         );
     }
-    private function buildEventDispatcher(ServiceManager $serviceManager): AggregateEventDispatcher
+    private function buildEventDispatcher(ServiceManager $serviceManager): EventDispatcherInterface
     {
         $listeners = [];
 

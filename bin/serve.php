@@ -89,7 +89,9 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         );
 
         $serviceManager = new ServiceManager($serviceProviders, $logger);
-        $eventDispatcher = new EventDispatcher(new ServiceListener($serviceManager));
+        $eventDispatcher = new EventDispatcher(
+            new ServiceListener($serviceManager)
+        );
 
         $handlers = new Handlers(
             new TextDocumentHandler($eventDispatcher),

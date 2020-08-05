@@ -2,8 +2,7 @@
 
 namespace AcmeLs;
 
-use Phly\EventDispatcher\EventDispatcher;
-use Phly\EventDispatcher\ListenerProvider\ListenerProviderAggregate;
+use Phpactor\LanguageServer\Adapter\Psr\AggregateEventDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
@@ -59,12 +58,10 @@ class AcmeLsDispatcherFactory implements DispatcherFactory
         $serviceManager = new ServiceManager($serviceProviders, $this->logger);
         $workspace = new Workspace();
 
-        // some PSR-14 event dispatcher ...
-        $aggregate = new ListenerProviderAggregate();
-        $aggregate->attach(new ServiceListener($serviceManager));
-        $aggregate->attach(new WorkspaceListener($workspace));
-        $eventDispatcher = new EventDispatcher($aggregate);
-        // ... finish event dispatcher
+        $eventDispatcher = new AggregateEventDispatcher(
+            new ServiceListener($serviceManager),
+            new WorkspaceListener($workspace)
+        );
 
         $handlers = new Handlers(
             new TextDocumentHandler($eventDispatcher),
