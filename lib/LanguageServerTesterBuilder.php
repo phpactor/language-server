@@ -244,4 +244,9 @@ final class LanguageServerTesterBuilder
         
         return new AggregateEventDispatcher(...$listeners);
     }
+
+    public function workspace(): Workspace
+    {
+        return $this->workspace;
+    }
 }
