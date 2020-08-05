@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Handler;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Test\HandlerTester;
 
 abstract class HandlerTestCase extends TestCase
 {

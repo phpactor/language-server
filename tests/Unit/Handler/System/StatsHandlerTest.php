@@ -9,7 +9,6 @@ use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Handler\System\StatsHandler;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
-use Phpactor\LanguageServer\Test\HandlerTester;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 
 class StatsHandlerTest extends HandlerTestCase

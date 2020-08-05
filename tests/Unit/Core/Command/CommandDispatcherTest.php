@@ -45,7 +45,8 @@ class CommandDispatcherTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('not invokable');
         $this->createDispatcher([
-            'command' => new class implements Command {},
+            'command' => new class implements Command {
+            },
         ]);
     }
 
