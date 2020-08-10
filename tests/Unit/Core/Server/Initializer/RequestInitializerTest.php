@@ -29,10 +29,10 @@ class RequestInitializerTest extends TestCase
     {
         $capabiltiies = (new RequestInitializer())->provideInitializeParams(new RequestMessage(1, 'initialize', [
             'capabilities' => [
-                'experimental' => new \stdClass(),
+                'experimental' => [],
             ],
         ]));
         self::assertInstanceOf(InitializeParams::class, $capabiltiies);
-        self::assertEquals(new \stdClass(), $capabiltiies->capabilities->experimental);
+        self::assertEquals([], $capabiltiies->capabilities->experimental);
     }
 }
