@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpactor\LanguageServer\ServiceProvider;
+namespace Phpactor\LanguageServer\Example\Service;
 
 use Amp\CancellationToken;
 use Amp\CancelledException;

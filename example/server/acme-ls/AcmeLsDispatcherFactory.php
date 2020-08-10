@@ -27,7 +27,7 @@ use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
-use Phpactor\LanguageServer\ServiceProvider\PingProvider;
+use Phpactor\LanguageServer\Example\Service\PingProvider;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;

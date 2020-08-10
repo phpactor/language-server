@@ -12,7 +12,7 @@ use Phpactor\LanguageServer\Core\Handler\ClosureHandler;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Phpactor\LanguageServer\ServiceProvider\PingProvider;
+use Phpactor\LanguageServer\Example\Service\PingProvider;
 use Phpactor\LanguageServer\Test\LanguageServerTester;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use function Amp\Promise\wait;

@@ -12,7 +12,7 @@ Example
 
 A full example of a service provider:
 
-.. literalinclude:: ../../lib/ServiceProvider/PingProvider.php
+.. literalinclude:: ../../lib/Example/Service/PingProvider.php
    :language: php
    :linenos:
 

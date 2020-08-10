@@ -1,8 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-use Phly\EventDispatcher\EventDispatcher;
 use Phpactor\LanguageServerProtocol\InitializeParams;
+use Phpactor\LanguageServer\Adapter\Psr\AggregateEventDispatcher;
+use Phpactor\LanguageServer\Core\CodeAction\AggregateCodeActionProvider;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
@@ -15,16 +16,21 @@ use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Server\ServerStats;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
+use Phpactor\LanguageServer\Core\Workspace\Workspace;
+use Phpactor\LanguageServer\Example\CodeAction\SayHelloCodeActionProvider;
+use Phpactor\LanguageServer\Example\Command\SayHelloCommand;
+use Phpactor\LanguageServer\Handler\TextDocument\CodeActionHandler;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
-use Phpactor\LanguageServer\ServiceProvider\PingProvider;
+use Phpactor\LanguageServer\Example\Service\PingProvider;
 use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Handler\System\StatsHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\LanguageServerBuilder;
+use Phpactor\LanguageServer\Listener\WorkspaceListener;
 use Phpactor\LanguageServer\Middleware\CancellationMiddleware;
 use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
@@ -85,19 +91,26 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
         $serviceProviders = new ServiceProviders(
-            new PingProvider($clientApi)
+            //new PingProvider($clientApi)
         );
 
+        $workspace = new Workspace();
         $serviceManager = new ServiceManager($serviceProviders, $logger);
-        $eventDispatcher = new EventDispatcher(
-            new ServiceListener($serviceManager)
+        $eventDispatcher = new AggregateEventDispatcher(
+            new ServiceListener($serviceManager),
+            new WorkspaceListener($workspace)
         );
 
         $handlers = new Handlers(
             new TextDocumentHandler($eventDispatcher),
             new StatsHandler($clientApi, $stats),
             new ServiceHandler($serviceManager, $clientApi),
-            new CommandHandler(new CommandDispatcher([])),
+            new CommandHandler(new CommandDispatcher([
+                'phpactor.say_hello' => new SayHelloCommand($clientApi)
+            ])),
+            new CodeActionHandler(new AggregateCodeActionProvider(
+                new SayHelloCodeActionProvider()
+            ), $workspace),
             new ExitHandler()
         );
 
