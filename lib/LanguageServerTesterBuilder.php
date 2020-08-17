@@ -2,11 +2,13 @@
 
 namespace Phpactor\LanguageServer;
 
-use Amp\Loop;
 use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Psr\AggregateEventDispatcher;
+use Phpactor\LanguageServer\Core\Diagnostics\AggregateDiagnosticsProvider;
+use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
+use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsProvider;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\MiddlewareDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
@@ -35,11 +37,11 @@ use Phpactor\LanguageServer\Core\Service\ServiceProviders;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
+use Phpactor\LanguageServer\Service\DiagnosticsService;
 use Phpactor\LanguageServer\Test\LanguageServerTester;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Log\NullLogger;
-use Throwable;
 
 final class LanguageServerTesterBuilder
 {
@@ -104,9 +106,19 @@ final class LanguageServerTesterBuilder
     private $enableServices = false;
 
     /**
+     * @var bool
+     */
+    private $enableDiagnostics = false;
+
+    /**
      * @var array<ListenerProviderInterface>
      */
     private $listeners = [];
+
+    /**
+     * @var array<DiagnosticsProvider>
+     */
+    private $diagnosticsProvider = [];
 
     private function __construct()
     {
@@ -126,6 +138,7 @@ final class LanguageServerTesterBuilder
         $tester = new self();
         $tester->enableTextDocuments();
         $tester->enableServices();
+        $tester->enableDiagnostics();
 
         return $tester;
     }
@@ -168,6 +181,13 @@ final class LanguageServerTesterBuilder
         return $this;
     }
 
+    public function addDiagnosticsProvider(DiagnosticsProvider $diagnosticsProvider): self
+    {
+        $this->diagnosticsProvider[] = $diagnosticsProvider;
+
+        return $this;
+    }
+
     public function addListenerProvider(ListenerProviderInterface $listenerProvider): self
     {
         $this->listeners[] = $listenerProvider;
@@ -202,6 +222,12 @@ final class LanguageServerTesterBuilder
     {
         $this->enableServices = true;
 
+        return $this;
+    }
+
+    public function enableDiagnostics(): self
+    {
+        $this->enableDiagnostics = true;
         return $this;
     }
 
@@ -253,7 +279,20 @@ final class LanguageServerTesterBuilder
             function (MessageTransmitter $transmitter, InitializeParams $params) {
                 $logger =  new NullLogger();
                 
-                $serviceManager = new ServiceManager(new ServiceProviders(...$this->serviceProviders), $logger);
+                $serviceProviders = $this->serviceProviders;
+
+                if ($this->enableDiagnostics) {
+                    $service = new DiagnosticsService(
+                        new DiagnosticsEngine(
+                            $this->clientApi,
+                            new AggregateDiagnosticsProvider(...$this->diagnosticsProvider)
+                        )
+                    );
+                    $serviceProviders[] = $service;
+                    $this->listeners[] = $service;
+                }
+
+                $serviceManager = new ServiceManager(new ServiceProviders(...$serviceProviders), $logger);
                 $eventDispatcher = $this->buildEventDispatcher($serviceManager);
 
                 $handlers = $this->handlers;

@@ -4,9 +4,6 @@ namespace Phpactor\LanguageServer\Core\Diagnostics;
 
 use Amp\CancelledException;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
-use Phpactor\LanguageServer\Event\TextDocumentSaved;
-use Phpactor\LanguageServer\Event\TextDocumentUpdated;
-use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Amp\Promise;
 use Amp\CancellationToken;
 use Amp\Deferred;

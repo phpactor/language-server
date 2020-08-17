@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Diagnostics;
 
 use Amp\Promise;
-use Generator;
 use Phpactor\LanguageServerProtocol\Position;
 use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;

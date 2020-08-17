@@ -6,7 +6,6 @@ use Amp\Delayed;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServer\Core\Diagnostics\ClosureDiagnosticsProvider;
 use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
-use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsProvider;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Service\DiagnosticsService;
@@ -18,7 +17,10 @@ class DiagnosticsServiceTest extends TestCase
 {
     public function testService(): void
     {
-        $tester = LanguageServerTesterBuilder::create();
+        $tester = LanguageServerTesterBuilder::createBare()
+            ->enableServices()
+            ->enableTextDocuments();
+
         $service = new DiagnosticsService(
             new DiagnosticsEngine(
                 $tester->clientApi(),

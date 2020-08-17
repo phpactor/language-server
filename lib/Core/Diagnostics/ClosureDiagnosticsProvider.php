@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Core\Diagnostics;
 
 use Amp\Promise;
-use Amp\Success;
 use Closure;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 
