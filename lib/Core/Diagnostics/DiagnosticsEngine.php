@@ -79,10 +79,12 @@ class DiagnosticsEngine
 
                 assert($textDocument instanceof TextDocumentItem);
 
+                $diagnostics = yield $this->provider->provideDiagnostics($textDocument);
+
                 $this->clientApi->diagnostics()->publishDiagnostics(
                     $textDocument->uri,
                     $textDocument->version,
-                    yield $this->provider->provideDiagnostics($textDocument)
+                    $diagnostics
                 );
             }
         });

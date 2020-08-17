@@ -18,7 +18,7 @@ final class DiagnosticsClient
 
     public function publishDiagnostics(string $uri, ?int $version, array $diagnostics): void
     {
-        $this->client->notification('diagnostics/publishDiagnostics', [
+        $this->client->notification('textDocument/publishDiagnostics', [
             'uri' => $uri,
             'version' => $version,
             'diagnostics' => $diagnostics,
