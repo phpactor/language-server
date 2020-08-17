@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer;
 
+use Amp\Loop;
 use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
@@ -36,7 +37,9 @@ use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
 use Phpactor\LanguageServer\Test\LanguageServerTester;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Log\NullLogger;
+use Throwable;
 
 final class LanguageServerTesterBuilder
 {
@@ -100,6 +103,11 @@ final class LanguageServerTesterBuilder
      */
     private $enableServices = false;
 
+    /**
+     * @var array<ListenerProviderInterface>
+     */
+    private $listeners = [];
+
     private function __construct()
     {
         $this->initializeParams = new InitializeParams(new ClientCapabilities());
@@ -156,6 +164,13 @@ final class LanguageServerTesterBuilder
     public function addServiceProvider(ServiceProvider $serviceProvider): self
     {
         $this->serviceProviders[] = $serviceProvider;
+
+        return $this;
+    }
+
+    public function addListenerProvider(ListenerProviderInterface $listenerProvider): self
+    {
+        $this->listeners[] = $listenerProvider;
 
         return $this;
     }
@@ -272,7 +287,7 @@ final class LanguageServerTesterBuilder
     }
     private function buildEventDispatcher(ServiceManager $serviceManager): EventDispatcherInterface
     {
-        $listeners = [];
+        $listeners = $this->listeners;
 
         if ($this->enableServices) {
             $listeners[] = new ServiceListener($serviceManager);

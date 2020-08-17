@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Test;
 
 use Phpactor\LanguageServerProtocol\ClientCapabilities;
+use Phpactor\LanguageServerProtocol\Diagnostic;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServerProtocol\Position;
 use Phpactor\LanguageServerProtocol\Range;
@@ -18,9 +19,9 @@ final class ProtocolFactory
         return new TextDocumentItem($uri, 'php', 1, $content);
     }
 
-    public static function versionedTextDocumentIdentifier(string $string, ?int $version = null): VersionedTextDocumentIdentifier
+    public static function versionedTextDocumentIdentifier(?string $uri = 'foobar', ?int $version = null): VersionedTextDocumentIdentifier
     {
-        return new VersionedTextDocumentIdentifier('foobar');
+        return new VersionedTextDocumentIdentifier($uri, $version);
     }
 
     public static function textDocumentIdentifier(string $uri): TextDocumentIdentifier
@@ -52,5 +53,10 @@ final class ProtocolFactory
     public static function position(int $lineNb, int $colNb): Position
     {
         return new Position($lineNb, $colNb);
+    }
+
+    public static function diagnostic(Range $range, string $message): Diagnostic
+    {
+        return new Diagnostic($range, $message);
     }
 }

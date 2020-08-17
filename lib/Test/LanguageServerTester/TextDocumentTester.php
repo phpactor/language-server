@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Test\LanguageServerTester;
 
+use Phpactor\LanguageServerProtocol\DidChangeTextDocumentNotification;
+use Phpactor\LanguageServerProtocol\DidChangeTextDocumentParams;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentNotification;
@@ -23,6 +25,18 @@ class TextDocumentTester
     {
         $this->tester->notifyAndWait(DidOpenTextDocumentNotification::METHOD, new DidOpenTextDocumentParams(
             ProtocolFactory::textDocumentItem($url, $content)
+        ));
+    }
+
+    public function update(string $uri, string $newText): void
+    {
+        $this->tester->notifyAndWait(DidChangeTextDocumentNotification::METHOD, new DidChangeTextDocumentParams(
+            ProtocolFactory::versionedTextDocumentIdentifier($uri, 1),
+            [
+                [
+                    'text' => $newText
+                ]
+            ]
         ));
     }
 }

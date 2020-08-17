@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
-<phpunit
-    colors="true"
-    bootstrap="vendor/autoload.php"
-    >
-
-    <testsuites>
-        <testsuite name="Phpactor Language Server">
-            <directory>./tests</directory>
-        </testsuite>
-    </testsuites>
-
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory>lib</directory>
-        </whitelist>
-    </filter>
-
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage includeUncoveredFiles="true">
+    <include>
+      <directory>lib</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="Phpactor Language Server">
+      <directory>./tests</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>
