@@ -181,7 +181,7 @@ class ClientApiTest extends AsyncTestCase
             },
             function (TestRpcClient $client, $result) {
                 $message = $client->transmitter()->shiftNotification();
-                self::assertEquals('diagnostics/publishDiagnostics', $message->method);
+                self::assertEquals('textDocument/publishDiagnostics', $message->method);
             }
         ];
     }

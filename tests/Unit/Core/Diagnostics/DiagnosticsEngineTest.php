@@ -37,7 +37,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
         $notification = $tester->transmitter()->shiftNotification();
 
         self::assertNotNull($notification);
-        self::assertEquals('diagnostics/publishDiagnostics', $notification->method);
+        self::assertEquals('textDocument/publishDiagnostics', $notification->method);
     }
 
     /**

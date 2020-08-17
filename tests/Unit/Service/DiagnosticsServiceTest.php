@@ -48,6 +48,6 @@ class DiagnosticsServiceTest extends TestCase
         wait(new Delayed(100));
         $notification = $tester->transmitter()->shift();
         assert($notification instanceof NotificationMessage);
-        self::assertEquals('diagnostics/publishDiagnostics', $notification->method);
+        self::assertEquals('textDocument/publishDiagnostics', $notification->method);
     }
 }

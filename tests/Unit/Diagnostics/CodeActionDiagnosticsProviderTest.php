@@ -32,7 +32,7 @@ class CodeActionDiagnosticsProviderTest extends TestCase
         wait(new Delayed(100));
 
         self::assertEquals(1, $tester->transmitter()->count());
-        self::assertEquals('diagnostics/publishDiagnostics', $tester->transmitter()->shiftNotification()->method);
+        self::assertEquals('textDocument/publishDiagnostics', $tester->transmitter()->shiftNotification()->method);
     }
 }
 
