@@ -16,6 +16,7 @@ use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\Test\LanguageServerTester\ServicesTester;
 use Phpactor\LanguageServer\Test\LanguageServerTester\TextDocumentTester;
+use Phpactor\LanguageServer\Test\LanguageServerTester\WorkspaceTester;
 use RuntimeException;
 use function Amp\Promise\wait;
 
@@ -162,5 +163,10 @@ final class LanguageServerTester
     public function cancel(int $requestId): void
     {
         $this->dispatchAndWait(new NotificationMessage('$/cancelRequest', ['id' => $requestId]));
+    }
+
+    public function workspace(): WorkspaceTester
+    {
+        return new WorkspaceTester($this);
     }
 }

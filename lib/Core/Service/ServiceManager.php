@@ -12,10 +12,6 @@ use function Amp\asyncCall;
 
 class ServiceManager
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
 
     /**
      * @var array
@@ -26,6 +22,11 @@ class ServiceManager
      * @var ServiceProviders
      */
     private $serviceProviders;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
         ServiceProviders $serviceProviders,

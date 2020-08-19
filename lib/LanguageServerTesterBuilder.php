@@ -6,6 +6,7 @@ use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Adapter\DTL\DTLArgumentResolver;
 use Phpactor\LanguageServer\Adapter\Psr\AggregateEventDispatcher;
+use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use Phpactor\LanguageServer\Core\Diagnostics\AggregateDiagnosticsProvider;
 use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
 use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsProvider;
@@ -16,12 +17,14 @@ use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolv
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
+use Phpactor\LanguageServer\Core\Server\ResponseWatcher\TestResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 use Phpactor\LanguageServer\Core\Server\RpcClient\JsonRpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
+use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Listener\WorkspaceListener;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
@@ -71,7 +74,7 @@ final class LanguageServerTesterBuilder
     private $transmitter;
 
     /**
-     * @var ResponseWatcher
+     * @var TestResponseWatcher
      */
     private $responseWatcher;
 
@@ -81,7 +84,7 @@ final class LanguageServerTesterBuilder
     private $enableTextDocuments = false;
 
     /**
-     * @var DeferredResponseWatcher
+     * @var ResponseWatcher
      */
     private $responseHandler;
 
@@ -111,6 +114,11 @@ final class LanguageServerTesterBuilder
     private $enableDiagnostics = false;
 
     /**
+     * @var bool
+     */
+    private $enableCommands = false;
+
+    /**
      * @var array<ListenerProviderInterface>
      */
     private $listeners = [];
@@ -124,7 +132,7 @@ final class LanguageServerTesterBuilder
     {
         $this->initializeParams = new InitializeParams(new ClientCapabilities());
         $this->transmitter = new TestMessageTransmitter();
-        $this->responseWatcher = new DeferredResponseWatcher();
+        $this->responseWatcher = new TestResponseWatcher(new DeferredResponseWatcher());
         $this->rpcClient = new JsonRpcClient($this->transmitter, $this->responseWatcher);
         $this->clientApi = new ClientApi($this->rpcClient);
         $this->workspace = new Workspace();
@@ -139,6 +147,7 @@ final class LanguageServerTesterBuilder
         $tester->enableTextDocuments();
         $tester->enableServices();
         $tester->enableDiagnostics();
+        $tester->enableCommands();
 
         return $tester;
     }
@@ -230,6 +239,12 @@ final class LanguageServerTesterBuilder
         $this->enableDiagnostics = true;
         return $this;
     }
+    
+    public function enableCommands(): self
+    {
+        $this->enableCommands = true;
+        return $this;
+    }
 
     /**
      * Test Transmitter service: can be used to check which
@@ -262,6 +277,11 @@ final class LanguageServerTesterBuilder
     public function workspace(): Workspace
     {
         return $this->workspace;
+    }
+
+    public function responseWatcher(): TestResponseWatcher
+    {
+        return $this->responseWatcher;
     }
 
     public function build(): LanguageServerTester
@@ -303,6 +323,10 @@ final class LanguageServerTesterBuilder
 
                 if ($this->enableServices) {
                     $handlers[] = new ServiceHandler($serviceManager, $this->clientApi);
+                }
+
+                if ($this->enableCommands) {
+                    $handlers[] = new CommandHandler(new CommandDispatcher($this->commands));
                 }
 
                 $handlers = new Handlers(...$handlers);
