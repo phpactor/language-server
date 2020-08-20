@@ -33,7 +33,8 @@ class DiagnosticsServiceTest extends TestCase
                             )
                         ];
                     });
-                })
+                }),
+                0
             )
         );
 

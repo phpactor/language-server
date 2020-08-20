@@ -42,7 +42,7 @@ class DiagnosticsEngine
      */
     private $sleepTime;
 
-    public function __construct(ClientApi $clientApi, DiagnosticsProvider $provider, int $sleepTime = 100)
+    public function __construct(ClientApi $clientApi, DiagnosticsProvider $provider, int $sleepTime = 1000)
     {
         $this->deferred = new Deferred();
         $this->provider = $provider;
