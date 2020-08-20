@@ -49,10 +49,6 @@ class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
         if ($event instanceof TextDocumentUpdated) {
             yield [$this, 'enqueueUpdate'];
         }
-
-        if ($event instanceof TextDocumentSaved) {
-            yield [$this, 'enqueueSaved'];
-        }
     }
 
     public function enqueueUpdate(TextDocumentUpdated $update): void
@@ -62,18 +58,6 @@ class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
             'php',
             $update->identifier()->version,
             $update->updatedText()
-        );
-
-        $this->engine->enqueue($item);
-    }
-
-    public function enqueueSaved(TextDocumentSaved $saved): void
-    {
-        $item = new TextDocumentItem(
-            $saved->identifier()->uri,
-            'php',
-            $saved->identifier()->version,
-            $saved->text()
         );
 
         $this->engine->enqueue($item);

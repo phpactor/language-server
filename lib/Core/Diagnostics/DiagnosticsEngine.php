@@ -12,11 +12,6 @@ use Phpactor\LanguageServerProtocol\TextDocumentItem;
 class DiagnosticsEngine
 {
     /**
-     * @var int
-     */
-    private $pollTime;
-
-    /**
      * @var Deferred<TextDocumentItem>
      */
     private $deferred;
@@ -41,9 +36,8 @@ class DiagnosticsEngine
      */
     private $clientApi;
 
-    public function __construct(ClientApi $clientApi, DiagnosticsProvider $provider, int $pollTime = 100)
+    public function __construct(ClientApi $clientApi, DiagnosticsProvider $provider)
     {
-        $this->pollTime = $pollTime;
         $this->deferred = new Deferred();
         $this->provider = $provider;
         $this->clientApi = $clientApi;

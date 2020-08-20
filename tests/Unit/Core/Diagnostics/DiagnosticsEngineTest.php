@@ -12,6 +12,8 @@ use Phpactor\LanguageServer\Core\Diagnostics\ClosureDiagnosticsProvider;
 use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
+use function Amp\call;
+use function Amp\delay;
 
 class DiagnosticsEngineTest extends AsyncTestCase
 {
@@ -55,22 +57,50 @@ class DiagnosticsEngineTest extends AsyncTestCase
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///barfoo', 'foobar'));
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///bazbar', 'foobar'));
 
-        yield new Delayed(10);
+        yield new Delayed(0);
 
         $token->cancel();
 
         self::assertEquals(3, $tester->transmitter()->count());
     }
 
-    private function createEngine(LanguageServerTesterBuilder $tester): DiagnosticsEngine
+    /**
+     * @return Generator<mixed>
+     */
+    public function testDeduplicatesSuccessiveChangesToSameFile(): Generator
     {
-        $engine = new DiagnosticsEngine($tester->clientApi(), new ClosureDiagnosticsProvider(function (TextDocumentItem $item) {
-            return new Success([
-                ProtocolFactory::diagnostic(
-                    ProtocolFactory::range(0, 0, 0, 0),
-                    'Foobar is broken'
-                )
-            ]);
+        $tester = LanguageServerTesterBuilder::create();
+        $engine = $this->createEngine($tester, 5);
+
+        $token = new CancellationTokenSource();
+        $promise = $engine->run($token->getToken());
+
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'bazboo'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
+
+        yield new Delayed(10);
+
+        $token->cancel();
+
+        self::assertEquals(1, $tester->transmitter()->count());
+    }
+
+    private function createEngine(LanguageServerTesterBuilder $tester, int $delay = 0): DiagnosticsEngine
+    {
+        $engine = new DiagnosticsEngine($tester->clientApi(), new ClosureDiagnosticsProvider(function (TextDocumentItem $item) use ($delay) {
+            return call(function () use ($delay) {
+                if ($delay) {
+                    yield delay($delay);
+                }
+                return [
+                    ProtocolFactory::diagnostic(
+                        ProtocolFactory::range(0, 0, 0, 0),
+                        'Foobar is broken'
+                    )
+                ];
+
+            });
         }));
         return $engine;
     }
