@@ -15,7 +15,7 @@ Example of a command:
    :linenos:
 
 It unconditionally provides two code actions: ``Alice`` and ``Bob``. It
-references a previously registered :doc:`commands <../reference/command>` such as:
+references a previously registered :doc:`commands <../reference/commands>` such as:
 
 .. literalinclude:: ../../lib/Example/Command/SayHelloCommand.php
    :language: php

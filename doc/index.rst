@@ -22,6 +22,7 @@ Reference
    reference/builder
    reference/handlers
    reference/service-providers
+   reference/diagnostic-providers
    reference/code-action-providers
    reference/commands
 

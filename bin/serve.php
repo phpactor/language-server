@@ -4,6 +4,8 @@
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Adapter\Psr\AggregateEventDispatcher;
 use Phpactor\LanguageServer\Core\CodeAction\AggregateCodeActionProvider;
+use Phpactor\LanguageServer\Core\Diagnostics\AggregateDiagnosticsProvider;
+use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\PassThroughArgumentResolver;
@@ -19,6 +21,7 @@ use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Example\CodeAction\SayHelloCodeActionProvider;
 use Phpactor\LanguageServer\Example\Command\SayHelloCommand;
+use Phpactor\LanguageServer\Example\Diagnostics\SayHelloDiagnosticsProvider;
 use Phpactor\LanguageServer\Handler\TextDocument\CodeActionHandler;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
@@ -36,6 +39,7 @@ use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
 use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
+use Phpactor\LanguageServer\Service\DiagnosticsService;
 use Psr\Log\AbstractLogger;
 use function Safe\fopen;
 
@@ -90,15 +94,21 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $responseWatcher = new DeferredResponseWatcher();
         $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
-        $serviceProviders = new ServiceProviders(
-            //new PingProvider($clientApi)
+        $diagnosticsService = new DiagnosticsService(
+            new DiagnosticsEngine($clientApi, new AggregateDiagnosticsProvider(
+                $logger,
+                new SayHelloDiagnosticsProvider()
+            ))
         );
+
+        $serviceProviders = new ServiceProviders($diagnosticsService);
 
         $workspace = new Workspace();
         $serviceManager = new ServiceManager($serviceProviders, $logger);
         $eventDispatcher = new AggregateEventDispatcher(
             new ServiceListener($serviceManager),
-            new WorkspaceListener($workspace)
+            new WorkspaceListener($workspace),
+            $diagnosticsService
         );
 
         $handlers = new Handlers(
