@@ -22,7 +22,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
     public function testPublishesDiagnostics(): Generator
     {
         $tester = LanguageServerTesterBuilder::create();
-        $engine = $this->createEngine($tester);
+        $engine = $this->createEngine($tester, 0, 0);
 
         $token = new CancellationTokenSource();
         $promise = $engine->run($token->getToken());
@@ -37,7 +37,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $notification = $tester->transmitter()->shiftNotification();
 
-        self::assertNotNull($notification);
+        self::assertNotNull($notification, 'Notification sent');
         self::assertEquals('textDocument/publishDiagnostics', $notification->method);
     }
 
@@ -47,7 +47,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
     public function testPublishesForManyFiles(): Generator
     {
         $tester = LanguageServerTesterBuilder::create();
-        $engine = $this->createEngine($tester);
+        $engine = $this->createEngine($tester, 0, 0);
 
         $token = new CancellationTokenSource();
         $promise = $engine->run($token->getToken());
@@ -69,7 +69,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
     public function testDeduplicatesSuccessiveChangesToSameFile(): Generator
     {
         $tester = LanguageServerTesterBuilder::create();
-        $engine = $this->createEngine($tester, 5);
+        $engine = $this->createEngine($tester, 5, 0);
 
         $token = new CancellationTokenSource();
         $promise = $engine->run($token->getToken());
@@ -85,7 +85,29 @@ class DiagnosticsEngineTest extends AsyncTestCase
         self::assertEquals(1, $tester->transmitter()->count());
     }
 
-    private function createEngine(LanguageServerTesterBuilder $tester, int $delay = 0): DiagnosticsEngine
+    /**
+     * @return Generator<mixed>
+     */
+    public function testSleepPreventsSeige(): Generator
+    {
+        $tester = LanguageServerTesterBuilder::create();
+        $engine = $this->createEngine($tester, 5, 10);
+
+        $token = new CancellationTokenSource();
+        $promise = $engine->run($token->getToken());
+
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'bazboo'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///barfoo', 'foobar'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///bazbar', 'foobar'));
+
+        yield new Delayed(100);
+
+        $token->cancel();
+
+        self::assertEquals(2, $tester->transmitter()->count());
+    }
+
+    private function createEngine(LanguageServerTesterBuilder $tester, int $delay = 0, int $sleepTime = 0): DiagnosticsEngine
     {
         $engine = new DiagnosticsEngine($tester->clientApi(), new ClosureDiagnosticsProvider(function (TextDocumentItem $item) use ($delay) {
             return call(function () use ($delay) {
@@ -99,7 +121,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
                     )
                 ];
             });
-        }));
+        }), $sleepTime);
         return $engine;
     }
 }

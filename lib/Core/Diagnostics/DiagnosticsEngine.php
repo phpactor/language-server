@@ -8,6 +8,7 @@ use Amp\Promise;
 use Amp\CancellationToken;
 use Amp\Deferred;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
+use function Amp\delay;
 
 class DiagnosticsEngine
 {
@@ -36,11 +37,17 @@ class DiagnosticsEngine
      */
     private $clientApi;
 
-    public function __construct(ClientApi $clientApi, DiagnosticsProvider $provider)
+    /**
+     * @var int
+     */
+    private $sleepTime;
+
+    public function __construct(ClientApi $clientApi, DiagnosticsProvider $provider, int $sleepTime = 100)
     {
         $this->deferred = new Deferred();
         $this->provider = $provider;
         $this->clientApi = $clientApi;
+        $this->sleepTime = $sleepTime;
     }
 
     /**
@@ -74,6 +81,10 @@ class DiagnosticsEngine
                 assert($textDocument instanceof TextDocumentItem);
 
                 $diagnostics = yield $this->provider->provideDiagnostics($textDocument);
+
+                if ($this->sleepTime > 0) {
+                    yield delay($this->sleepTime);
+                }
 
                 $this->clientApi->diagnostics()->publishDiagnostics(
                     $textDocument->uri,
