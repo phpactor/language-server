@@ -15,9 +15,29 @@ final class TestMessageTransmitter implements MessageTransmitter, TestMessageTra
      */
     private $buffer = [];
 
+    public function __construct(Message ...$buffer)
+    {
+        $this->buffer = $buffer;
+    }
+
     public function transmit(Message $response): void
     {
         $this->buffer[] = $response;
+    }
+
+    public function filterByMethod(string $method): self
+    {
+        return new self(...array_filter($this->buffer, function (Message $message) use ($method) {
+            if (
+                !$message instanceof RequestMessage &&
+                !$message instanceof NotificationMessage
+            )
+            {
+                return false;
+            }
+
+            return $message->method === $method;
+        }));
     }
 
     public function shift(): ?Message
