@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Core\Diagnostics;
 use Amp\Promise;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Psr\Log\LoggerInterface;
-use Throwable;
 use function Amp\call;
 
 class AggregateDiagnosticsProvider implements DiagnosticsProvider

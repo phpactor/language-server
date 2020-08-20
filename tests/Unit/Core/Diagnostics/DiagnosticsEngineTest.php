@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Diagnostics;
 use Amp\CancellationTokenSource;
 use Amp\Delayed;
 use Amp\PHPUnit\AsyncTestCase;
-use Amp\Success;
 use Generator;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Diagnostics\ClosureDiagnosticsProvider;
@@ -99,7 +98,6 @@ class DiagnosticsEngineTest extends AsyncTestCase
                         'Foobar is broken'
                     )
                 ];
-
             });
         }));
         return $engine;
