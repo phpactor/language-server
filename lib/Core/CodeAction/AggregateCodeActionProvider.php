@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Core\CodeAction;
 
 use Amp\Promise;
-use Generator;
 use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use function Amp\call;

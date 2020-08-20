@@ -30,7 +30,7 @@ class CodeActionDiagnosticsProvider implements DiagnosticsProvider
         return call(function () use ($textDocument) {
             $diagnostics = [];
             foreach ($this->providers as $provider) {
-                $codeActions = $provider->provideActionsFor($textDocument, new Range(
+                $codeActions = yield $provider->provideActionsFor($textDocument, new Range(
                     new Position(0, 0),
                     new Position(PHP_INT_MAX, PHP_INT_MAX)
                 ));
