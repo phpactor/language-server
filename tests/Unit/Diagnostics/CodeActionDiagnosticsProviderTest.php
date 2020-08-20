@@ -3,7 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Diagnostics;
 
 use Amp\Delayed;
-use Generator;
+use Amp\Promise;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServerProtocol\CodeAction;
 use Phpactor\LanguageServerProtocol\Range;
@@ -13,6 +13,7 @@ use Phpactor\LanguageServer\Diagnostics\CodeActionDiagnosticsProvider;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use function Amp\Promise\wait;
+use function Amp\call;
 
 class CodeActionDiagnosticsProviderTest extends TestCase
 {
@@ -38,20 +39,21 @@ class CodeActionDiagnosticsProviderTest extends TestCase
 
 class TestCodeActionProvider implements CodeActionProvider
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Generator
+    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Promise
     {
-        yield CodeAction::fromArray([
-            'title' => 'Bar',
-            'diagnostics' => [
-                ProtocolFactory::diagnostic(
-                    ProtocolFactory::range(0, 0, 0, 0),
-                    'Foobar'
-                ),
-            ]
-        ]);
+        return call(function () {
+            return [
+                CodeAction::fromArray([
+                    'title' => 'Bar',
+                    'diagnostics' => [
+                        ProtocolFactory::diagnostic(
+                            ProtocolFactory::range(0, 0, 0, 0),
+                            'Foobar'
+                        ),
+                    ]
+                ])
+            ];
+        });
     }
 
     /**

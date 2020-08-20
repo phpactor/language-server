@@ -56,14 +56,7 @@ class CodeActionHandler implements Handler, CanRegisterCapabilities
     {
         return call(function () use ($params) {
             $document = $this->workspace->get($params->textDocument->uri);
-            $actions = [];
-
-            foreach ($this->provider->provideActionsFor($document, $params->range) as $action) {
-                $actions[] = $action;
-                // could interupt here if code actions are blocking for too long
-            }
-
-            return $actions;
+            return $this->provider->provideActionsFor($document, $params->range);
         });
     }
 }

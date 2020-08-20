@@ -2,7 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\CodeAction;
 
-use Generator;
+use Amp\Promise;
 use Phpactor\LanguageServerProtocol\CodeAction;
 use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
@@ -10,9 +10,9 @@ use Phpactor\LanguageServerProtocol\TextDocumentItem;
 interface CodeActionProvider
 {
     /**
-     * @return Generator<CodeAction>
+     * @return Promise<array<CodeAction>>
      */
-    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Generator;
+    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Promise;
 
     /**
      * Return the kinds of actions that this provider can return, for example

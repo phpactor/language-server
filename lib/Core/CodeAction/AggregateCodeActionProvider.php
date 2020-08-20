@@ -2,9 +2,11 @@
 
 namespace Phpactor\LanguageServer\Core\CodeAction;
 
+use Amp\Promise;
 use Generator;
 use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
+use function Amp\call;
 
 class AggregateCodeActionProvider implements CodeActionProvider
 {
@@ -21,11 +23,16 @@ class AggregateCodeActionProvider implements CodeActionProvider
     /**
      * {@inheritDoc}
      */
-    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Generator
+    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Promise
     {
-        foreach ($this->providers as $provider) {
-            yield from $provider->provideActionsFor($textDocument, $range);
-        }
+        return call(function () use ($textDocument, $range) {
+            $actions = [];
+            foreach ($this->providers as $provider) {
+                $actions = array_merge($actions, yield $provider->provideActionsFor($textDocument, $range));
+            }
+
+            return $actions;
+        });
     }
 
     /**

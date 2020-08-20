@@ -2,12 +2,14 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\CodeAction;
 
+use Amp\Success;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServerProtocol\CodeAction;
 use Phpactor\LanguageServer\Core\CodeAction\AggregateCodeActionProvider;
 use Phpactor\LanguageServer\Core\CodeAction\CodeActionProvider;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Prophecy\PhpUnit\ProphecyTrait;
+use function Amp\Promise\wait;
 
 class AggregateCodeActionProviderTest extends TestCase
 {
@@ -37,13 +39,13 @@ class AggregateCodeActionProviderTest extends TestCase
         $provider1 = $this->prophesize(CodeActionProvider::class);
         $provider2 = $this->prophesize(CodeActionProvider::class);
 
-        $provider1->provideActionsFor($item, $range)->willYield([$action1]);
-        $provider2->provideActionsFor($item, $range)->willYield([$action2]);
+        $provider1->provideActionsFor($item, $range)->willReturn(new Success([$action1]));
+        $provider2->provideActionsFor($item, $range)->willReturn(new Success([$action2]));
 
         $aggregate = new AggregateCodeActionProvider($provider1->reveal(), $provider2->reveal());
 
         $actions = [];
-        foreach ($aggregate->provideActionsFor($item, $range) as $action) {
+        foreach (wait($aggregate->provideActionsFor($item, $range)) as $action) {
             $actions[] = $action;
         }
 

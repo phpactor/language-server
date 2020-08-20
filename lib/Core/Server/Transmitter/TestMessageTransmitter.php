@@ -31,8 +31,7 @@ final class TestMessageTransmitter implements MessageTransmitter, TestMessageTra
             if (
                 !$message instanceof RequestMessage &&
                 !$message instanceof NotificationMessage
-            )
-            {
+            ) {
                 return false;
             }
 

@@ -2,33 +2,34 @@
 
 namespace Phpactor\LanguageServer\Example\CodeAction;
 
-use Generator;
+use Amp\Promise;
 use Phpactor\LanguageServerProtocol\CodeAction;
 use Phpactor\LanguageServerProtocol\Command;
 use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\CodeAction\CodeActionProvider;
+use function Amp\call;
 
 class SayHelloCodeActionProvider implements CodeActionProvider
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Generator
+    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Promise
     {
-        yield CodeAction::fromArray([
-            'title' => 'Alice',
-            'command' => new Command('Hello Alice', 'phpactor.say_hello', [
-                'Alice',
-            ])
-        ]);
-
-        yield CodeAction::fromArray([
-            'title' => 'Bob',
-            'command' => new Command('Hello Bob', 'phpactor.say_hello', [
-                'Bob',
-            ])
-        ]);
+        return call(function () {
+            return [
+                CodeAction::fromArray([
+                    'title' => 'Alice',
+                    'command' => new Command('Hello Alice', 'phpactor.say_hello', [
+                        'Alice',
+                    ])
+                ]),
+                CodeAction::fromArray([
+                    'title' => 'Bob',
+                    'command' => new Command('Hello Bob', 'phpactor.say_hello', [
+                        'Bob',
+                    ])
+                ])
+            ];
+        });
     }
 
     /**
