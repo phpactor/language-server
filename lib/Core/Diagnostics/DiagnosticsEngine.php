@@ -80,11 +80,11 @@ class DiagnosticsEngine
 
                 assert($textDocument instanceof TextDocumentItem);
 
-                $diagnostics = yield $this->provider->provideDiagnostics($textDocument);
-
                 if ($this->sleepTime > 0) {
                     yield delay($this->sleepTime);
                 }
+
+                $diagnostics = yield $this->provider->provideDiagnostics($textDocument);
 
                 $this->clientApi->diagnostics()->publishDiagnostics(
                     $textDocument->uri,
