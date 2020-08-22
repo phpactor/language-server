@@ -63,14 +63,7 @@ class DiagnosticsEngine
                     return;
                 }
 
-                // if another update came in while doing the previous lint use
-                // use that.
-                if ($this->next) {
-                    $textDocument = $this->next;
-                    $this->next = null;
-                } else {
-                    $textDocument = yield $this->deferred->promise();
-                }
+                $textDocument = yield $this->deferred->promise();
 
                 $this->deferred = new Deferred();
 
@@ -82,6 +75,11 @@ class DiagnosticsEngine
 
                 if ($this->sleepTime > 0) {
                     yield delay($this->sleepTime);
+                }
+
+                if ($this->next) {
+                    $textDocument = $this->next;
+                    $this->next = null;
                 }
 
                 $diagnostics = yield $this->provider->provideDiagnostics($textDocument);
