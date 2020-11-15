@@ -17,7 +17,7 @@
         "dantleech/invoke": "^1.0",
         "ramsey/uuid": "^4.0",
         "psr/event-dispatcher": "^1.0",
-        "phpactor/language-server-protocol": "dev-master",
+        "phpactor/language-server-protocol": "~0.1",
         "thecodingmachine/safe": "^1.1",
         "dantleech/argument-resolver": "^1.1"
     },
