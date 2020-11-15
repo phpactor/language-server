@@ -34,9 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phpactor\\LanguageServer\\": "lib/",
-            "LanguageServerProtocol\\": "protocol/",
-            "Phpactor\\Extension\\LanguageServer\\": "language-server-extension/lib/"
+            "Phpactor\\LanguageServer\\": "lib/"
         }
     },
     "autoload-dev": {
