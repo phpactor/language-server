@@ -24,10 +24,27 @@ class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
      */
     private $workspace;
 
-    public function __construct(DiagnosticsEngine $engine, ?Workspace $workspace = null)
+    /**
+     * @var bool
+     */
+    private $lintOnUpdate;
+
+    /**
+     * @var bool
+     */
+    private $lintOnSave;
+
+    public function __construct(
+        DiagnosticsEngine $engine,
+        bool $lintOnUpdate = true,
+        bool $lintOnSave = true,
+        ?Workspace $workspace = null
+    )
     {
         $this->engine = $engine;
         $this->workspace = $workspace ?: new Workspace();
+        $this->lintOnUpdate = $lintOnUpdate;
+        $this->lintOnSave = $lintOnSave;
     }
 
     /**
@@ -53,11 +70,11 @@ class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
      */
     public function getListenersForEvent(object $event): iterable
     {
-        if ($event instanceof TextDocumentUpdated) {
+        if ($this->lintOnUpdate && $event instanceof TextDocumentUpdated) {
             yield [$this, 'enqueueUpdate'];
         }
 
-        if ($event instanceof TextDocumentSaved) {
+        if ($this->lintOnSave && $event instanceof TextDocumentSaved) {
             yield [$this, 'enqueueSave'];
         }
     }

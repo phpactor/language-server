@@ -36,6 +36,8 @@ class DiagnosticsServiceTest extends TestCase
                 }),
                 0
             ),
+            true,
+            true,
             $tester->workspace()
         );
 
