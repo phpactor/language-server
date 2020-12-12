@@ -35,7 +35,8 @@ class DiagnosticsServiceTest extends TestCase
                     });
                 }),
                 0
-            )
+            ),
+            $tester->workspace()
         );
 
         $tester->addServiceProvider($service);
@@ -46,6 +47,12 @@ class DiagnosticsServiceTest extends TestCase
         $tester->textDocument()->open('file:///foobar', 'barfoo');
         wait(new Delayed(100));
         $tester->textDocument()->update('file:///foobar', 'barfoo');
+        wait(new Delayed(100));
+        $notification = $tester->transmitter()->shift();
+        assert($notification instanceof NotificationMessage);
+        self::assertEquals('textDocument/publishDiagnostics', $notification->method);
+
+        $tester->textDocument()->save('file:///foobar', 'foobar');
         wait(new Delayed(100));
         $notification = $tester->transmitter()->shift();
         assert($notification instanceof NotificationMessage);

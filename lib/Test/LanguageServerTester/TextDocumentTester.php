@@ -4,6 +4,8 @@ namespace Phpactor\LanguageServer\Test\LanguageServerTester;
 
 use Phpactor\LanguageServerProtocol\DidChangeTextDocumentNotification;
 use Phpactor\LanguageServerProtocol\DidChangeTextDocumentParams;
+use Phpactor\LanguageServerProtocol\DidSaveTextDocumentNotification;
+use Phpactor\LanguageServerProtocol\DidSaveTextDocumentParams;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentNotification;
@@ -37,6 +39,13 @@ class TextDocumentTester
                     'text' => $newText
                 ]
             ]
+        ));
+    }
+
+    public function save(string $uri): void
+    {
+        $this->tester->notifyAndWait(DidSaveTextDocumentNotification::METHOD, new DidSaveTextDocumentParams(
+            ProtocolFactory::versionedTextDocumentIdentifier($uri, 1)
         ));
     }
 }
