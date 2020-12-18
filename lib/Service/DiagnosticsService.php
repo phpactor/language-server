@@ -39,8 +39,7 @@ class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
         bool $lintOnUpdate = true,
         bool $lintOnSave = true,
         ?Workspace $workspace = null
-    )
-    {
+    ) {
         $this->engine = $engine;
         $this->workspace = $workspace ?: new Workspace();
         $this->lintOnUpdate = $lintOnUpdate;
