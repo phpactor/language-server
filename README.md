@@ -1,7 +1,7 @@
 Phpactor Language Server
 ========================
 
-[![Build Status](https://travis-ci.org/phpactor/language-server.svg?branch=master)](https://travis-ci.org/phpactor/language-server)
+![CI](https://github.com/phpactor/language-server/workflows/CI/badge.svg)
 
 This package provides a platform for *building* a Language Server according to
 the [Language Server Specification](https://microsoft.github.io/language-server-protocol/specification)
