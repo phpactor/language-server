@@ -1,0 +1,432 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/CodeAction/AggregateCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/CodeAction/AggregateCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/CodeAction/AggregateCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/CodeAction/AggregateCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/CodeAction/AggregateCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/CodeAction/AggregateCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/AggregateDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/AggregateDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/AggregateDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/AggregateDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/AggregateDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/AggregateDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/DiagnosticsEngine.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/DiagnosticsEngine.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/DiagnosticsEngine.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/DiagnosticsEngine.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/DiagnosticsEngine.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Diagnostics/DiagnosticsEngine.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Handler\\\\ClosureHandler\\:\\:handle\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: lib/Core/Handler/ClosureHandler.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Handler/HandlerMethodRunner.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Handler/HandlerMethodRunner.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Handler/HandlerMethodRunner.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Handler/HandlerMethodRunner.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Handler/HandlerMethodRunner.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Handler/HandlerMethodRunner.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Client/MessageRequestClient.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Client/MessageRequestClient.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Client/MessageRequestClient.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Client/MessageRequestClient.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Client/MessageRequestClient.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Client/MessageRequestClient.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 2
+			path: lib/Core/Server/Client/WorkspaceClient.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 2
+			path: lib/Core/Server/Client/WorkspaceClient.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 2
+			path: lib/Core/Server/Client/WorkspaceClient.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 2
+			path: lib/Core/Server/Client/WorkspaceClient.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 2
+			path: lib/Core/Server/Client/WorkspaceClient.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 2
+			path: lib/Core/Server/Client/WorkspaceClient.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 3
+			path: lib/Core/Server/LanguageServer.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 3
+			path: lib/Core/Server/LanguageServer.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 3
+			path: lib/Core/Server/LanguageServer.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 3
+			path: lib/Core/Server/LanguageServer.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 3
+			path: lib/Core/Server/LanguageServer.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 3
+			path: lib/Core/Server/LanguageServer.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Parser/LspMessageReader.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Parser/LspMessageReader.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Parser/LspMessageReader.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Parser/LspMessageReader.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Parser/LspMessageReader.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Core/Server/Parser/LspMessageReader.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Diagnostics/CodeActionDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Diagnostics/CodeActionDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Diagnostics/CodeActionDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Diagnostics/CodeActionDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Diagnostics/CodeActionDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Diagnostics/CodeActionDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/CodeAction/SayHelloCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/CodeAction/SayHelloCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/CodeAction/SayHelloCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/CodeAction/SayHelloCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/CodeAction/SayHelloCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/CodeAction/SayHelloCodeActionProvider.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Diagnostics/SayHelloDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Diagnostics/SayHelloDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Diagnostics/SayHelloDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Diagnostics/SayHelloDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Diagnostics/SayHelloDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Diagnostics/SayHelloDiagnosticsProvider.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Service/PingProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Service/PingProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Service/PingProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Service/PingProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Service/PingProvider.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Example/Service/PingProvider.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Handler/TextDocument/CodeActionHandler.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Handler/TextDocument/CodeActionHandler.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Handler/TextDocument/CodeActionHandler.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Handler/TextDocument/CodeActionHandler.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Handler/TextDocument/CodeActionHandler.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Handler/TextDocument/CodeActionHandler.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Middleware/ErrorHandlingMiddleware.php
+
+		-
+			message: "#^Unable to resolve the template type TGenerator in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Middleware/ErrorHandlingMiddleware.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Middleware/ErrorHandlingMiddleware.php
+
+		-
+			message: "#^Unable to resolve the template type TGeneratorReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Middleware/ErrorHandlingMiddleware.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Middleware/ErrorHandlingMiddleware.php
+
+		-
+			message: "#^Unable to resolve the template type TReturn in call to function Amp\\\\call$#"
+			count: 1
+			path: lib/Middleware/ErrorHandlingMiddleware.php
+
+		-
+			message: "#^Unable to resolve the template type TPromise in call to function Amp\\\\Promise\\\\wait$#"
+			count: 3
+			path: lib/Test/LanguageServerTester.php
+
