@@ -5,11 +5,9 @@ parameters:
         - '{Unable to resolve the template type}'
         - '{Handler.*has no return type}'
     checkMissingIterableValueType: false
-        
     paths:
         - lib
         - example
         - bin
-
 includes:
     - vendor/jangregor/phpstan-prophecy/extension.neon
