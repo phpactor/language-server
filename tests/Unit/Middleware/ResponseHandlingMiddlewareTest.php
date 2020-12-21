@@ -20,7 +20,7 @@ class ResponseHandlingMiddlewareTest extends AsyncTestCase
      */
     private $watcher;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         parent::setUp();
         $this->watcher = new DeferredResponseWatcher();

@@ -19,7 +19,7 @@ class HandlersTest extends TestCase
      */
     private $handler2;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         $this->handler1 = $this->prophesize(Handler::class);
         $this->handler2 = $this->prophesize(Handler::class);

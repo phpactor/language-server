@@ -25,7 +25,7 @@ class WorkspaceListenerTest extends TestCase
      */
     private $listener;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         $this->workspace = $this->prophesize(Workspace::class);
         $this->listener = new WorkspaceListener($this->workspace->reveal());

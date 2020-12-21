@@ -25,7 +25,7 @@ class ErrorHandlingMiddlewareTest extends AsyncTestCase
      */
     private $logger;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         parent::setUp();
         $this->logger = new TestLogger();

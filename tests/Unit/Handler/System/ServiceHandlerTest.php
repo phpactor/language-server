@@ -33,7 +33,7 @@ class ServiceHandlerTest extends HandlerTestCase
      */
     private $client;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         $this->serviceManager = $this->prophesize(ServiceManager::class);
         $this->client = TestRpcClient::create();

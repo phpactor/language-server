@@ -14,7 +14,7 @@ class HandlerMethodResolverTest extends TestCase
      */
     private $resolver;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         $this->resolver = new HandlerMethodResolver();
     }

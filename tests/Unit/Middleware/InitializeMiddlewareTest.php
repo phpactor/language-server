@@ -31,7 +31,7 @@ class InitializeMiddlewareTest extends AsyncTestCase
      */
     private $dispatcher;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         parent::setUp();
         $this->dispatcher = $this->prophesize(EventDispatcherInterface::class);

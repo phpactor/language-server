@@ -24,7 +24,7 @@ class CancellationMiddlewareTest extends AsyncTestCase
      */
     private $runner;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         parent::setUp();
         $this->runner = $this->prophesize(MethodRunner::class);

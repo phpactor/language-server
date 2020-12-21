@@ -29,7 +29,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
      */
     private $dispatcher;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         $this->dispatcher = $this->prophesize(EventDispatcherInterface::class);
     }

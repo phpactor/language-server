@@ -16,7 +16,7 @@ class WorkspaceTest extends TestCase
      */
     private $workspace;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         $this->workspace = new Workspace();
     }

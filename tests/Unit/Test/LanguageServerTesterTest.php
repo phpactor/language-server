@@ -96,7 +96,7 @@ class LanguageServerTesterTest extends TestCase
         $tester = $this->createTester();
         $tester->initialize();
         $services = $tester->services()->listRunning();
-        self::assertContains('ping', $services);
+        self::assertStringContainsString('ping', $services);
 
         $tester->services()->stop('ping');
         $services = $tester->services()->listRunning();
@@ -104,7 +104,7 @@ class LanguageServerTesterTest extends TestCase
 
         $tester->services()->start('ping');
         $services = $tester->services()->listRunning();
-        self::assertContains('ping', $services);
+        self::assertStringContainsString('ping', $services);
     }
 
     public function testInitialize(): void

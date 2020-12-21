@@ -24,7 +24,7 @@ class ServiceListenerTest extends TestCase
      */
     private $serviceManager;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         $this->serviceManager = $this->prophesize(ServiceManager::class);
         $this->listener = (new ServiceListener($this->serviceManager->reveal()));

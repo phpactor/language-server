@@ -28,7 +28,7 @@ class StatsHandlerTest extends HandlerTestCase
      */
     private $client;
 
-    protected function setUp(): void
+    protected function setUp(): void: void
     {
         $this->stats = new ServerStats();
         $this->client = TestRpcClient::create();
