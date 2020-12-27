@@ -9,7 +9,6 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
-use RuntimeException;
 
 class RequestMessageFactoryTest extends TestCase
 {
