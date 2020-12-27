@@ -49,7 +49,6 @@ $options = [
     'address' => null,
 ];
 
-/** @phpstan-ignore-next-line */
 $options = array_merge($options, getopt('t::a::', ['type::', 'address::']));
 $type = $options['type'];
 $address = $options['address'];
@@ -144,6 +143,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
 ), $logger);
 
 if ($type === 'tcp') {
+    /** @phpstan-ignore-next-line */
     $builder->tcpServer((string)$address);
 }
 $builder
