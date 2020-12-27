@@ -2,8 +2,8 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Rpc;
 
-use DTL\Invoke\Internal\Exception\RequiredKeysMissing;
-use DTL\Invoke\Internal\Exception\UnknownKeys;
+use DTL\Invoke\Exception\RequiredKeysMissing;
+use DTL\Invoke\Exception\UnknownKeys;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\TestUtils\PHPUnit\TestCase;
