@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Rpc;
 
+use DTL\Invoke\Internal\Exception\RequiredKeysMissing;
+use DTL\Invoke\Internal\Exception\UnknownKeys;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\TestUtils\PHPUnit\TestCase;
@@ -13,14 +15,14 @@ class RequestMessageFactoryTest extends TestCase
 {
     public function testExceptionOnInvalidKeys()
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(UnknownKeys::class);
         $request = new RawMessage([], ['foo' => 'bar']);
         RequestMessageFactory::fromRequest($request);
     }
 
     public function testExceptionMissingKeys()
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(RequiredKeysMissing::class);
         $request = new RawMessage([], []);
         RequestMessageFactory::fromRequest($request);
     }
