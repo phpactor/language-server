@@ -54,11 +54,6 @@ Built With
 
 - [Amphp](https://amphp.org/): Event-driven concurrency framework.
 
-Contributing
-------------
-
-Contributions are welcome.
-
 License
 -------
 
