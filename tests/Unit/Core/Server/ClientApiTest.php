@@ -37,13 +37,13 @@ class ClientApiTest extends AsyncTestCase
     public function provideWindowShowMessage(): Generator
     {
         yield [
-            function (ClientApi $api) {
+            function (ClientApi $api): void {
                 $api->window()->showMessage()->error('foobar');
                 $api->window()->showMessage()->log('foobar');
                 $api->window()->showMessage()->info('foobar');
                 $api->window()->showMessage()->warning('foobar');
             },
-            function (TestRpcClient $client) {
+            function (TestRpcClient $client): void {
                 $message = $client->transmitter()->shiftNotification();
                 self::assertEquals('window/showMessage', $message->method);
                 self::assertEquals(MessageType::ERROR, $message->params['type']);
@@ -70,13 +70,13 @@ class ClientApiTest extends AsyncTestCase
     public function provideWindowLogMessage(): Generator
     {
         yield [
-            function (ClientApi $api) {
+            function (ClientApi $api): void {
                 $api->window()->logMessage()->error('foobar');
                 $api->window()->logMessage()->log('foobar');
                 $api->window()->logMessage()->info('foobar');
                 $api->window()->logMessage()->warning('foobar');
             },
-            function (TestRpcClient $client) {
+            function (TestRpcClient $client): void {
                 $message = $client->transmitter()->shiftNotification();
                 self::assertEquals('window/logMessage', $message->method);
                 self::assertEquals(MessageType::ERROR, $message->params['type']);
@@ -106,7 +106,7 @@ class ClientApiTest extends AsyncTestCase
             function (ClientApi $api) {
                 return $api->window()->showMessageRequest()->info('foobar', new MessageActionItem('foobar'));
             },
-            function (TestRpcClient $client, $result) {
+            function (TestRpcClient $client, $result): void {
                 $client->responseWatcher()->resolveLastResponse(['title' => 'foobar']);
                 $message = $client->transmitter()->shiftRequest();
                 self::assertEquals('window/showMessageRequest', $message->method);
@@ -129,7 +129,7 @@ class ClientApiTest extends AsyncTestCase
             function (ClientApi $api) {
                 return $api->workspace()->applyEdit(new WorkspaceEdit([]));
             },
-            function (TestRpcClient $client, $result) {
+            function (TestRpcClient $client, $result): void {
                 $client->responseWatcher()->resolveLastResponse([
                     'applied' => false,
                     'failureReason' => 'sorry',
@@ -154,7 +154,7 @@ class ClientApiTest extends AsyncTestCase
             function (ClientApi $api) {
                 return $api->workspace()->executeCommand('one', ['one', 'two']);
             },
-            function (TestRpcClient $client, $result) {
+            function (TestRpcClient $client, $result): void {
                 $client->responseWatcher()->resolveLastResponse('result');
                 $message = $client->transmitter()->shiftRequest();
                 self::assertEquals('workspace/executeCommand', $message->method);
@@ -171,7 +171,7 @@ class ClientApiTest extends AsyncTestCase
     public function provideDiagnostics(): Generator
     {
         yield [
-            function (ClientApi $api) {
+            function (ClientApi $api): void {
                 $api->diagnostics()->publishDiagnostics(
                     'file://file.php',
                     1,
@@ -179,7 +179,7 @@ class ClientApiTest extends AsyncTestCase
                     ]
                 );
             },
-            function (TestRpcClient $client, $result) {
+            function (TestRpcClient $client, $result): void {
                 $message = $client->transmitter()->shiftNotification();
                 self::assertEquals('textDocument/publishDiagnostics', $message->method);
             }

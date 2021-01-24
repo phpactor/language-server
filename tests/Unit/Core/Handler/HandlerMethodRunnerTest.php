@@ -51,7 +51,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
     public function testReturnsNullIfMessageIsANotification()
     {
         $dispatcher = $this->createRunner([
-            new ClosureHandler('foobar', function () {
+            new ClosureHandler('foobar', function (): void {
             })
         ]);
 
@@ -79,7 +79,7 @@ class HandlerMethodRunnerTest extends AsyncTestCase
         self::assertEquals(2, $response->id);
     }
 
-    public function testToleratesTryingToCancelNonRunningRequest()
+    public function testToleratesTryingToCancelNonRunningRequest(): void
     {
         $dispatcher = $this->createRunner([
             new ClosureHandler('foobar', function () {

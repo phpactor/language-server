@@ -32,7 +32,7 @@ final class SocketStreamProvider implements StreamProvider
         $promise = $this->server->accept();
 
         $deferred = new Deferred();
-        $promise->onResolve(function ($reason, ?Socket $socket) use ($deferred) {
+        $promise->onResolve(function ($reason, ?Socket $socket) use ($deferred): void {
             if (null === $socket) {
                 return;
             }

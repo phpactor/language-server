@@ -12,21 +12,21 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessageFactory;
 
 class RequestMessageFactoryTest extends TestCase
 {
-    public function testExceptionOnInvalidKeys()
+    public function testExceptionOnInvalidKeys(): void
     {
         $this->expectException(UnknownKeys::class);
         $request = new RawMessage([], ['foo' => 'bar']);
         RequestMessageFactory::fromRequest($request);
     }
 
-    public function testExceptionMissingKeys()
+    public function testExceptionMissingKeys(): void
     {
         $this->expectException(RequiredKeysMissing::class);
         $request = new RawMessage([], []);
         RequestMessageFactory::fromRequest($request);
     }
 
-    public function testReturnsRequestMessage()
+    public function testReturnsRequestMessage(): void
     {
         $request = new RawMessage([], [
             'jsonrpc' => 2.0,
@@ -41,7 +41,7 @@ class RequestMessageFactoryTest extends TestCase
         $this->assertEquals(['one' => 'two'], $request->params);
     }
 
-    public function testReturnsRequestMessageForNotification()
+    public function testReturnsRequestMessageForNotification(): void
     {
         $notification = new RawMessage([], [
             'jsonrpc' => 2.0,
@@ -56,7 +56,7 @@ class RequestMessageFactoryTest extends TestCase
         $this->assertEquals(['one' => 'two'], $notification->params);
     }
 
-    public function testReturnsRequestMessageForResponse()
+    public function testReturnsRequestMessageForResponse(): void
     {
         $response = new RawMessage([], [
             'jsonrpc' => 2.0,

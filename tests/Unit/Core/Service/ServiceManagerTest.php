@@ -268,7 +268,7 @@ class ExceptionThrowingService implements ServiceProvider
 
     public function exception(CancellationToken $cancel): Promise
     {
-        return \Amp\call(function () use ($cancel) {
+        return \Amp\call(function () use ($cancel): void {
             throw new Exception('No');
         });
     }

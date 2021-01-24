@@ -33,7 +33,7 @@ class CommandDispatcherTest extends TestCase
 
         $this->createDispatcher([
             'foobar' => new class implements Command {
-                public function __invoke(string $foobar)
+                public function __invoke(string $foobar): void
                 {
                 }
             }

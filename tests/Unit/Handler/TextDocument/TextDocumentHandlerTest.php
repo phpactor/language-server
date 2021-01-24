@@ -51,7 +51,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
         $this->dispatcher->dispatch(new TextDocumentOpened($textDocument))->shouldHaveBeenCalled();
     }
 
-    public function testUpdatesDocument()
+    public function testUpdatesDocument(): void
     {
         $textDocument = ProtocolFactory::textDocumentItem('foobar', 'foo');
         $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar');
@@ -78,7 +78,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
         self::assertNull($response->result);
     }
 
-    public function testClosesDocument()
+    public function testClosesDocument(): void
     {
         $document = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $document->uri = 'foobar';
@@ -95,7 +95,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
         $this->dispatcher->dispatch(new TextDocumentClosed($identifier))->shouldHaveBeenCalled();
     }
 
-    public function testSavesDocument()
+    public function testSavesDocument(): void
     {
         $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar');
         $this->dispatch('textDocument/didSave', [

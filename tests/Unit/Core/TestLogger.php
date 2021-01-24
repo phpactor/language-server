@@ -11,7 +11,7 @@ class TestLogger extends AbstractLogger
     /**
      * {@inheritDoc}
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $this->messages[] = sprintf('[%s] %s %s', $level, $message, json_encode($context));
     }

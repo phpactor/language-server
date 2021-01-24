@@ -24,7 +24,7 @@ class ServiceListener implements ListenerProviderInterface
     public function getListenersForEvent(object $event): iterable
     {
         if ($event instanceof Initialized) {
-            yield function (Initialized $closed) {
+            yield function (Initialized $closed): void {
                 $this->serviceManager->startAll();
             };
             return;

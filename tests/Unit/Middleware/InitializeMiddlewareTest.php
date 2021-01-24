@@ -106,7 +106,7 @@ class InitializeMiddlewareTest extends AsyncTestCase
         $handler->methods()->willReturn([
             'foo' => 'bar',
         ]);
-        $handler->registerCapabiltiies(Argument::type(ServerCapabilities::class))->will(function (array $args) {
+        $handler->registerCapabiltiies(Argument::type(ServerCapabilities::class))->will(function (array $args): void {
             $capabilities = $args[0];
             assert($capabilities instanceof ServerCapabilities);
             $capabilities->hoverProvider = true;

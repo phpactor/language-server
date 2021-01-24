@@ -19,7 +19,7 @@ class HandlerMethodResolverTest extends TestCase
         $this->resolver = new HandlerMethodResolver();
     }
 
-    public function testThrowsExceptionIfHandlerDidNotDeclaredMethods()
+    public function testThrowsExceptionIfHandlerDidNotDeclaredMethods(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('has not declared');
@@ -36,7 +36,7 @@ class HandlerMethodResolverTest extends TestCase
         $this->resolver->resolveHandlerMethod($handler, 'foo');
     }
 
-    public function testThrowsExceptionIfHandlerDoesNotHaveMethod()
+    public function testThrowsExceptionIfHandlerDoesNotHaveMethod(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('does not have');
@@ -57,7 +57,7 @@ class HandlerMethodResolverTest extends TestCase
         $this->resolver->resolveHandlerMethod($handler, 'foo');
     }
 
-    public function testResolvesMethodName()
+    public function testResolvesMethodName(): void
     {
         $handler = new class implements Handler {
             public function methods():array

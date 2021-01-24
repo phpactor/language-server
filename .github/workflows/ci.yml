@@ -43,7 +43,7 @@ jobs:
 
             -
                 name: "Run friendsofphp/php-cs-fixer"
-                run: "vendor/bin/php-cs-fixer fix --dry-run --diff --verbose"
+                run: "vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --allow-risky=yes"
     phpstan:
         name: "PHPStan (${{ matrix.php-version }})"
 

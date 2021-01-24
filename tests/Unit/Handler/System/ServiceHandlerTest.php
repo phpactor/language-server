@@ -57,7 +57,7 @@ class ServiceHandlerTest extends HandlerTestCase
         ]);
     }
 
-    public function testItStopsAService()
+    public function testItStopsAService(): void
     {
         $this->serviceManager->stop('foobar')->shouldBeCalled();
         $this->dispatch('phpactor/service/stop', [
@@ -66,7 +66,7 @@ class ServiceHandlerTest extends HandlerTestCase
         ]);
     }
 
-    public function testReturnsRunningServices()
+    public function testReturnsRunningServices(): void
     {
         $this->serviceManager->runningServices()->willReturn([
             'one', 'two'
