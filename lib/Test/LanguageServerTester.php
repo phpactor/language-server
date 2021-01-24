@@ -147,6 +147,16 @@ final class LanguageServerTester
         }
     }
 
+    public function cancel(int $requestId): void
+    {
+        $this->dispatchAndWait(new NotificationMessage('$/cancelRequest', ['id' => $requestId]));
+    }
+
+    public function workspace(): WorkspaceTester
+    {
+        return new WorkspaceTester($this);
+    }
+
     /**
      * @param array|object $params
      * @return array<string,mixed>
@@ -158,15 +168,5 @@ final class LanguageServerTester
         }
 
         return $this->messageSerializer->normalize($params);
-    }
-
-    public function cancel(int $requestId): void
-    {
-        $this->dispatchAndWait(new NotificationMessage('$/cancelRequest', ['id' => $requestId]));
-    }
-
-    public function workspace(): WorkspaceTester
-    {
-        return new WorkspaceTester($this);
     }
 }

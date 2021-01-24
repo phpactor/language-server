@@ -40,7 +40,7 @@ class StatsHandlerTest extends HandlerTestCase
         return new StatsHandler($this->clientApi, $this->stats);
     }
 
-    public function testItReturnsTheCurrentSessionStatus()
+    public function testItReturnsTheCurrentSessionStatus(): void
     {
         $tester = LanguageServerTesterBuilder::create()->addHandler($this->handler())->build();
 

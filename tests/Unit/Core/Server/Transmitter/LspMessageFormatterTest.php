@@ -12,7 +12,7 @@ class LspMessageFormatterTest extends TestCase
     /**
      * @dataProvider provideFormat
      */
-    public function testFormat(string $serialized, int $expectedContentLength)
+    public function testFormat(string $serialized, int $expectedContentLength): void
     {
         $serializer = $this->prophesize(MessageSerializer::class);
         $formatter = new LspMessageFormatter($serializer->reveal());

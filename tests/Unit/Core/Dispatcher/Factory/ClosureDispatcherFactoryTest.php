@@ -10,13 +10,14 @@ use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Server\Transmitter\NullMessageTransmitter;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use RuntimeException;
+use stdClass;
 
 class ClosureDispatcherFactoryTest extends TestCase
 {
     public function testReturnsDispatcher(): void
     {
         $dispatcher = $this->createDispatcherFactory(function () {
-            return new ClosureDispatcher(function () {
+            return new ClosureDispatcher(function (): void {
             });
         })->create(new NullMessageTransmitter(), ProtocolFactory::initializeParams());
 
@@ -27,7 +28,7 @@ class ClosureDispatcherFactoryTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->createDispatcherFactory(function () {
-            return new \stdClass();
+            return new stdClass();
         })->create(new NullMessageTransmitter(), ProtocolFactory::initializeParams());
     }
 

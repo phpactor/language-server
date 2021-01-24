@@ -55,11 +55,11 @@ class LanguageSeverProtocolParamsResolverTest extends TestCase
 
 class LspHandler
 {
-    public function initialize(InitializeParams $params, CancellationToken $c)
+    public function initialize(InitializeParams $params, CancellationToken $c): void
     {
     }
 
-    public function initializeWrongOrder(CancellationToken $c, InitializeParams $params)
+    public function initializeWrongOrder(CancellationToken $c, InitializeParams $params): void
     {
     }
 }

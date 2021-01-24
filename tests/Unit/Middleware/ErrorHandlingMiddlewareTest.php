@@ -54,7 +54,7 @@ class ErrorHandlingMiddlewareTest extends AsyncTestCase
         yield $this->createMiddleware()->process(
             new NotificationMessage('foobar'),
             new RequestHandler([
-                new ClosureMiddleware(function () {
+                new ClosureMiddleware(function (): void {
                     throw new ExitSession('please');
                 })
             ])
@@ -66,7 +66,7 @@ class ErrorHandlingMiddlewareTest extends AsyncTestCase
         $response = yield $this->createMiddleware()->process(
             new NotificationMessage('foobar'),
             new RequestHandler([
-                new ClosureMiddleware(function () {
+                new ClosureMiddleware(function (): void {
                     throw new RuntimeException('please');
                 })
             ])
@@ -81,7 +81,7 @@ class ErrorHandlingMiddlewareTest extends AsyncTestCase
         $response = yield $this->createMiddleware()->process(
             new RequestMessage(1, 'foobar', []),
             new RequestHandler([
-                new ClosureMiddleware(function () {
+                new ClosureMiddleware(function (): void {
                     throw new RuntimeException('please');
                 })
             ])
@@ -99,7 +99,7 @@ class ErrorHandlingMiddlewareTest extends AsyncTestCase
         $response = yield $this->createMiddleware()->process(
             new RequestMessage(1, 'foobar', []),
             new RequestHandler([
-                new ClosureMiddleware(function () {
+                new ClosureMiddleware(function (): void {
                     throw new HandlerNotFound('please');
                 })
             ])

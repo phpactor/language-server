@@ -103,7 +103,7 @@ final class LanguageServer
             yield $this->shutdown();
         });
 
-        Loop::setErrorHandler(function (Throwable $error) {
+        Loop::setErrorHandler(function (Throwable $error): void {
             $this->logger->critical($error->getMessage());
             throw $error;
         });
@@ -129,6 +129,25 @@ final class LanguageServer
         }
 
         return $this->streamProvider->address();
+    }
+
+    /**
+     * @return Promise<void>
+     */
+    public function shutdown(): Promise
+    {
+        return call(function () {
+            $this->logger->info('Shutting down');
+
+            $promises = [];
+            foreach ($this->connections as $connection) {
+                $promises[] = $connection->stream()->end();
+            }
+
+            yield any($promises);
+
+            $this->streamProvider->close();
+        });
     }
 
     private function listenForConnections(): Generator
@@ -218,25 +237,6 @@ final class LanguageServer
             }
 
             $transmitter->transmit($response);
-        });
-    }
-
-    /**
-     * @return Promise<void>
-     */
-    public function shutdown(): Promise
-    {
-        return call(function () {
-            $this->logger->info('Shutting down');
-
-            $promises = [];
-            foreach ($this->connections as $connection) {
-                $promises[] = $connection->stream()->end();
-            }
-
-            yield any($promises);
-
-            $this->streamProvider->close();
         });
     }
 }

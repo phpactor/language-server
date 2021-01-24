@@ -17,7 +17,7 @@ class CommandHandlerTest extends HandlerTestCase
         return $this->createHandler();
     }
 
-    public function testExecutesCommand()
+    public function testExecutesCommand(): void
     {
         $result = $this->dispatch('workspace/executeCommand', [
             'command' => 'foobar',
@@ -28,7 +28,7 @@ class CommandHandlerTest extends HandlerTestCase
         self::assertEquals('barfoo', $result->result);
     }
 
-    public function testRegistersCapabilities()
+    public function testRegistersCapabilities(): void
     {
         $capabilities = new ServerCapabilities();
         $this->createHandler()->registerCapabiltiies($capabilities);

@@ -1,12 +1,10 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->in('bin')
     ->in('lib')
-    ->in('example')
     ->in('tests')
     ->exclude([
-        'tests/Workspace'
+        'tests/Workspace',
     ])
 ;
 
@@ -15,6 +13,11 @@ return PhpCsFixer\Config::create()
         '@PSR2' => true,
         'no_unused_imports' => true,
         'array_syntax' => ['syntax' => 'short'],
+        'void_return' => true,
+        'ordered_class_elements' => true,
+        'single_quote' => true,
+        'heredoc_indentation' => true,
+        'global_namespace_import' => true,
     ])
     ->setFinder($finder)
 ;

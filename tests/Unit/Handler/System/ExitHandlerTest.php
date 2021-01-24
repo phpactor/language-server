@@ -14,13 +14,13 @@ class ExitHandlerTest extends HandlerTestCase
         return new ExitHandler();
     }
 
-    public function testThrowsExitSessionException()
+    public function testThrowsExitSessionException(): void
     {
         $this->expectException(ExitSession::class);
         $this->dispatch('exit', []);
     }
 
-    public function testShutdownDoesNothing()
+    public function testShutdownDoesNothing(): void
     {
         $this->dispatch('shutdown', []);
         $this->addToAssertionCount(1);

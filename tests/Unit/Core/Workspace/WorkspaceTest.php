@@ -36,7 +36,7 @@ class WorkspaceTest extends TestCase
         $this->assertSame($expectedDocument, $document);
     }
 
-    public function testThrowsExceptionUpdateUnknown()
+    public function testThrowsExceptionUpdateUnknown(): void
     {
         $this->expectException(UnknownDocument::class);
 
@@ -44,7 +44,7 @@ class WorkspaceTest extends TestCase
         $this->workspace->update($expectedDocument, 'foobar');
     }
 
-    public function testUpdatesDocument()
+    public function testUpdatesDocument(): void
     {
         $originalDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $expectedDocument = new VersionedTextDocumentIdentifier($originalDocument->uri);
@@ -59,7 +59,7 @@ class WorkspaceTest extends TestCase
     /**
      * @dataProvider provideDoesNotUpdateDocumentWithLowerVersionThanExistingDocument
      */
-    public function testDoesNotUpdateDocumentWithLowerVersionThanExistingDocument(int $originalVersion, ?int $newVersion, bool $shouldBeNewer)
+    public function testDoesNotUpdateDocumentWithLowerVersionThanExistingDocument(int $originalVersion, ?int $newVersion, bool $shouldBeNewer): void
     {
         $originalDocument = new TextDocumentItem('foobar', 'php', $originalVersion, 'original document');
 
@@ -96,7 +96,7 @@ class WorkspaceTest extends TestCase
         ];
     }
 
-    public function testReturnsNumberOfOpenFiles()
+    public function testReturnsNumberOfOpenFiles(): void
     {
         $originalDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $originalDocument->uri = 'foobar';
@@ -105,7 +105,7 @@ class WorkspaceTest extends TestCase
         $this->assertCount(1, $this->workspace);
     }
 
-    public function testRemoveDocument()
+    public function testRemoveDocument(): void
     {
         $originalDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
         $originalDocument->uri = 'foobar';
@@ -119,7 +119,7 @@ class WorkspaceTest extends TestCase
         $this->assertCount(0, $this->workspace);
     }
 
-    public function testIteratesOverDocuments()
+    public function testIteratesOverDocuments(): void
     {
         $doc1 = new TextDocumentItem('foobar1', 'php', 1, 'foo');
         $doc2 = new TextDocumentItem('foobar2', 'php', 1, 'foo');

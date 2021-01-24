@@ -11,7 +11,7 @@ class LanguageServerBuilderTest extends TestCase
 {
     public function testBuild(): void
     {
-        $server = LanguageServerBuilder::create(new ClosureDispatcherFactory(function () {
+        $server = LanguageServerBuilder::create(new ClosureDispatcherFactory(function (): void {
         }))
             ->tcpServer('127.0.0.1:8888')
             ->build();

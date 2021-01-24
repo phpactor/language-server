@@ -12,7 +12,7 @@ use RuntimeException;
 
 class LspMessageSerializerTest extends TestCase
 {
-    public function testExceptionCouldNotEncodeJson()
+    public function testExceptionCouldNotEncodeJson(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Could not encode JSON');
@@ -27,7 +27,7 @@ class LspMessageSerializerTest extends TestCase
     /**
      * @dataProvider provideSerializes
      */
-    public function testSerializes(Message $message, string $expected)
+    public function testSerializes(Message $message, string $expected): void
     {
         self::assertEquals($expected, $this->serialize($message));
     }

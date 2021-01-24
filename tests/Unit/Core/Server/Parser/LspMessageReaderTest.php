@@ -18,19 +18,19 @@ class LspMessageReaderTest extends TestCase
     {
     }
 
-    public function testYieldsRequest()
+    public function testYieldsRequest(): void
     {
         $stream = new InMemoryStream(
             <<<EOT
-Content-Length: 74\r\n
-Content-Type: foo\r\n\r\n
-{
-   "jsonrpc": "2.0",
-   "id": 1,
-   "method": "test",
-   "params": {}
-}
-EOT
+                Content-Length: 74\r\n
+                Content-Type: foo\r\n\r\n
+                {
+                   "jsonrpc": "2.0",
+                   "id": 1,
+                   "method": "test",
+                   "params": {}
+                }
+                EOT
         );
 
         $reader = new LspMessageReader($stream);
@@ -38,26 +38,26 @@ EOT
         $this->assertInstanceOf(RawMessage::class, $result);
     }
 
-    public function testReadsMultipleRequests()
+    public function testReadsMultipleRequests(): void
     {
         $stream = new InMemoryStream(
             <<<EOT
-Content-Length: 74\r\n
-Content-Type: foo\r\n\r\n
-{
-   "jsonrpc": "2.0",
-   "id": 1,
-   "method": "test",
-   "params": {}
-}Content-Length: 74\r\n
-Content-Type: foo\r\n\r\n
-{
-   "jsonrpc": "2.0",
-   "id": 1,
-   "method": "tset",
-   "params": {}
-}
-EOT
+                Content-Length: 74\r\n
+                Content-Type: foo\r\n\r\n
+                {
+                   "jsonrpc": "2.0",
+                   "id": 1,
+                   "method": "test",
+                   "params": {}
+                }Content-Length: 74\r\n
+                Content-Type: foo\r\n\r\n
+                {
+                   "jsonrpc": "2.0",
+                   "id": 1,
+                   "method": "tset",
+                   "params": {}
+                }
+                EOT
         );
         $reader = new LspMessageReader($stream);
         $result = \Amp\Promise\wait($reader->wait());

@@ -6,6 +6,7 @@ use Amp\Promise;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Psr\Log\LoggerInterface;
 use function Amp\call;
+use Throwable;
 
 class AggregateDiagnosticsProvider implements DiagnosticsProvider
 {
@@ -44,7 +45,7 @@ class AggregateDiagnosticsProvider implements DiagnosticsProvider
                         number_format(microtime(true) - $start, 2),
                         get_class($provider)
                     ));
-                } catch (\Throwable $throwable) {
+                } catch (Throwable $throwable) {
                     $this->logger->error(sprintf(
                         'Diagnostic error from provider "%s": %s',
                         get_class($provider),

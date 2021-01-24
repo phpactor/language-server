@@ -25,7 +25,7 @@ class HandlersTest extends TestCase
         $this->handler2 = $this->prophesize(Handler::class);
     }
 
-    public function testThrowsExceptionNotFound()
+    public function testThrowsExceptionNotFound(): void
     {
         $this->expectException(HandlerNotFound::class);
         $this->handler1->methods()->willReturn(['barbra']);
@@ -33,7 +33,7 @@ class HandlersTest extends TestCase
         $handlers->get('foobar');
     }
 
-    public function testReturnsHandler()
+    public function testReturnsHandler(): void
     {
         $this->handler1->methods()->willReturn(['foobar' => 'foobar']);
         $handlers = $this->create([ $this->handler1->reveal() ]);
@@ -41,7 +41,7 @@ class HandlersTest extends TestCase
         $this->assertSame($this->handler1->reveal(), $handler);
     }
 
-    public function testMerge()
+    public function testMerge(): void
     {
         $this->handler1->methods()->willReturn(['foobar' => 'foobar']);
         $this->handler2->methods()->willReturn(['barfoo' => 'barfoo']);
