@@ -7,3 +7,4 @@
 /stubs
 /doc/_build
 /.vscode
+.php_cs.cache
