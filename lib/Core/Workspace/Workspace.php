@@ -87,6 +87,8 @@ class Workspace implements Countable, IteratorAggregate
         }
 
         $this->documents[$textDocument->uri]->text = $updatedText;
+        $this->documents[$textDocument->uri]->version = $textDocument->version;
+        $this->documentVersions[$textDocument->uri] = $textDocument->version;
     }
 
     public function openFiles(): int
