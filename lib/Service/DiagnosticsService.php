@@ -95,7 +95,7 @@ class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
         $item = new TextDocumentItem(
             $save->identifier()->uri,
             'php',
-            $save->identifier()->version,
+            $save->identifier()->version ?? 1, // VIM lsp client seems delivers NULL here, so just use an arbitrary identifier
             $save->text() ?: $this->workspace->get($save->identifier()->uri)->text
         );
 
