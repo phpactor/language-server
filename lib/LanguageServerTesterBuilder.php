@@ -25,6 +25,8 @@ use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
+use Phpactor\LanguageServer\Handler\Workspace\DidChangeWatchedFilesHandler;
+use Phpactor\LanguageServer\Listener\DidChangeWatchedFilesListener;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Listener\WorkspaceListener;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
@@ -111,6 +113,11 @@ final class LanguageServerTesterBuilder
     /**
      * @var bool
      */
+    private $enableFileEvents = false;
+
+    /**
+     * @var bool
+     */
     private $enableDiagnostics = false;
 
     /**
@@ -127,6 +134,11 @@ final class LanguageServerTesterBuilder
      * @var array<DiagnosticsProvider>
      */
     private $diagnosticsProvider = [];
+
+    /**
+     * @var string[]
+     */
+    private $fileEventGlobs = ['**/*.php'];
 
     private function __construct()
     {
@@ -225,6 +237,21 @@ final class LanguageServerTesterBuilder
     }
 
     /**
+     * Enable file events
+     * @param string[] $globs
+     */
+    public function enableFileEvents(?array $globs = null): self
+    {
+        $this->enableFileEvents = true;
+
+        if (null !==$globs) {
+            $this->fileEventGlobs = $globs;
+        }
+
+        return $this;
+    }
+
+    /**
      * Enable the services (enabled by default with ::create)
      */
     public function enableServices(): self
@@ -313,6 +340,10 @@ final class LanguageServerTesterBuilder
                     $this->listeners[] = $service;
                 }
 
+                if ($this->enableFileEvents) {
+                    $this->listeners[] = new DidChangeWatchedFilesListener($this->clientApi, $this->fileEventGlobs);
+                }
+
                 $serviceManager = new ServiceManager(new ServiceProviders(...$serviceProviders), $logger);
                 $eventDispatcher = $this->buildEventDispatcher($serviceManager);
 
@@ -324,6 +355,10 @@ final class LanguageServerTesterBuilder
 
                 if ($this->enableServices) {
                     $handlers[] = new ServiceHandler($serviceManager, $this->clientApi);
+                }
+
+                if ($this->enableFileEvents) {
+                    $handlers[] = new DidChangeWatchedFilesHandler($eventDispatcher);
                 }
 
                 if ($this->enableCommands) {
