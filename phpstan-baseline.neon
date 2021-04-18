@@ -4,9 +4,3 @@ parameters:
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Handler\\\\ClosureHandler\\:\\:handle\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: lib/Core/Handler/ClosureHandler.php
-
-		-
-			message: "#^Unable to resolve the template type TValue in call to function Amp\\\\Promise\\\\any$#"
-			count: 1
-			path: lib/Core/Server/LanguageServer.php
-
