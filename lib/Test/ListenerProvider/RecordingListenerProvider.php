@@ -7,6 +7,9 @@ use RuntimeException;
 
 class RecordingListenerProvider implements ListenerProviderInterface
 {
+    /**
+     * @var object[]
+     */
     private $recieved = [];
 
     /**
@@ -22,9 +25,7 @@ class RecordingListenerProvider implements ListenerProviderInterface
     }
 
     /**
-     * @templtae T of class-string
-     * @param T $type
-     * @return T
+     * @param string $type
      */
     public function shift(string $type): object
     {
@@ -37,7 +38,8 @@ class RecordingListenerProvider implements ListenerProviderInterface
         if (!$next instanceof $type) {
             throw new RuntimeException(sprintf(
                 'Expected event of type "%s" but got "%s"',
-                $type, get_class($next)
+                $type,
+                get_class($next)
             ));
         }
 

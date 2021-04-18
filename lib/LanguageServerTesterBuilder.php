@@ -135,6 +135,9 @@ final class LanguageServerTesterBuilder
      */
     private $diagnosticsProvider = [];
 
+    /**
+     * @var string[]
+     */
     private $fileEventGlobs = ['**/*.php'];
 
     private function __construct()

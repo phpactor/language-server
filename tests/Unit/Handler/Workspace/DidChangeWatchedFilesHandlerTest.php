@@ -2,29 +2,13 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Handler\Workspace;
 
-use Amp\Success;
-use Phly\EventDispatcher\ListenerProvider\ListenerProviderAggregate;
 use Phpactor\LanguageServerProtocol\DidChangeWatchedFilesParams;
 use Phpactor\LanguageServerProtocol\FileChangeType;
 use Phpactor\LanguageServerProtocol\FileEvent;
-use Phpactor\LanguageServerProtocol\ServerCapabilities;
-use Phpactor\LanguageServer\Core\Command\Command;
-use Phpactor\LanguageServer\Core\Handler\Handler;
-use Phpactor\LanguageServer\Core\Server\ClientApi;
-use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
-use Phpactor\LanguageServer\Event\FileCreated;
 use Phpactor\LanguageServer\Event\FilesChanged;
-use Phpactor\LanguageServer\Event\Initialized;
-use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
-use Phpactor\LanguageServer\Handler\Workspace\DidChangeWatchedFilesHandler;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Test\ListenerProvider\RecordingListenerProvider;
-use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
-use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use Phpactor\TestUtils\PHPUnit\TestCase;
-use Psr\EventDispatcher\ListenerProviderInterface;
-use function Amp\Promise\wait;
-use function Amp\delay;
 
 class DidChangeWatchedFilesHandlerTest extends TestCase
 {

@@ -2,16 +2,11 @@
 
 namespace Phpactor\LanguageServer\Listener;
 
-use Phpactor\LanguageServerProtocol\DidChangeTextDocumentNotification;
-use Phpactor\LanguageServerProtocol\DidChangeWatchedFilesParams;
 use Phpactor\LanguageServerProtocol\DidChangeWatchedFilesRegistrationOptions;
 use Phpactor\LanguageServerProtocol\FileSystemWatcher;
 use Phpactor\LanguageServerProtocol\Registration;
-use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
-use Phpactor\LanguageServer\Event\FilesChanged;
 use Phpactor\LanguageServer\Event\Initialized;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Ramsey\Uuid\Uuid;
 use function Amp\asyncCall;
@@ -50,13 +45,14 @@ class DidChangeWatchedFilesListener implements ListenerProviderInterface
     {
         asyncCall(function () {
             yield $this->client->client()->registerCapability(
-            new Registration(
+                new Registration(
                 Uuid::uuid4()->__toString(),
                 'workspace/didChangeWatchedFiles',
                 new DidChangeWatchedFilesRegistrationOptions(array_map(function (string $glob) {
                     return new FileSystemWatcher($glob);
                 }, $this->globPatterns))
-            ));
+            )
+            );
         });
     }
 }
