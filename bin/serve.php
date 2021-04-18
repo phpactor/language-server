@@ -24,6 +24,7 @@ use Phpactor\LanguageServer\Example\Command\SayHelloCommand;
 use Phpactor\LanguageServer\Example\Diagnostics\SayHelloDiagnosticsProvider;
 use Phpactor\LanguageServer\Handler\TextDocument\CodeActionHandler;
 use Phpactor\LanguageServer\Handler\Workspace\DidChangeWatchedFilesHandler;
+use Phpactor\LanguageServer\Listener\DidChangeWatchedFilesListener;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
@@ -109,7 +110,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $eventDispatcher = new AggregateEventDispatcher(
             new ServiceListener($serviceManager),
             new WorkspaceListener($workspace),
-            new DidChangeWatchedFilesHandler($clientApi, ['**/*.php']),
+            new DidChangeWatchedFilesListener($clientApi, ['**/*.php']),
             $diagnosticsService
         );
 
@@ -120,7 +121,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
             new CommandHandler(new CommandDispatcher([
                 'phpactor.say_hello' => new SayHelloCommand($clientApi)
             ])),
-            new DidChangeWatchedFilesHandler($clientApi, ['**/*.php']),
+            new DidChangeWatchedFilesHandler($eventDispatcher),
             new CodeActionHandler(new AggregateCodeActionProvider(
                 new SayHelloCodeActionProvider()
             ), $workspace),

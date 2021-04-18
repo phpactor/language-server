@@ -16,54 +16,16 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 use Ramsey\Uuid\Uuid;
 use function Amp\asyncCall;
 
-class DidChangeWatchedFilesHandler implements ListenerProviderInterface, Handler
+class DidChangeWatchedFilesHandler implements Handler
 {
-    /**
-     * @var ClientApi
-     */
-    private $client;
-
-    /**
-     * @var array
-     */
-    private $globPatterns;
-
     /**
      * @var EventDispatcherInterface
      */
     private $dispatcher;
 
-    public function __construct(ClientApi $client, EventDispatcherInterface $dispatcher, array $globPatterns)
+    public function __construct(EventDispatcherInterface $dispatcher)
     {
-        $this->client = $client;
-        $this->globPatterns = $globPatterns;
         $this->dispatcher = $dispatcher;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getListenersForEvent(object $event): iterable
-    {
-        if ($event instanceof Initialized) {
-            return [[$this, 'registerCapability']];
-        }
-
-        return [];
-    }
-
-    public function registerCapability(Initialized $initialized): void
-    {
-        asyncCall(function () {
-            yield $this->client->client()->registerCapability(
-            new Registration(
-                Uuid::uuid4()->__toString(),
-                'workspace/didChangeWatchedFiles',
-                new DidChangeWatchedFilesRegistrationOptions(array_map(function (string $glob) {
-                    return new FileSystemWatcher($glob);
-                }, $this->globPatterns))
-            ));
-        });
     }
 
     /**

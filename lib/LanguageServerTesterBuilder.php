@@ -26,6 +26,7 @@ use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Handler\Workspace\DidChangeWatchedFilesHandler;
+use Phpactor\LanguageServer\Listener\DidChangeWatchedFilesListener;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Listener\WorkspaceListener;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
@@ -336,6 +337,10 @@ final class LanguageServerTesterBuilder
                     $this->listeners[] = $service;
                 }
 
+                if ($this->enableFileEvents) {
+                    $this->listeners[] = new DidChangeWatchedFilesListener($this->clientApi, $this->fileEventGlobs);
+                }
+
                 $serviceManager = new ServiceManager(new ServiceProviders(...$serviceProviders), $logger);
                 $eventDispatcher = $this->buildEventDispatcher($serviceManager);
 
@@ -350,12 +355,7 @@ final class LanguageServerTesterBuilder
                 }
 
                 if ($this->enableFileEvents) {
-                    $handlers = (function (array $handlers) use ($eventDispatcher) {
-                        $handler = new DidChangeWatchedFilesHandler($this->clientApi, $eventDispatcher, $this->fileEventGlobs);
-                        $handlers[] = $handler;
-                        $this->listeners[] = $handler;
-                        return $handlers;
-                    })($handlers);
+                    $handlers[] = new DidChangeWatchedFilesHandler($eventDispatcher);
                 }
 
                 if ($this->enableCommands) {
