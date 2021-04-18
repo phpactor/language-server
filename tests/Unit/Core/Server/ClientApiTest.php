@@ -6,8 +6,12 @@ use Amp\PHPUnit\AsyncTestCase;
 use Closure;
 use Generator;
 use Phpactor\LanguageServerProtocol\ApplyWorkspaceEditResponse;
+use Phpactor\LanguageServerProtocol\DidChangeWatchedFilesRegistrationOptions;
+use Phpactor\LanguageServerProtocol\FileSystemWatcher;
 use Phpactor\LanguageServerProtocol\MessageActionItem;
 use Phpactor\LanguageServerProtocol\MessageType;
+use Phpactor\LanguageServerProtocol\Registration;
+use Phpactor\LanguageServerProtocol\Unregistration;
 use Phpactor\LanguageServerProtocol\WorkspaceEdit;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
@@ -21,6 +25,7 @@ class ClientApiTest extends AsyncTestCase
      * @dataProvider provideWorkspaceEdit
      * @dataProvider provideWorkspaceExecuteCommand
      * @dataProvider provideDiagnostics
+     * @dataProvider provideRegisterCapability
      */
     public function testSend(Closure $executor, Closure $assertions): void
     {
@@ -182,6 +187,38 @@ class ClientApiTest extends AsyncTestCase
             function (TestRpcClient $client, $result): void {
                 $message = $client->transmitter()->shiftNotification();
                 self::assertEquals('textDocument/publishDiagnostics', $message->method);
+            }
+        ];
+    }
+
+    /**
+     * @reuturn Generator<mixed>
+     */
+    public function provideRegisterCapability(): Generator
+    {
+        yield [
+            function (ClientApi $api): void {
+                $api->client()->registerCapability(
+                    new Registration('foobar', 'workspace/didChangeWatchedFiles', new DidChangeWatchedFilesRegistrationOptions([
+                        new FileSystemWatcher('**/*.php')
+                    ]))
+                );
+            },
+            function (TestRpcClient $client, $result): void {
+                $message = $client->transmitter()->shiftNotification();
+                self::assertEquals('client/registerCapability', $message->method);
+            }
+        ];
+
+        yield [
+            function (ClientApi $api): void {
+                $api->client()->unregisterCapability(
+                    new Unregistration('10', 'foo')
+                );
+            },
+            function (TestRpcClient $client, $result): void {
+                $message = $client->transmitter()->shiftNotification();
+                self::assertEquals('client/unregisterCapability', $message->method);
             }
         ];
     }

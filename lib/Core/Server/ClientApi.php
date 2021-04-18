@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Server;
 
+use Phpactor\LanguageServer\Core\Server\Client\ClientClient;
 use Phpactor\LanguageServer\Core\Server\Client\DiagnosticsClient;
 use Phpactor\LanguageServer\Core\Server\Client\WindowClient;
 use Phpactor\LanguageServer\Core\Server\Client\WorkspaceClient;
@@ -16,6 +17,11 @@ final class ClientApi
     public function __construct(RpcClient $client)
     {
         $this->client = $client;
+    }
+
+    public function client(): ClientClient
+    {
+        return new ClientClient($this->client);
     }
 
     public function window(): WindowClient
