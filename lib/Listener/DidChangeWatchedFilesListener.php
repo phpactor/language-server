@@ -46,12 +46,12 @@ class DidChangeWatchedFilesListener implements ListenerProviderInterface
         asyncCall(function () {
             yield $this->client->client()->registerCapability(
                 new Registration(
-                Uuid::uuid4()->__toString(),
-                'workspace/didChangeWatchedFiles',
-                new DidChangeWatchedFilesRegistrationOptions(array_map(function (string $glob) {
-                    return new FileSystemWatcher($glob);
-                }, $this->globPatterns))
-            )
+                    Uuid::uuid4()->__toString(),
+                    'workspace/didChangeWatchedFiles',
+                    new DidChangeWatchedFilesRegistrationOptions(array_map(function (string $glob) {
+                        return new FileSystemWatcher($glob);
+                    }, $this->globPatterns))
+                )
             );
         });
     }
