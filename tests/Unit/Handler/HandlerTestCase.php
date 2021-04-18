@@ -16,4 +16,11 @@ abstract class HandlerTestCase extends TestCase
 
         return $tester->requestAndWait($method, $params);
     }
+
+    public function notify(string $method, array $params)
+    {
+        $tester = LanguageServerTesterBuilder::createBare()->addHandler($this->handler())->build();
+
+        return $tester->notifyAndWait($method, $params);
+    }
 }

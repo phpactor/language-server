@@ -23,6 +23,7 @@ use Phpactor\LanguageServer\Example\CodeAction\SayHelloCodeActionProvider;
 use Phpactor\LanguageServer\Example\Command\SayHelloCommand;
 use Phpactor\LanguageServer\Example\Diagnostics\SayHelloDiagnosticsProvider;
 use Phpactor\LanguageServer\Handler\TextDocument\CodeActionHandler;
+use Phpactor\LanguageServer\Handler\Workspace\DidChangeWatchedFilesHandler;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
@@ -38,6 +39,7 @@ use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
 use Phpactor\LanguageServer\Middleware\InitializeMiddleware;
 use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
+use Phpactor\LanguageServer\Middleware\ResponseHandlingMiddleware;
 use Phpactor\LanguageServer\Service\DiagnosticsService;
 use Psr\Log\AbstractLogger;
 use function Safe\fopen;
@@ -107,6 +109,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $eventDispatcher = new AggregateEventDispatcher(
             new ServiceListener($serviceManager),
             new WorkspaceListener($workspace),
+            new DidChangeWatchedFilesHandler($clientApi, ['**/*.php']),
             $diagnosticsService
         );
 
@@ -117,6 +120,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
             new CommandHandler(new CommandDispatcher([
                 'phpactor.say_hello' => new SayHelloCommand($clientApi)
             ])),
+            new DidChangeWatchedFilesHandler($clientApi, ['**/*.php']),
             new CodeActionHandler(new AggregateCodeActionProvider(
                 new SayHelloCodeActionProvider()
             ), $workspace),
@@ -137,6 +141,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
                 'version' => 1,
             ]),
             new CancellationMiddleware($runner),
+            new ResponseHandlingMiddleware($responseWatcher),
             new HandlerMiddleware($runner)
         );
     }

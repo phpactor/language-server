@@ -205,7 +205,7 @@ class ClientApiTest extends AsyncTestCase
                 );
             },
             function (TestRpcClient $client, $result): void {
-                $message = $client->transmitter()->shiftNotification();
+                $message = $client->transmitter()->shiftRequest();
                 self::assertEquals('client/registerCapability', $message->method);
             }
         ];
@@ -217,7 +217,7 @@ class ClientApiTest extends AsyncTestCase
                 );
             },
             function (TestRpcClient $client, $result): void {
-                $message = $client->transmitter()->shiftNotification();
+                $message = $client->transmitter()->shiftRequest();
                 self::assertEquals('client/unregisterCapability', $message->method);
             }
         ];

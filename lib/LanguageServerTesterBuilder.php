@@ -25,6 +25,7 @@ use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
+use Phpactor\LanguageServer\Handler\Workspace\DidChangeWatchedFilesHandler;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Listener\WorkspaceListener;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
@@ -111,6 +112,11 @@ final class LanguageServerTesterBuilder
     /**
      * @var bool
      */
+    private $enableFileEvents = false;
+
+    /**
+     * @var bool
+     */
     private $enableDiagnostics = false;
 
     /**
@@ -127,6 +133,8 @@ final class LanguageServerTesterBuilder
      * @var array<DiagnosticsProvider>
      */
     private $diagnosticsProvider = [];
+
+    private $fileEventGlobs = ['**/*.php'];
 
     private function __construct()
     {
@@ -220,6 +228,21 @@ final class LanguageServerTesterBuilder
     public function enableTextDocuments(): self
     {
         $this->enableTextDocuments = true;
+
+        return $this;
+    }
+
+    /**
+     * Enable file events
+     * @param string[] $globs
+     */
+    public function enableFileEvents(?array $globs = null): self
+    {
+        $this->enableFileEvents = true;
+
+        if (null !==$globs) {
+            $this->fileEventGlobs = $globs;
+        }
 
         return $this;
     }
@@ -324,6 +347,15 @@ final class LanguageServerTesterBuilder
 
                 if ($this->enableServices) {
                     $handlers[] = new ServiceHandler($serviceManager, $this->clientApi);
+                }
+
+                if ($this->enableFileEvents) {
+                    $handlers = (function (array $handlers) use ($eventDispatcher) {
+                        $handler = new DidChangeWatchedFilesHandler($this->clientApi, $eventDispatcher, $this->fileEventGlobs);
+                        $handlers[] = $handler;
+                        $this->listeners[] = $handler;
+                        return $handlers;
+                    })($handlers);
                 }
 
                 if ($this->enableCommands) {
