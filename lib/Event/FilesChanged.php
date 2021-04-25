@@ -2,10 +2,8 @@
 
 namespace Phpactor\LanguageServer\Event;
 
-use Phpactor\LanguageServerProtocol\FileChangeType;
 use Phpactor\LanguageServerProtocol\FileEvent;
 use RuntimeException;
-use function array_shift;
 
 final class FilesChanged
 {
