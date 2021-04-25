@@ -35,7 +35,7 @@ final class FilesChanged
     {
         $first = reset($this->events);
 
-        if (null === $first) {
+        if (false === $first) {
             throw new RuntimeException(
                 'No file events, cannot get the first one',
             );
