@@ -104,6 +104,11 @@ final class LanguageServer
         });
 
         Loop::setErrorHandler(function (Throwable $error): void {
+            if ($error instanceof ShutdownServer) {
+                Loop::stop();
+                return;
+            }
+
             $this->logger->critical($error->getMessage());
             throw $error;
         });
