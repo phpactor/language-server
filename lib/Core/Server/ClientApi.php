@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Core\Server;
 use Phpactor\LanguageServer\Core\Server\Client\ClientClient;
 use Phpactor\LanguageServer\Core\Server\Client\DiagnosticsClient;
 use Phpactor\LanguageServer\Core\Server\Client\WindowClient;
+use Phpactor\LanguageServer\Core\Server\Client\WorkDoneProgressClient;
 use Phpactor\LanguageServer\Core\Server\Client\WorkspaceClient;
 
 final class ClientApi
@@ -37,5 +38,10 @@ final class ClientApi
     public function diagnostics(): DiagnosticsClient
     {
         return new DiagnosticsClient($this->client);
+    }
+
+    public function workDoneProgress(): WorkDoneProgressClient
+    {
+        return new WorkDoneProgressClient($this->client);
     }
 }
