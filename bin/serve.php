@@ -110,7 +110,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $eventDispatcher = new AggregateEventDispatcher(
             new ServiceListener($serviceManager),
             new WorkspaceListener($workspace),
-            new DidChangeWatchedFilesListener($clientApi, ['**/*.php']),
+            new DidChangeWatchedFilesListener($clientApi, ['**/*.php'], $params->capabilities),
             $diagnosticsService
         );
 

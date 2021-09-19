@@ -341,7 +341,7 @@ final class LanguageServerTesterBuilder
                 }
 
                 if ($this->enableFileEvents) {
-                    $this->listeners[] = new DidChangeWatchedFilesListener($this->clientApi, $this->fileEventGlobs);
+                    $this->listeners[] = new DidChangeWatchedFilesListener($this->clientApi, $this->fileEventGlobs, $params->capabilities);
                 }
 
                 $serviceManager = new ServiceManager(new ServiceProviders(...$serviceProviders), $logger);
