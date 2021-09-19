@@ -42,7 +42,17 @@ final class MessageProgressNotifier implements ProgressNotifier
         ?int $percentage = null,
         ?bool $cancellable = null
     ): void {
-        $this->api->info($message);
+        $progress = [
+            $title
+        ];
+
+        if ($message) {
+            $progress[] = sprintf(': %s', $message);
+        }
+        if ($percentage) {
+            $progress[] = sprintf(', %d%% done', $percentage);
+        }
+        $this->api->info(implode('', $progress));
     }
 
     /**
