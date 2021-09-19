@@ -6,6 +6,7 @@ use Amp\Promise;
 use InvalidArgumentException;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
+use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 
 final class WorkDoneProgressClient
 {
@@ -22,17 +23,17 @@ final class WorkDoneProgressClient
     /**
      * @return Promise<ResponseMessage>
      */
-    public function create(string $token): Promise
+    public function create(WorkDoneToken $token): Promise
     {
         return \Amp\call(function () use ($token) {
             return yield $this->client->request('window/workDoneProgress/create', [
-                'token' => $token,
+                'token' => (string) $token,
             ]);
         });
     }
 
     public function begin(
-        string $token,
+        WorkDoneToken $token,
         string $title,
         ?string $message = null,
         ?int $percentage = null,
@@ -50,7 +51,7 @@ final class WorkDoneProgressClient
     }
 
     public function report(
-        string $token,
+        WorkDoneToken $token,
         ?string $message = null,
         ?int $percentage = null,
         ?bool $cancellable = null
@@ -65,7 +66,7 @@ final class WorkDoneProgressClient
         ]);
     }
 
-    public function end(string $token, ?string $message = null): void
+    public function end(WorkDoneToken $token, ?string $message = null): void
     {
         $this->notify($token, [
             'kind' => 'end',
@@ -82,12 +83,12 @@ final class WorkDoneProgressClient
         }
     }
 
-    private function notify(string $token, array $value): void
+    private function notify(WorkDoneToken $token, array $value): void
     {
         assert(in_array($value['kind'], ['begin', 'report', 'end']));
 
         $this->client->notification('$/progress', [
-            'token' => $token,
+            'token' => (string) $token,
             'value' => $value,
         ]);
     }

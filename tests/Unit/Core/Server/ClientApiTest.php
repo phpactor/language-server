@@ -15,6 +15,7 @@ use Phpactor\LanguageServerProtocol\Unregistration;
 use Phpactor\LanguageServerProtocol\WorkspaceEdit;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
+use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 
 class ClientApiTest extends AsyncTestCase
 {
@@ -231,7 +232,8 @@ class ClientApiTest extends AsyncTestCase
     {
         yield 'Creating Work Done Progress' => [
             function (ClientApi $api): void {
-                $api->workDoneProgress()->create('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $token = new WorkDoneToken('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $api->workDoneProgress()->create($token);
             },
             function (TestRpcClient $client): void {
                 $message = $client->transmitter()->shiftRequest();
@@ -242,11 +244,8 @@ class ClientApiTest extends AsyncTestCase
 
         yield 'Work Done Progress Begin' => [
             function (ClientApi $api): void {
-                $api->workDoneProgress()->begin(
-                    '4ef439b3-3c6a-4c98-ae0a-af2b4503cb15',
-                    'title',
-                    'message',
-                );
+                $token = new WorkDoneToken('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $api->workDoneProgress()->begin($token, 'title', 'message');
             },
             function (TestRpcClient $client, $result): void {
                 $message = $client->transmitter()->shiftNotification();
@@ -262,11 +261,8 @@ class ClientApiTest extends AsyncTestCase
 
         yield 'Work Done Progress Report' => [
             function (ClientApi $api): void {
-                $api->workDoneProgress()->report(
-                    '4ef439b3-3c6a-4c98-ae0a-af2b4503cb15',
-                    'message',
-                    20,
-                );
+                $token = new WorkDoneToken('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $api->workDoneProgress()->report($token, 'message', 20);
             },
             function (TestRpcClient $client, $result): void {
                 $message = $client->transmitter()->shiftNotification();
@@ -281,10 +277,8 @@ class ClientApiTest extends AsyncTestCase
 
         yield 'Work Done Progress End' => [
             function (ClientApi $api): void {
-                $api->workDoneProgress()->end(
-                    '4ef439b3-3c6a-4c98-ae0a-af2b4503cb15',
-                    'message',
-                );
+                $token = new WorkDoneToken('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $api->workDoneProgress()->end($token, 'message');
             },
             function (TestRpcClient $client, $result): void {
                 $message = $client->transmitter()->shiftNotification();
