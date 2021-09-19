@@ -15,11 +15,7 @@ final class ClientCapabilityDependentProgressNotifier implements ProgressNotifie
 
     public function __construct(ClientApi $api, ClientCapabilities $capabilities)
     {
-        if ($capabilities->window['workDoneProgress'] ?? false) {
-            $this->notifier = new WorkDoneProgressNotifier($api);
-        } else {
-            $this->notifier = new MessageProgressNotifier($api);
-        }
+        $this->notifier = $this->createNotifier($api, $capabilities);
     }
 
     /**
@@ -58,5 +54,14 @@ final class ClientCapabilityDependentProgressNotifier implements ProgressNotifie
     public function end(WorkDoneToken $token, ?string $message = null): void
     {
         $this->notifier->end($token, $message);
+    }
+
+    private function createNotifier(ClientApi $api, ClientCapabilities $capabilities): ProgressNotifier
+    {
+        if ($capabilities->window['workDoneProgress'] ?? false) {
+            return new WorkDoneProgressNotifier($api);
+        }
+
+        return new MessageProgressNotifier($api);
     }
 }
