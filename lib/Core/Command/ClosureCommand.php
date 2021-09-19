@@ -20,7 +20,8 @@ class ClosureCommand implements Command
      * @param mixed[] $args
      * @return mixed
      */
-    public function __invoke(...$args) {
+    public function __invoke(...$args)
+    {
         $closure = $this->closure;
         return $closure(...$args);
     }
