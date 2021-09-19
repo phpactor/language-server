@@ -15,6 +15,7 @@ use Phpactor\LanguageServerProtocol\Unregistration;
 use Phpactor\LanguageServerProtocol\WorkspaceEdit;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
+use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 
 class ClientApiTest extends AsyncTestCase
 {
@@ -26,6 +27,7 @@ class ClientApiTest extends AsyncTestCase
      * @dataProvider provideWorkspaceExecuteCommand
      * @dataProvider provideDiagnostics
      * @dataProvider provideRegisterCapability
+     * @dataProvider provideWorkDoneProgress
      */
     public function testSend(Closure $executor, Closure $assertions): void
     {
@@ -37,7 +39,7 @@ class ClientApiTest extends AsyncTestCase
     }
 
     /**
-     * @reuturn Generator<mixed>
+     * @return Generator<mixed>
      */
     public function provideWindowShowMessage(): Generator
     {
@@ -70,7 +72,7 @@ class ClientApiTest extends AsyncTestCase
     }
 
     /**
-     * @reuturn Generator<mixed>
+     * @return Generator<mixed>
      */
     public function provideWindowLogMessage(): Generator
     {
@@ -103,7 +105,7 @@ class ClientApiTest extends AsyncTestCase
     }
 
     /**
-     * @reuturn Generator<mixed>
+     * @return Generator<mixed>
      */
     public function provideWindowShowMessageRequest(): Generator
     {
@@ -126,7 +128,7 @@ class ClientApiTest extends AsyncTestCase
     }
 
     /**
-     * @reuturn Generator<mixed>
+     * @return Generator<mixed>
      */
     public function provideWorkspaceEdit(): Generator
     {
@@ -151,7 +153,7 @@ class ClientApiTest extends AsyncTestCase
     }
 
     /**
-     * @reuturn Generator<mixed>
+     * @return Generator<mixed>
      */
     public function provideWorkspaceExecuteCommand(): Generator
     {
@@ -171,7 +173,7 @@ class ClientApiTest extends AsyncTestCase
     }
 
     /**
-     * @reuturn Generator<mixed>
+     * @return Generator<mixed>
      */
     public function provideDiagnostics(): Generator
     {
@@ -192,7 +194,7 @@ class ClientApiTest extends AsyncTestCase
     }
 
     /**
-     * @reuturn Generator<mixed>
+     * @return Generator<mixed>
      */
     public function provideRegisterCapability(): Generator
     {
@@ -219,6 +221,71 @@ class ClientApiTest extends AsyncTestCase
             function (TestRpcClient $client, $result): void {
                 $message = $client->transmitter()->shiftRequest();
                 self::assertEquals('client/unregisterCapability', $message->method);
+            }
+        ];
+    }
+
+    /**
+     * @return Generator<mixed>
+     */
+    public function provideWorkDoneProgress(): Generator
+    {
+        yield 'Creating Work Done Progress' => [
+            function (ClientApi $api): void {
+                $token = new WorkDoneToken('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $api->workDoneProgress()->create($token);
+            },
+            function (TestRpcClient $client): void {
+                $message = $client->transmitter()->shiftRequest();
+                self::assertEquals('window/workDoneProgress/create', $message->method);
+                self::assertEquals('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15', $message->params['token']);
+            }
+        ];
+
+        yield 'Work Done Progress Begin' => [
+            function (ClientApi $api): void {
+                $token = new WorkDoneToken('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $api->workDoneProgress()->begin($token, 'title', 'message');
+            },
+            function (TestRpcClient $client, $result): void {
+                $message = $client->transmitter()->shiftNotification();
+                self::assertEquals('$/progress', $message->method);
+                self::assertEquals('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15', $message->params['token']);
+                self::assertEquals('begin', $message->params['value']['kind']);
+                self::assertEquals('title', $message->params['value']['title']);
+                self::assertEquals('message', $message->params['value']['message']);
+                self::assertNull($message->params['value']['percentage']);
+                self::assertNull($message->params['value']['cancellable']);
+            }
+        ];
+
+        yield 'Work Done Progress Report' => [
+            function (ClientApi $api): void {
+                $token = new WorkDoneToken('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $api->workDoneProgress()->report($token, 'message', 20);
+            },
+            function (TestRpcClient $client, $result): void {
+                $message = $client->transmitter()->shiftNotification();
+                self::assertEquals('$/progress', $message->method);
+                self::assertEquals('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15', $message->params['token']);
+                self::assertEquals('report', $message->params['value']['kind']);
+                self::assertEquals('message', $message->params['value']['message']);
+                self::assertEquals(20, $message->params['value']['percentage']);
+                self::assertNull($message->params['value']['cancellable']);
+            }
+        ];
+
+        yield 'Work Done Progress End' => [
+            function (ClientApi $api): void {
+                $token = new WorkDoneToken('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15');
+                $api->workDoneProgress()->end($token, 'message');
+            },
+            function (TestRpcClient $client, $result): void {
+                $message = $client->transmitter()->shiftNotification();
+                self::assertEquals('$/progress', $message->method);
+                self::assertEquals('4ef439b3-3c6a-4c98-ae0a-af2b4503cb15', $message->params['token']);
+                self::assertEquals('end', $message->params['value']['kind']);
+                self::assertEquals('message', $message->params['value']['message']);
             }
         ];
     }
