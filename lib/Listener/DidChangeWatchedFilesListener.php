@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Listener;
 
+use Phpactor\LanguageServerProtocol\ClientCapabilities;
 use Phpactor\LanguageServerProtocol\DidChangeWatchedFilesRegistrationOptions;
 use Phpactor\LanguageServerProtocol\FileSystemWatcher;
 use Phpactor\LanguageServerProtocol\Registration;
@@ -23,10 +24,16 @@ class DidChangeWatchedFilesListener implements ListenerProviderInterface
      */
     private $globPatterns;
 
-    public function __construct(ClientApi $client, array $globPatterns)
+    /**
+     * @var ClientCapabilities
+     */
+    private $clientCapabilities;
+
+    public function __construct(ClientApi $client, array $globPatterns, ClientCapabilities $clientCapabilities)
     {
         $this->client = $client;
         $this->globPatterns = $globPatterns;
+        $this->clientCapabilities = $clientCapabilities;
     }
 
     /**
@@ -43,6 +50,10 @@ class DidChangeWatchedFilesListener implements ListenerProviderInterface
 
     public function registerCapability(Initialized $initialized): void
     {
+        if (!($this->clientCapabilities->workspace['didChangeWatchedFiles']['dynamicRegistration'] ?? false)) {
+            return;
+        }
+
         asyncCall(function () {
             yield $this->client->client()->registerCapability(
                 new Registration(
