@@ -87,13 +87,13 @@ final class ClientCapabilityDependentProgressNotifierTest extends AsyncTestCase
         $message = $this->transmitter->shiftNotification();
         self::assertEquals('window/showMessage', $message->method);
         self::assertEquals(MessageType::INFO, $message->params['type']);
-        self::assertEquals('report message - 30%', $message->params['message']);
+        self::assertEquals('title: report message, 30% done', $message->params['message']);
 
         $notifier->end($token, 'end message');
         $message = $this->transmitter->shiftNotification();
         self::assertEquals('window/showMessage', $message->method);
         self::assertEquals(MessageType::INFO, $message->params['type']);
-        self::assertEquals('end message', $message->params['message']);
+        self::assertEquals('title: end message', $message->params['message']);
     }
 
     private function createNotifierWithProgressCapability() : ClientCapabilityDependentProgressNotifier

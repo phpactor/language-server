@@ -28,20 +28,70 @@ class MessageProgressNotifierTest extends TestCase
         $this->api = new TestRpcClient($this->transmitter, new TestResponseWatcher());
     }
 
-    public function testBegin(): void
-    {
+    /**
+     * @dataProvider provideMessageArguments
+     */
+    public function testReport(
+        string $expectedBeginMessage,
+        string $expectedReportMessage,
+        string $expectedEndMessage,
+        string $title,
+        ?string $message = null,
+        ?int $percentage = null
+    ): void {
         $token = WorkDoneToken::generate();
-        $this->createNotifier()->begin($token, 'Hello');
+        $notifier = $this->createNotifier();
+
+        $notifier->begin($token, $title, $message, $percentage);
         self::assertEquals(1, $this->transmitter->count());
-        self::assertEquals('Hello', $this->transmitter->shiftNotification()->params['message']);
+        $sentMessage = $this->transmitter->shiftNotification()->params['message'];
+        self::assertEquals($expectedBeginMessage, $sentMessage, 'Error in begin message');
+
+        $notifier->report($token, $message, $percentage);
+        self::assertEquals(1, $this->transmitter->count());
+        $sentMessage = $this->transmitter->shiftNotification()->params['message'];
+        self::assertEquals($expectedReportMessage, $sentMessage, 'Error in report message');
+
+        $notifier->end($token, $message);
+        self::assertEquals(1, $this->transmitter->count());
+        $sentMessage = $this->transmitter->shiftNotification()->params['message'];
+        self::assertEquals($expectedEndMessage, $sentMessage, 'Error in end message');
     }
 
-    public function testBeginMessageAndPercentage(): void
+    public function provideMessageArguments(): iterable
     {
-        $token = WorkDoneToken::generate();
-        $this->createNotifier()->begin($token, 'Indexer', 'this may take some time', 50);
-        self::assertEquals(1, $this->transmitter->count());
-        self::assertEquals('Indexer: this may take some time, 50% done', $this->transmitter->shiftNotification()->params['message']);
+        yield 'Title only' => [
+            'Title',
+            'Title',
+            'Title',
+            'Title',
+        ];
+
+        yield 'Title and message' => [
+            'Title: Message',
+            'Title: Message',
+            'Title: Message',
+            'Title',
+            'Message',
+        ];
+
+        yield 'Title and percentage' => [
+            'Title: 35% done',
+            'Title: 35% done',
+            'Title',
+            'Title',
+            null,
+            35,
+        ];
+
+        yield 'Title, message and percentage' => [
+            'Title: Message, 35% done',
+            'Title: Message, 35% done',
+            'Title: Message',
+            'Title',
+            'Message',
+            35,
+        ];
     }
 
     private function createNotifier(): ProgressNotifier

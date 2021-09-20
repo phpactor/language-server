@@ -16,6 +16,11 @@ final class MessageProgressNotifier implements ProgressNotifier
      */
     private $api;
 
+    /**
+     * @var array<string, string> Titles indexed by token
+     */
+    private $titles;
+
     public function __construct(ClientApi $api)
     {
         $this->api = $api->window()->showMessage();
@@ -42,17 +47,11 @@ final class MessageProgressNotifier implements ProgressNotifier
         ?int $percentage = null,
         ?bool $cancellable = null
     ): void {
-        $progress = [
-            $title
-        ];
+        $this->titles[(string) $token] = $title;
 
-        if ($message) {
-            $progress[] = sprintf(': %s', $message);
-        }
-        if ($percentage) {
-            $progress[] = sprintf(', %d%% done', $percentage);
-        }
-        $this->api->info(implode('', $progress));
+        $this->api->info(
+            $this->formatMessage($token, $message, $percentage),
+        );
     }
 
     /**
@@ -60,11 +59,33 @@ final class MessageProgressNotifier implements ProgressNotifier
      */
     public function report(WorkDoneToken $token, ?string $message = null, ?int $percentage = null, ?bool $cancellable = null): void
     {
-        $this->api->info(sprintf('%s - %d%%', $message, $percentage));
+        $this->api->info(
+            $this->formatMessage($token, $message, $percentage),
+        );
     }
 
     public function end(WorkDoneToken $token, ?string $message = null): void
     {
-        $this->api->info($message);
+        $this->api->info(
+            $this->formatMessage($token, $message),
+        );
+
+        unset($this->titles[(string) $token]);
+    }
+
+    private function formatMessage(WorkDoneToken $token, ?string $message, ?int $percentage = null): string
+    {
+        $progress = [$this->titles[(string) $token]];
+        
+        if ($message) {
+            $progress[] = sprintf(': %s', $message);
+        }
+        
+        if ($percentage) {
+            $progress[] = $message ? ', ' : ': ';
+            $progress[] = sprintf('%d%% done', $percentage);
+        }
+        
+        return implode('', $progress);
     }
 }
