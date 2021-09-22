@@ -42,24 +42,25 @@ final class ProgressNotifierFactoryTest extends AsyncTestCase
         $notifier = $factory->create($token);
 
         $this->assertUseProgressNotifications($notifier);
-        $notifier->begin('title');
-        $this->assertTokenSentEquals($token);
+        $this->assertNotifyUsingToken($notifier, $token);
     }
 
     public function testProgressInitiatedByServerWithClientCapability(): void
     {
         $factory = $this->createFactoryForClientWithProgressCapability();
-        $this->clientWillRespondSuccessToCreateRequest();
         $notifier = $factory->create();
+        $this->respondWithSuccess();
+        $token = $this->grabTokenFromCreateRequest();
 
         $this->assertUseProgressNotifications($notifier);
+        $this->assertNotifyUsingToken($notifier, $token);
     }
 
     public function testProgressInitiatedByServerWithClientCapabilityButErrorOccurs(): void
     {
         $factory = $this->createFactoryForClientWithProgressCapability();
-        $this->clientWillRespondErrorToCreateRequest();
         $notifier = $factory->create();
+        $this->respondWithError();
 
         $this->assertUseMessageNotifications($notifier);
     }
@@ -92,14 +93,43 @@ final class ProgressNotifierFactoryTest extends AsyncTestCase
         return new ProgressNotifierFactory($api, $capabilities);
     }
 
-    private function clientWillRespondSuccessToCreateRequest(): void
+    private function assertNotifyUsingToken(ProgressNotifier $notifier, string $token): void
     {
-        $this->client->responseWatcher()->resolveNextResponse(null);
+        $this->transmitter->clear();
+        $notifier->begin('title');
+        self::assertCount(1, $this->transmitter);
+        self::assertEquals(
+            $token,
+            $this->transmitter->shiftNotification()->params['token'],
+            'The token does not match',
+        );
     }
 
-    private function clientWillRespondErrorToCreateRequest(): void
+    private function grabTokenFromCreateRequest(): string
     {
-        $this->client->responseWatcher()->resolveNextResponse(null, new ResponseError(
+        self::assertCount(1, $this->transmitter, 'The "create" request was not send');
+
+        $createMessage = $this->transmitter->shiftRequest();
+        $token = $createMessage->params['token'];
+
+        self::assertEquals(
+            'window/workDoneProgress/create',
+            $createMessage->method,
+            'The "create" request was not send',
+        );
+        self::assertNotEmpty($token, 'The token is missing from the "create" request');
+
+        return $token;
+    }
+
+    private function respondWithSuccess(): void
+    {
+        $this->client->responseWatcher()->resolveLastResponse(null);
+    }
+
+    private function respondWithError(): void
+    {
+        $this->client->responseWatcher()->resolveLastResponse(null, new ResponseError(
             ErrorCodes::MethodNotFound,
             'window/workDoneProgress/create',
         ));
@@ -108,12 +138,6 @@ final class ProgressNotifierFactoryTest extends AsyncTestCase
     private function assertUseProgressNotifications(ProgressNotifier $notifier): void
     {
         self::assertInstanceOf(WorkDoneProgressNotifier::class, $notifier);
-    }
-
-    private function assertTokenSentEquals(WorkDoneToken $token): void
-    {
-        self::assertCount(1, $this->transmitter);
-        self::assertEquals((string) $token, $this->transmitter->shiftNotification()->params['token']);
     }
 
     private function assertUseMessageNotifications(ProgressNotifier $notifier): void

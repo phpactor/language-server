@@ -20,11 +20,6 @@ final class TestResponseWatcher implements ResponseWatcher
      */
     private $requestIds = [];
 
-    /**
-     * @var ResponseMessage|null
-     */
-    private $nextResponse = null;
-
     public function __construct(?ResponseWatcher $innerWatcher = null)
     {
         $this->innerWatcher = $innerWatcher ?: new DeferredResponseWatcher();
@@ -38,15 +33,7 @@ final class TestResponseWatcher implements ResponseWatcher
     /**
      * @param mixed $result
      */
-    public function resolveNextResponse($result, ?ResponseError $error = null): void
-    {
-        $this->nextResponse = new ResponseMessage(0, $result, $error);
-    }
-
-    /**
-     * @param mixed $result
-     */
-    public function resolveLastResponse($result): void
+    public function resolveLastResponse($result, ?ResponseError $error = null): void
     {
         $id = array_shift($this->requestIds);
         if (null === $id) {
@@ -54,7 +41,7 @@ final class TestResponseWatcher implements ResponseWatcher
                 'No responses left to handle'
             );
         }
-        $this->handle(new ResponseMessage($id, $result));
+        $this->handle(new ResponseMessage($id, $result, $error));
     }
 
     /**
@@ -63,16 +50,7 @@ final class TestResponseWatcher implements ResponseWatcher
     public function waitForResponse($requestId): Promise
     {
         $this->requestIds[] = $requestId;
-        $promise = $this->innerWatcher->waitForResponse($requestId);
 
-        if ($this->nextResponse) {
-            $this->handle(new ResponseMessage(
-                $requestId,
-                $this->nextResponse->result,
-                $this->nextResponse->error,
-            ));
-        }
-
-        return $promise;
+        return $this->innerWatcher->waitForResponse($requestId);
     }
 }

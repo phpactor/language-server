@@ -30,39 +30,30 @@ class WorkDoneProgressNotifierTest extends TestCase
         $this->api = new TestRpcClient($this->transmitter, new TestResponseWatcher());
     }
 
-    public function testCreateInitiatedByClient(): void
+    public function testProgressInitiatedByClient(): void
     {
         $token = WorkDoneToken::generate();
         $notifier = $this->createNotifier($token);
 
-        $notifier->begin('title');
-        $this->assertNotifiedWithToken($token);
+        $this->assertNotifyUsingToken($notifier, $token);
     }
 
-    public function testCreateInitiatedByServerAccepted(): void
+    public function testProgressInitiatedByServerAndAccepted(): void
     {
-        $this->clientWillRespondSuccessToCreateRequest();
         $notifier = $this->createNotifier();
+        $this->respondWithSuccess();
 
-        $this->assertNumberOfSentNotifications(1);
-        $createMessage = $this->transmitter->shiftRequest();
-        $token = $createMessage->params['token'];
-        self::assertEquals('window/workDoneProgress/create', $createMessage->method);
-        self::assertNotEmpty($token);
+        $token = $this->grabTokenFromCreateRequest();
 
-        $notifier->begin('title');
-        $this->assertNotifiedWithToken($token);
+        $this->assertNotifyUsingToken($notifier, $token);
     }
 
-    public function testCreateInitiatedByServerRefused(): void
+    public function testProgressInitiatedByServerButRefused(): void
     {
-        $this->clientWillRespondErrorToCreateRequest();
         $notifier = $this->createNotifier();
-        $this->transmitter->clear();
+        $this->respondWithError();
 
-        $notifier->begin('title');
-        self::assertCount(1, $this->transmitter);
-        self::assertEquals('window/showMessage', $this->transmitter->shiftNotification()->method);
+        $this->assertUseMessageNotifications($notifier);
     }
 
     public function testDoesNotSendAnythingAfterEndNotification(): void
@@ -70,11 +61,9 @@ class WorkDoneProgressNotifierTest extends TestCase
         $notifier = $this->createNotifier(WorkDoneToken::generate());
         $notifier->begin('title');
         $notifier->end();
-        $this->assertNumberOfSentNotifications(2);
-        $this->transmitter->clear();
-
         $notifier->report();
-        $this->assertNumberOfSentNotifications(0, 'No progress should be reported after calling end()');
+
+        $this->assertNumberOfSentNotifications(2, 'No progress should be reported after calling end()');
     }
 
     /**
@@ -128,26 +117,54 @@ class WorkDoneProgressNotifierTest extends TestCase
         return new WorkDoneProgressNotifier(new ClientApi($this->api), $token);
     }
 
-    private function clientWillRespondSuccessToCreateRequest(): void
+    private function assertNotifyUsingToken(WorkDoneProgressNotifier $notifier, string $token): void
     {
-        $this->api->responseWatcher()->resolveNextResponse(null);
+        $this->transmitter->clear();
+        $notifier->begin('title');
+        $this->assertNumberOfSentNotifications(1);
+        self::assertEquals(
+            $token,
+            $this->transmitter->shiftNotification()->params['token'],
+            'The token does not match',
+        );
     }
 
-    private function clientWillRespondErrorToCreateRequest(): void
+    private function respondWithSuccess(): void
     {
-        $this->api->responseWatcher()->resolveNextResponse(null, new ResponseError(
+        $this->api->responseWatcher()->resolveLastResponse(null);
+    }
+
+    private function respondWithError(): void
+    {
+        $this->api->responseWatcher()->resolveLastResponse(null, new ResponseError(
             ErrorCodes::MethodNotFound,
             'window/workDoneProgress/create',
         ));
     }
 
-    private function assertValidProgressNotification(string $token, array $values): void
+    private function grabTokenFromCreateRequest(): string
     {
-        $this->assertNumberOfSentNotifications(1);
-        $notification = $this->transmitter->shiftNotification();
-        self::assertEquals('$/progress', $notification->method);
-        self::assertEquals($token, $notification->params['token']);
-        self::assertEquals($values, $notification->params['value']);
+        $this->assertNumberOfSentNotifications(1, 'The "create" request was not send');
+
+        $createMessage = $this->transmitter->shiftRequest();
+        $token = $createMessage->params['token'];
+
+        self::assertEquals(
+            'window/workDoneProgress/create',
+            $createMessage->method,
+            'The "create" request was not send',
+        );
+        self::assertNotEmpty($token, 'The token is missing from the "create" request');
+
+        return $token;
+    }
+
+    private function assertUseMessageNotifications(WorkDoneProgressNotifier $notifier): void
+    {
+        $this->transmitter->clear();
+        $notifier->begin('title');
+        self::assertCount(1, $this->transmitter);
+        self::assertEquals('window/showMessage', $this->transmitter->shiftNotification()->method);
     }
 
     private function assertNumberOfSentNotifications(int $count, ?string $message = null): void
@@ -159,13 +176,12 @@ class WorkDoneProgressNotifierTest extends TestCase
         );
     }
 
-    private function assertNotifiedWithToken(string $token): void
+    private function assertValidProgressNotification(string $token, array $values): void
     {
         $this->assertNumberOfSentNotifications(1);
-        self::assertEquals(
-            $token,
-            $this->transmitter->shiftNotification()->params['token'],
-            'The token does not match',
-        );
+        $notification = $this->transmitter->shiftNotification();
+        self::assertEquals('$/progress', $notification->method);
+        self::assertEquals($token, $notification->params['token']);
+        self::assertEquals($values, $notification->params['value']);
     }
 }
