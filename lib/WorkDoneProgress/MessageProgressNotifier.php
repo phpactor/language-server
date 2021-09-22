@@ -2,12 +2,8 @@
 
 namespace Phpactor\LanguageServer\WorkDoneProgress;
 
-use Amp\Promise;
-use Amp\Success;
-use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\Client\MessageClient;
-use Ramsey\Uuid\Uuid;
 
 final class MessageProgressNotifier implements ProgressNotifier
 {
@@ -17,9 +13,9 @@ final class MessageProgressNotifier implements ProgressNotifier
     private $api;
 
     /**
-     * @var array<string, string> Titles indexed by token
+     * @var string The title of the progress being reported
      */
-    private $titles;
+    private $title;
 
     public function __construct(ClientApi $api)
     {
@@ -29,53 +25,39 @@ final class MessageProgressNotifier implements ProgressNotifier
     /**
      * {@inheritDoc}
      */
-    public function create(WorkDoneToken $token): Promise
-    {
-        return new Success(new ResponseMessage(
-            Uuid::uuid4(),
-            null,
-        ));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function begin(
-        WorkDoneToken $token,
         string $title,
         ?string $message = null,
         ?int $percentage = null,
         ?bool $cancellable = null
     ): void {
-        $this->titles[(string) $token] = $title;
+        $this->title = $title;
 
         $this->api->info(
-            $this->formatMessage($token, $message, $percentage),
+            $this->formatMessage($message, $percentage),
         );
     }
 
     /**
      * {@inheritDoc}
      */
-    public function report(WorkDoneToken $token, ?string $message = null, ?int $percentage = null, ?bool $cancellable = null): void
+    public function report(?string $message = null, ?int $percentage = null, ?bool $cancellable = null): void
     {
         $this->api->info(
-            $this->formatMessage($token, $message, $percentage),
+            $this->formatMessage($message, $percentage),
         );
     }
 
-    public function end(WorkDoneToken $token, ?string $message = null): void
+    public function end(?string $message = null): void
     {
         $this->api->info(
-            $this->formatMessage($token, $message),
+            $this->formatMessage($message),
         );
-
-        unset($this->titles[(string) $token]);
     }
 
-    private function formatMessage(WorkDoneToken $token, ?string $message, ?int $percentage = null): string
+    private function formatMessage(?string $message, ?int $percentage = null): string
     {
-        $progress = [$this->titles[(string) $token]];
+        $progress = [$this->title];
         
         if ($message) {
             $progress[] = sprintf(': %s', $message);

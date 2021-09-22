@@ -9,7 +9,6 @@ use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\WorkDoneProgress\MessageProgressNotifier;
 use Phpactor\LanguageServer\WorkDoneProgress\ProgressNotifier;
-use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 
 class MessageProgressNotifierTest extends TestCase
 {
@@ -17,6 +16,7 @@ class MessageProgressNotifierTest extends TestCase
      * @var TestMessageTransmitter
      */
     private $transmitter;
+
     /**
      * @var TestRpcClient
      */
@@ -29,9 +29,9 @@ class MessageProgressNotifierTest extends TestCase
     }
 
     /**
-     * @dataProvider provideMessageArguments
+     * @dataProvider provideNotificationArguments
      */
-    public function testReport(
+    public function testSendCorrectNotifications(
         string $expectedBeginMessage,
         string $expectedReportMessage,
         string $expectedEndMessage,
@@ -39,26 +39,19 @@ class MessageProgressNotifierTest extends TestCase
         ?string $message = null,
         ?int $percentage = null
     ): void {
-        $token = WorkDoneToken::generate();
         $notifier = $this->createNotifier();
 
-        $notifier->begin($token, $title, $message, $percentage);
-        self::assertEquals(1, $this->transmitter->count());
-        $sentMessage = $this->transmitter->shiftNotification()->params['message'];
-        self::assertEquals($expectedBeginMessage, $sentMessage, 'Error in begin message');
+        $notifier->begin($title, $message, $percentage);
+        $this->assertMessageEquals($expectedBeginMessage, 'Error in begin message');
 
-        $notifier->report($token, $message, $percentage);
-        self::assertEquals(1, $this->transmitter->count());
-        $sentMessage = $this->transmitter->shiftNotification()->params['message'];
-        self::assertEquals($expectedReportMessage, $sentMessage, 'Error in report message');
+        $notifier->report($message, $percentage);
+        $this->assertMessageEquals($expectedReportMessage, 'Error in report message');
 
-        $notifier->end($token, $message);
-        self::assertEquals(1, $this->transmitter->count());
-        $sentMessage = $this->transmitter->shiftNotification()->params['message'];
-        self::assertEquals($expectedEndMessage, $sentMessage, 'Error in end message');
+        $notifier->end($message);
+        $this->assertMessageEquals($expectedEndMessage, 'Error in end message');
     }
 
-    public function provideMessageArguments(): iterable
+    public function provideNotificationArguments(): iterable
     {
         yield 'Title only' => [
             'Title',
@@ -97,5 +90,14 @@ class MessageProgressNotifierTest extends TestCase
     private function createNotifier(): ProgressNotifier
     {
         return new MessageProgressNotifier(new ClientApi($this->api));
+    }
+
+    private function assertMessageEquals(
+        string $expectedBeginMessage,
+        string $errorMessage
+    ): void {
+        self::assertEquals(1, $this->transmitter->count());
+        $sentMessage = $this->transmitter->shiftNotification()->params['message'];
+        self::assertEquals($expectedBeginMessage, $sentMessage, $errorMessage);
     }
 }
