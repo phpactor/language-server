@@ -2,11 +2,13 @@
 
 namespace Phpactor\LanguageServer\WorkDoneProgress;
 
+use Amp\Promise;
+use Amp\Success;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\Client\WorkDoneProgressClient;
 use RuntimeException;
-use function Amp\Promise\wait;
+use Throwable;
 
 final class WorkDoneProgressNotifier implements ProgressNotifier
 {
@@ -16,18 +18,20 @@ final class WorkDoneProgressNotifier implements ProgressNotifier
     private $api;
 
     /**
-     * @var WorkDoneToken|null
+     * @var MessageProgressNotifier
      */
-    private $token;
+    private $fallbackApi;
+
+    /**
+     * @var Promise<WorkDoneToken|null>
+     */
+    private $promise;
 
     public function __construct(ClientApi $api, ?WorkDoneToken $token = null)
     {
         $this->api = $api->workDoneProgress();
-        $this->token = $token;
-
-        if (!$this->token) {
-            $this->create();
-        }
+        $this->fallbackApi = new MessageProgressNotifier($api);
+        $this->promise = $token ? new Success($token) : $this->create();
     }
 
     /**
@@ -39,11 +43,11 @@ final class WorkDoneProgressNotifier implements ProgressNotifier
         ?int $percentage = null,
         ?bool $cancellable = null
     ): void {
-        if (!$this->token) {
-            return;
-        }
-
-        $this->api->begin($this->token, $title, $message, $percentage, $cancellable);
+        $this->onResolve(function (WorkDoneToken $token, ...$args): void {
+            $this->api->begin($token, ...$args);
+        }, function (...$args): void {
+            $this->fallbackApi->begin(...$args);
+        }, $title, $message, $percentage, $cancellable);
     }
 
     /**
@@ -54,39 +58,58 @@ final class WorkDoneProgressNotifier implements ProgressNotifier
         ?int $percentage = null,
         ?bool $cancellable = null
     ): void {
-        if (!$this->token) {
-            return;
-        }
-
-        $this->api->report($this->token, $message, $percentage, $cancellable);
+        $this->onResolve(function (WorkDoneToken $token, ...$args): void {
+            $this->api->report($token, ...$args);
+        }, function (...$args): void {
+            $this->fallbackApi->report(...$args);
+        }, $message, $percentage, $cancellable);
     }
 
     public function end(?string $message = null): void
     {
-        if (!$this->token) {
-            return;
-        }
-
-        $this->api->end($this->token, $message);
-        $this->token = null;
+        $this->onResolve(function (WorkDoneToken $token, ...$args): void {
+            $this->api->end($token, ...$args);
+            $this->promise = new Success(null);
+        }, function (...$args): void {
+            $this->fallbackApi->end(...$args);
+            $this->promise = new Success(null);
+        }, $message);
     }
 
     /**
-     * @throws RuntimeException if the client respond an error, contains the code & message from the response error.
+     * @return Promise<WorkDoneToken>
      */
-    private function create(): void
+    private function create(): Promise
     {
-        $token = WorkDoneToken::generate();
-        /** @var ResponseMessage $response */
-        $response = wait($this->api->create($token));
+        return \Amp\call(function () {
+            $token = WorkDoneToken::generate();
+            $response = yield $this->api->create($token);
+            assert($response instanceof ResponseMessage);
 
-        if ($response->error) {
-            throw new RuntimeException(
-                $response->error->message,
-                $response->error->code,
-            );
-        }
+            if ($error = $response->error) {
+                throw new RuntimeException($error->message, $error->code);
+            }
 
-        $this->token = $token;
+            return $token;
+        });
+    }
+
+    /**
+     * @param mixed[] $args
+     */
+    private function onResolve(callable $onSucess, callable $onError, ...$args): void
+    {
+        \Amp\asyncCall(function (callable $onSuccess, callable $onError, ...$args) {
+            try {
+                if (!$token = yield $this->promise) {
+                    return; // Stop if no more token (end notification was sent)
+                }
+                assert($token instanceof WorkDoneToken);
+
+                $onSuccess($token, ...$args);
+            } catch (Throwable $e) {
+                $onError(...$args);
+            }
+        }, $onSucess, $onError, ...$args);
     }
 }

@@ -11,7 +11,6 @@ use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneProgressNotifier;
 use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
-use RuntimeException;
 
 class WorkDoneProgressNotifierTest extends TestCase
 {
@@ -57,12 +56,13 @@ class WorkDoneProgressNotifierTest extends TestCase
 
     public function testCreateInitiatedByServerRefused(): void
     {
-        self::expectException(RuntimeException::class);
-        self::expectExceptionMessage('window/workDoneProgress/create');
-        self::expectExceptionCode(ErrorCodes::MethodNotFound);
-
         $this->clientWillRespondErrorToCreateRequest();
         $notifier = $this->createNotifier();
+        $this->transmitter->clear();
+
+        $notifier->begin('title');
+        self::assertCount(1, $this->transmitter);
+        self::assertEquals('window/showMessage', $this->transmitter->shiftNotification()->method);
     }
 
     public function testDoesNotSendAnythingAfterEndNotification(): void

@@ -3,9 +3,7 @@
 namespace Phpactor\LanguageServer\WorkDoneProgress;
 
 use Phpactor\LanguageServerProtocol\ClientCapabilities;
-use Phpactor\LanguageServer\Core\Rpc\ErrorCodes;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
-use RuntimeException;
 
 final class ProgressNotifierFactory
 {
@@ -31,15 +29,7 @@ final class ProgressNotifierFactory
             return new MessageProgressNotifier($this->api);
         }
 
-        try {
-            return new WorkDoneProgressNotifier($this->api, $token);
-        } catch (RuntimeException $error) {
-            if (ErrorCodes::MethodNotFound === $error->getCode()) {
-                return new MessageProgressNotifier($this->api);
-            }
-
-            throw $error;
-        }
+        return new WorkDoneProgressNotifier($this->api, $token);
     }
 
     private function canServerInitiateProgress(): bool

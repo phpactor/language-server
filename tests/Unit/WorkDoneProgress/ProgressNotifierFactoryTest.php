@@ -118,6 +118,19 @@ final class ProgressNotifierFactoryTest extends AsyncTestCase
 
     private function assertUseMessageNotifications(ProgressNotifier $notifier): void
     {
-        self::assertInstanceOf(MessageProgressNotifier::class, $notifier);
+        if ($notifier instanceof MessageProgressNotifier) {
+            $this->addToAssertionCount(1);
+
+            return;
+        }
+
+        $this->transmitter->clear();
+        $notifier->begin('title');
+        self::assertCount(1, $this->transmitter, 'Does not use message notification');
+        self::assertEquals(
+            'window/showMessage',
+            $this->transmitter->shiftNotification()->method,
+            'Does not use message notification'
+        );
     }
 }
