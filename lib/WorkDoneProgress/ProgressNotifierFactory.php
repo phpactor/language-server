@@ -23,7 +23,7 @@ final class ProgressNotifierFactory
         $this->capabilities = $capabilities;
     }
 
-    public function create(?WorkDoneToken $token = null): ProgressNotifier
+    public function create(?string $token = null): ProgressNotifier
     {
         if (!$token && !$this->canServerInitiateProgress()) {
             return new MessageProgressNotifier($this->api);

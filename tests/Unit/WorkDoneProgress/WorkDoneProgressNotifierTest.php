@@ -10,7 +10,6 @@ use Phpactor\LanguageServer\Core\Server\ResponseWatcher\TestResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneProgressNotifier;
-use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 
 class WorkDoneProgressNotifierTest extends TestCase
 {
@@ -32,7 +31,7 @@ class WorkDoneProgressNotifierTest extends TestCase
 
     public function testProgressInitiatedByClient(): void
     {
-        $token = WorkDoneToken::generate();
+        $token = 'e29a5096-82bb-48d9-8e24-c25a628e7fbe';
         $notifier = $this->createNotifier($token);
 
         $this->assertNotifyUsingToken($notifier, $token);
@@ -58,7 +57,7 @@ class WorkDoneProgressNotifierTest extends TestCase
 
     public function testDoesNotSendAnythingAfterEndNotification(): void
     {
-        $notifier = $this->createNotifier(WorkDoneToken::generate());
+        $notifier = $this->createNotifier('6d829368-2367-4301-99b2-962d601df9c6');
         $notifier->begin('title');
         $notifier->end();
         $notifier->report();
@@ -74,7 +73,7 @@ class WorkDoneProgressNotifierTest extends TestCase
         ?string $message = null,
         ?int $percentage = null
     ): void {
-        $token = WorkDoneToken::generate();
+        $token = 'd5638554-14ed-4227-bba9-fd12b03d3559';
         $notifier = $this->createNotifier($token);
 
         $notifier->begin($title, $message, $percentage);
@@ -112,7 +111,7 @@ class WorkDoneProgressNotifierTest extends TestCase
         yield 'Title, message and percentage' => ['Title', 'Message', 35];
     }
 
-    private function createNotifier(?WorkDoneToken $token = null): WorkDoneProgressNotifier
+    private function createNotifier(?string $token = null): WorkDoneProgressNotifier
     {
         return new WorkDoneProgressNotifier(new ClientApi($this->api), $token);
     }

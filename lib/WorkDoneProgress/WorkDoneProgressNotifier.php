@@ -27,11 +27,11 @@ final class WorkDoneProgressNotifier implements ProgressNotifier
      */
     private $promise;
 
-    public function __construct(ClientApi $api, ?WorkDoneToken $token = null)
+    public function __construct(ClientApi $api, ?string $token = null)
     {
         $this->api = $api->workDoneProgress();
         $this->fallbackApi = new MessageProgressNotifier($api);
-        $this->promise = $token ? new Success($token) : $this->create();
+        $this->promise = $token ? new Success(new WorkDoneToken($token)) : $this->create();
     }
 
     /**

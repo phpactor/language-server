@@ -13,7 +13,6 @@ use Phpactor\LanguageServer\WorkDoneProgress\MessageProgressNotifier;
 use Phpactor\LanguageServer\WorkDoneProgress\ProgressNotifier;
 use Phpactor\LanguageServer\WorkDoneProgress\ProgressNotifierFactory;
 use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneProgressNotifier;
-use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 
 final class ProgressNotifierFactoryTest extends AsyncTestCase
 {
@@ -38,7 +37,7 @@ final class ProgressNotifierFactoryTest extends AsyncTestCase
     public function testProgressInitiatedByClient(): void
     {
         $factory = $this->createFactoryForClientWithoutProgressCapability();
-        $token = WorkDoneToken::generate();
+        $token = '8bc95aa1-da28-4ea8-a654-bfc0ae48171a';
         $notifier = $factory->create($token);
 
         $this->assertUseProgressNotifications($notifier);
