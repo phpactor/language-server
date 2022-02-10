@@ -29,7 +29,7 @@ class LspMessageSerializerTest extends TestCase
      */
     public function testSerializes(Message $message, string $expected): void
     {
-        self::assertEquals($expected, $this->serialize($message));
+        self::assertJsonStringEqualsJsonString($expected, $this->serialize($message));
     }
 
     public function provideSerializes()
