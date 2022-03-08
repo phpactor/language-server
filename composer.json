@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "amphp/socket": "^1.1",
         "dantleech/argument-resolver": "^1.1",
         "dantleech/invoke": "^2.0",

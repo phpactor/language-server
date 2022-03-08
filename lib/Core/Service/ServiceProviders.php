@@ -7,6 +7,7 @@ use IteratorAggregate;
 
 use Countable;
 use Phpactor\LanguageServer\Core\Service\Exception\UnknownService;
+use Traversable;
 
 /**
  * @implements IteratorAggregate<ServiceProvider>
@@ -30,12 +31,12 @@ final class ServiceProviders implements Countable, IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->services);
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->services);
     }
