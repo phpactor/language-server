@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Server\Parser;
 
 use Amp\ByteStream\InMemoryStream;
+use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotDecodeBody;
 use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
 use Phpactor\LanguageServer\Core\Rpc\RawMessage;
@@ -64,5 +65,25 @@ class LspMessageReaderTest extends TestCase
         $this->assertInstanceOf(RawMessage::class, $result, 'first');
         $result = \Amp\Promise\wait($reader->wait());
         $this->assertInstanceOf(RawMessage::class, $result, 'second');
+    }
+
+    public function testReadingAnInvalidStream(): void
+    {
+        $stream = new InMemoryStream(
+            <<<EOT
+                Content-Length: 74\r\n
+                Content-Type: foo\r\n\r\n
+                {
+                    "jsonrpc":"2.0",
+                    "method":"textDocument/didOpen",
+                    "params": {
+                        "textDocument": {
+                        }
+                EOT
+        );
+        $this->expectException(CouldNotDecodeBody::class);
+
+        $reader = new LspMessageReader($stream);
+        $result = \Amp\Promise\wait($reader->wait());
     }
 }
