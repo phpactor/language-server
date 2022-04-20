@@ -31,4 +31,9 @@ class SayHelloDiagnosticsProvider implements DiagnosticsProvider
             ];
         });
     }
+
+    public function name(): string
+    {
+        return 'say-hello';
+    }
 }

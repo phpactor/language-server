@@ -125,4 +125,11 @@ class ServiceManager
 
         return isset($this->cancellations[$serviceName]);
     }
+
+    public function stopAll(): void
+    {
+        foreach ($this->serviceProviders->names() as $serviceName) {
+            $this->stop($serviceName);
+        }
+    }
 }

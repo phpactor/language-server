@@ -9,7 +9,6 @@ use Generator;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
 use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Phpactor\LanguageServer\Core\Server\Parser\RequestReader;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
@@ -30,11 +29,6 @@ use function Amp\call;
 
 final class LanguageServer
 {
-    /**
-     * @var RequestReader
-     */
-    private $parser;
-
     /**
      * @var LoggerInterface
      */

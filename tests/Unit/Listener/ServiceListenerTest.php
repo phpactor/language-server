@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Listener;
 
 use PHPUnit\Framework\TestCase;
+use Phpactor\LanguageServer\Event\WillShutdown;
 use Phpactor\LanguageServer\Listener\ServiceListener;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Event\Initialized;
@@ -35,6 +36,13 @@ class ServiceListenerTest extends TestCase
         $event = new Initialized();
         $this->dispatch($event);
         $this->serviceManager->startAll()->shouldHaveBeenCalled();
+    }
+
+    public function testStopsAllServicesOnShutdown(): void
+    {
+        $event = new WillShutdown();
+        $this->dispatch($event);
+        $this->serviceManager->stopAll()->shouldHaveBeenCalled();
     }
 
     public function testDoesNotStartServicesOnOtherEvent(): void

@@ -47,6 +47,19 @@ class ServiceManagerTest extends AsyncTestCase
         self::assertTrue($service->called);
     }
 
+    public function testStopAll(): void
+    {
+        $service = new PingService();
+        $serviceManager = $this->createServiceManager($service);
+        $serviceManager->startAll();
+
+        self::assertFalse($service->cancellationToken->isRequested());
+
+        $serviceManager->stopAll();
+
+        self::assertTrue($service->cancellationToken->isRequested());
+    }
+
     public function testStartService(): void
     {
         $service = new PingService();
@@ -140,7 +153,10 @@ class ServiceManagerTest extends AsyncTestCase
 
 class PingService implements ServiceProvider
 {
+    /** @var bool */
     public $called = false;
+    public CancellationToken $cancellationToken;
+
     /**
      * {@inheritDoc}
      */
@@ -159,9 +175,13 @@ class PingService implements ServiceProvider
         ];
     }
 
-    public function ping(): Promise
+    /**
+     * @return Promise<null>
+     */
+    public function ping(CancellationToken $token): Promise
     {
         $this->called = true;
+        $this->cancellationToken = $token;
         return new Success();
     }
 }

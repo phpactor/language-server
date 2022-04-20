@@ -23,7 +23,7 @@ final class ServiceProviders implements Countable, IteratorAggregate
     {
         foreach ($serviceProviders as $serviceProvider) {
             foreach ($serviceProvider->services() as $methodName) {
-                $this->services[$methodName] = $serviceProvider;
+                $this->services[(string)$methodName] = $serviceProvider;
             }
         }
     }

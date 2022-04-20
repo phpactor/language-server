@@ -12,4 +12,6 @@ interface DiagnosticsProvider
      * @return Promise<array<Diagnostic>>
      */
     public function provideDiagnostics(TextDocumentItem $textDocument): Promise;
+
+    public function name(): string;
 }
