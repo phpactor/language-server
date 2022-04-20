@@ -32,7 +32,7 @@ class ServiceListener implements ListenerProviderInterface
         }
 
         if ($event instanceof WillShutdown) {
-            yield function (Initialized $closed): void {
+            yield function (WillShutdown $closed): void {
                 $this->serviceManager->stopAll();
             };
             return;
