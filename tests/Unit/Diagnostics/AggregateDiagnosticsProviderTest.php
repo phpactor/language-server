@@ -18,17 +18,17 @@ class AggregateDiagnosticsProviderTest extends TestCase
         $providers = [
             $this->createProvider([
                 ProtocolFactory::diagnostic(
-                    ProtocolFactory::range(1,1,2,2),
+                    ProtocolFactory::range(1, 1, 2, 2),
                     'one'
                 ),
                 ProtocolFactory::diagnostic(
-                    ProtocolFactory::range(1,1,2,2),
+                    ProtocolFactory::range(1, 1, 2, 2),
                     'two'
                 )
             ]),
             $this->createProvider([
                 ProtocolFactory::diagnostic(
-                    ProtocolFactory::range(1,1,2,2),
+                    ProtocolFactory::range(1, 1, 2, 2),
                     'three'
                 ),
             ]),
@@ -50,7 +50,7 @@ class AggregateDiagnosticsProviderTest extends TestCase
 
     private function createAggregate(ClosureDiagnosticsProvider ...$providers): AggregateDiagnosticsProvider
     {
-         return new AggregateDiagnosticsProvider(new NullLogger(), ...$providers);
+        return new AggregateDiagnosticsProvider(new NullLogger(), ...$providers);
     }
 
     /**
@@ -58,7 +58,7 @@ class AggregateDiagnosticsProviderTest extends TestCase
      */
     private function createProvider(array $diagnostics, string $name = 'test'): ClosureDiagnosticsProvider
     {
-        return new ClosureDiagnosticsProvider(function  () use ($diagnostics) {
+        return new ClosureDiagnosticsProvider(function () use ($diagnostics) {
             return new Success($diagnostics);
         }, $name);
     }
