@@ -38,6 +38,8 @@ interface Handler
      *
      * The arguments passed by the RPC call depend on the `ArgumentResolver`
      * implementation used by the `HandlerMethodRunner`.
+     *
+     * @return array<string,string>
      */
     public function methods(): array;
 }
