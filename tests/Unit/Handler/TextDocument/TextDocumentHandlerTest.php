@@ -14,11 +14,14 @@ use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class TextDocumentHandlerTest extends HandlerTestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var Workspace
      */
