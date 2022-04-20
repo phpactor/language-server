@@ -13,18 +13,23 @@ class ClosureDiagnosticsProvider implements DiagnosticsProvider
      */
     private $closure;
 
-    public function __construct(Closure $closure)
+    private string $name;
+
+    public function __construct(Closure $closure, string $name = 'closure')
     {
         $this->closure = $closure;
+        $this->name = $name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function provideDiagnostics(TextDocumentItem $textDocument): Promise
     {
         $closure = $this->closure;
 
         return $closure($textDocument);
+    }
+
+    public function name(): string
+    {
+        return $this->name;
     }
 }

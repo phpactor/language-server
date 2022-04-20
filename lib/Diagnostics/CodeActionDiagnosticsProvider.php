@@ -45,4 +45,9 @@ class CodeActionDiagnosticsProvider implements DiagnosticsProvider
             return $diagnostics;
         });
     }
+
+    public function name(): string
+    {
+        return 'code-action';
+    }
 }
