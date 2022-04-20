@@ -67,7 +67,7 @@ class AcmeLsDispatcherFactory implements DispatcherFactory
             new TextDocumentHandler($eventDispatcher),
             new ServiceHandler($serviceManager, $clientApi),
             new CommandHandler(new CommandDispatcher([])),
-            new ExitHandler()
+            new ExitHandler($eventDispatcher)
         );
 
         $runner = new HandlerMethodRunner(
