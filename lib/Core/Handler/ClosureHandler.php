@@ -32,6 +32,9 @@ final class ClosureHandler implements Handler
         ];
     }
 
+    /**
+     * @return mixed
+     */
     public function handle()
     {
         $args = func_get_args();

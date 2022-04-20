@@ -86,11 +86,6 @@ final class LanguageServerTesterBuilder
     private $enableTextDocuments = false;
 
     /**
-     * @var ResponseWatcher
-     */
-    private $responseHandler;
-
-    /**
      * @var RpcClient
      */
     private $rpcClient;

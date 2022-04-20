@@ -28,11 +28,6 @@ class Workspace implements Countable, IteratorAggregate
     private $documentVersions = [];
 
     /**
-     * @var int
-     */
-    private $processId;
-
-    /**
      * @var LoggerInterface|null
      */
     private $logger;

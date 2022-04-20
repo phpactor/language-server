@@ -31,11 +31,6 @@ use function Amp\call;
 final class LanguageServer
 {
     /**
-     * @var RequestReader
-     */
-    private $parser;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
