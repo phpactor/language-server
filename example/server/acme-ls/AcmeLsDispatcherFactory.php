@@ -32,6 +32,7 @@ use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\ResponseWatcher\DeferredResponseWatcher;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Middleware\HandlerMiddleware;
+use Phpactor\LanguageServer\Middleware\ShutdownMiddleware;
 use Psr\Log\LoggerInterface;
 
 class AcmeLsDispatcherFactory implements DispatcherFactory
@@ -67,7 +68,6 @@ class AcmeLsDispatcherFactory implements DispatcherFactory
             new TextDocumentHandler($eventDispatcher),
             new ServiceHandler($serviceManager, $clientApi),
             new CommandHandler(new CommandDispatcher([])),
-            new ExitHandler($eventDispatcher)
         );
 
         $runner = new HandlerMethodRunner(
@@ -83,6 +83,7 @@ class AcmeLsDispatcherFactory implements DispatcherFactory
             new InitializeMiddleware($handlers, $eventDispatcher, [
                 'version' => 1,
             ]),
+            new ShutdownMiddleware($eventDispatcher),
             new ResponseHandlingMiddleware($responseWatcher),
             new CancellationMiddleware($runner),
             new HandlerMiddleware($runner)
