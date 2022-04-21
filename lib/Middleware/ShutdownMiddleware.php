@@ -61,7 +61,7 @@ final class ShutdownMiddleware implements Middleware
 
             if ($request->method === self::METHOD_SHUTDOWN) {
                 $this->shuttingDown = true;
-                return $this->shutdown();
+                return $this->shutdown($request);
             }
         }
 
@@ -71,11 +71,15 @@ final class ShutdownMiddleware implements Middleware
     /**
      * @return Promise<null>
      */
-    public function shutdown(): Promise
+    public function shutdown(RequestMessage $request): Promise
     {
-        return call(function () {
+        return call(function () use ($request) {
             $this->eventDispatcher->dispatch(new WillShutdown());
             yield new Delayed($this->gracePeriod);
+            return new ResponseMessage(
+                $request->id,
+                null
+            );
         });
     }
 }

@@ -49,7 +49,7 @@ class ShutdownMiddlwareTest extends AsyncTestCase
             new RequestHandler()
         );
         $this->eventDispatcher->dispatch(new WillShutdown())->shouldHaveBeenCalled();
-        self::assertNull($response);
+        self::assertEquals(new ResponseMessage(1, null), $response);
     }
 
     public function testShutdownTwiceReturnsError(): Generator
