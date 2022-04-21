@@ -1,6 +1,7 @@
 <?php
 
 namespace Phpactor\LanguageServer\Middleware;
+
 use Amp\Success;
 use Phpactor\LanguageServer\Core\Middleware\Middleware;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
@@ -12,7 +13,6 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Amp\Delayed;
-use Phpactor\LanguageServer\Event\Initialized;
 use Phpactor\LanguageServer\Event\WillShutdown;
 use Amp\Promise;
 use function Amp\call;
@@ -40,7 +40,6 @@ final class ShutdownMiddleware implements Middleware
         if ($request instanceof NotificationMessage) {
             if ($request->method === self::METHOD_EXIT) {
                 throw new ExitSession('Exit method invoked by client');
-         
             }
 
             if ($this->shuttingDown) {

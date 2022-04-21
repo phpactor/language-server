@@ -4,17 +4,14 @@ namespace Phpactor\LanguageServer\Tests\Unit\Middleware;
 
 use Amp\PHPUnit\AsyncTestCase;
 use Generator;
-use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Middleware\Exception\MiddlewareTerminated;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Event\WillShutdown;
 use Phpactor\LanguageServer\Middleware\ShutdownMiddleware;
-use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\EventDispatcher\EventDispatcherInterface;
