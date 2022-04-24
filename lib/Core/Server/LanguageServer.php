@@ -181,13 +181,12 @@ final class LanguageServer
     private function handle(Connection $connection): Promise
     {
         return \Amp\call(function () use ($connection) {
-            $transmitter = new ConnectionMessageTransmitter($connection, $this->logger);
+            $transmitter = new ConnectionMessageTransmitter($connection);
             $reader = new LspMessageReader($connection->stream());
             $dispatcher = null;
 
             // wait for the next request
             while (null !== $request = yield $reader->wait()) {
-                $this->logger->info('IN:', $request->body());
                 $this->stats->incRequestCount();
 
                 try {

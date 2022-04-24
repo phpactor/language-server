@@ -90,7 +90,7 @@ class ErrorHandlingMiddlewareTest extends AsyncTestCase
         self::assertInstanceOf(ResponseMessage::class, $response);
         assert($response instanceof ResponseMessage);
         self::assertInstanceOf(ResponseError::class, $response->error);
-        self::assertEquals('Exception [RuntimeException] please', $response->error->message);
+        self::assertStringContainsString('Exception [RuntimeException] please', $response->error->message);
         self::assertEquals(ErrorCodes::InternalError, $response->error->code);
     }
 
@@ -108,7 +108,7 @@ class ErrorHandlingMiddlewareTest extends AsyncTestCase
         self::assertInstanceOf(ResponseMessage::class, $response);
         assert($response instanceof ResponseMessage);
         self::assertInstanceOf(ResponseError::class, $response->error);
-        self::assertEquals('Exception [Phpactor\LanguageServer\Core\Handler\HandlerNotFound] please', $response->error->message);
+        self::assertStringContainsString('Exception [Phpactor\LanguageServer\Core\Handler\HandlerNotFound] please', $response->error->message);
         self::assertEquals(ErrorCodes::MethodNotFound, $response->error->code);
     }
 
