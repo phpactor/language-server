@@ -56,7 +56,7 @@ class ErrorHandlingMiddleware implements Middleware
                     null,
                     new ResponseError(
                         $this->resolveErrorCode($error),
-                        $message,
+                        sprintf('%s at %s#%s', $message, $error->getFile(), $error->getLine()),
                         $error->getTraceAsString()
                     )
                 ));
