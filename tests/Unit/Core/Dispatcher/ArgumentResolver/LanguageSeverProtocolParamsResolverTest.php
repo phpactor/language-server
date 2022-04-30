@@ -8,6 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\LanguageSeverProtocolParamsResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
+use Phpactor\LanguageServer\Test\ProtocolFactory;
 
 class LanguageSeverProtocolParamsResolverTest extends TestCase
 {
@@ -20,11 +23,37 @@ class LanguageSeverProtocolParamsResolverTest extends TestCase
             ],
             'rootUri' => 'file://tmp/foo',
         ];
-        $resolvedArgs = $resolver->resolveArguments($handler, 'initialize', $args);
+        $resolvedArgs = $resolver->resolveArguments($handler, 'initialize', ProtocolFactory::requestMessage('foo', $args));
 
         self::assertEquals([
             InitializeParams::fromArray($args),
         ], $resolvedArgs);
+    }
+
+    public function testResolvesRawRequestMessage(): void
+    {
+        $handler = new LspHandler();
+        $resolver = new LanguageSeverProtocolParamsResolver();
+        $args = [
+            'foo' => 'bar',
+        ];
+        $message = ProtocolFactory::requestMessage('foo', $args);
+        $resolvedArgs = $resolver->resolveArguments($handler, 'rawRequest', $message);
+
+        self::assertEquals([$message], $resolvedArgs);
+    }
+
+    public function testResolvesRawNotification(): void
+    {
+        $handler = new LspHandler();
+        $resolver = new LanguageSeverProtocolParamsResolver();
+        $args = [
+            'foo' => 'bar',
+        ];
+        $message = ProtocolFactory::notificationMessage('foo', $args);
+        $resolvedArgs = $resolver->resolveArguments($handler, 'rawNotification', $message);
+
+        self::assertEquals([$message], $resolvedArgs);
     }
 
     public function testNotResolvableWhenFirstParamNotProtocolParams(): void
@@ -44,7 +73,7 @@ class LanguageSeverProtocolParamsResolverTest extends TestCase
             'cancel' => $cancellationToken
         ];
 
-        $resolvedArgs = $resolver->resolveArguments($handler, 'initializeWrongOrder', $args);
+        $resolvedArgs = $resolver->resolveArguments($handler, 'initializeWrongOrder', ProtocolFactory::requestMessage('foo', $args));
 
         self::assertEquals([
             InitializeParams::fromArray($args),
@@ -60,6 +89,14 @@ class LspHandler
     }
 
     public function initializeWrongOrder(CancellationToken $c, InitializeParams $params): void
+    {
+    }
+
+    public function rawRequest(RequestMessage $request): void
+    {
+    }
+
+    public function rawNotification(NotificationMessage $notification): void
     {
     }
 }
