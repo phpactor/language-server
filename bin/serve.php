@@ -47,14 +47,23 @@ use function Safe\fopen;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$options = [
-    'type' => 'tcp',
-    'address' => null,
-];
+if ($argc === 1) {
+    echo <<<DOC
+Usage: serve.php --address=127.0.0.1:9000 --type=tcp
 
-$options = array_merge($options, getopt('t::a::', ['type::', 'address::']));
-$type = $options['type'];
-$address = $options['address'];
+Parameters:
+-a --address
+    Address of the server. (needs to be set for a tcp server)
+-t --type
+    Type of server (optional, default is tcp)
+DOC;
+    exit(1);
+}
+
+$cliOptions = getopt('t::a::', ['type::', 'address::']);
+$type = $cliOptions['t'] ?? $cliOptions['type'] ?? 'tcp';
+$address = $cliOptions['a'] ?? $cliOptions['address'] ?? null;
+
 if ($type === 'tcp' && !is_string($address)) {
     throw new RuntimeException('Address should be a string');
 }
