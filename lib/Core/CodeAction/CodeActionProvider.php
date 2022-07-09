@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\CodeAction;
 
+use Amp\CancellationToken;
 use Amp\Promise;
 use Phpactor\LanguageServerProtocol\CodeAction;
 use Phpactor\LanguageServerProtocol\Range;
@@ -12,7 +13,7 @@ interface CodeActionProvider
     /**
      * @return Promise<array<CodeAction>>
      */
-    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Promise;
+    public function provideActionsFor(TextDocumentItem $textDocument, Range $range, CancellationToken $cancel): Promise;
 
     /**
      * Return the kinds of actions that this provider can return, for example
