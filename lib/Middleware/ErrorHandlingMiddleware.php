@@ -2,6 +2,8 @@
 
 namespace Phpactor\LanguageServer\Middleware;
 
+use Amp\CancellationToken;
+use Amp\CancelledException;
 use Amp\Promise;
 use Amp\Success;
 use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
@@ -39,6 +41,19 @@ class ErrorHandlingMiddleware implements Middleware
                 return yield $handler->handle($request);
             } catch (ServerControl $exception) {
                 throw $exception;
+            } catch (CancelledException $cancelled) {
+                if (!$request instanceof RequestMessage) {
+                    return new Success(null);
+                }
+
+                return new Success(new ResponseMessage(
+                    $request->id,
+                    null,
+                    new ResponseError(
+                        ErrorCodes::RequestCancelled,
+                        sprintf('Request %d (%s) cancelled', $request->id, $request->method),
+                    )
+                ));
             } catch (Throwable $error) {
                 $message = sprintf('Exception [%s] %s', get_class($error), $error->getMessage());
                 if (!$request instanceof RequestMessage) {
