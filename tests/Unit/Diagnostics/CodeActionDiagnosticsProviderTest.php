@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Diagnostics;
 
+use Amp\CancellationToken;
 use Amp\Delayed;
 use Amp\Promise;
 use PHPUnit\Framework\TestCase;
@@ -39,7 +40,7 @@ class CodeActionDiagnosticsProviderTest extends TestCase
 
 class TestCodeActionProvider implements CodeActionProvider
 {
-    public function provideActionsFor(TextDocumentItem $textDocument, Range $range): Promise
+    public function provideActionsFor(TextDocumentItem $textDocument, Range $range, CancellationToken $cancel): Promise
     {
         return call(function () {
             return [

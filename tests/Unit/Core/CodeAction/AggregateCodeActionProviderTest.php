@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\CodeAction;
 
+use Amp\CancellationTokenSource;
 use Amp\Success;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServerProtocol\CodeAction;
@@ -39,13 +40,15 @@ class AggregateCodeActionProviderTest extends TestCase
         $provider1 = $this->prophesize(CodeActionProvider::class);
         $provider2 = $this->prophesize(CodeActionProvider::class);
 
-        $provider1->provideActionsFor($item, $range)->willReturn(new Success([$action1]));
-        $provider2->provideActionsFor($item, $range)->willReturn(new Success([$action2]));
+        $source = new CancellationTokenSource();
+        $token = $source->getToken();
+        $provider1->provideActionsFor($item, $range, $token)->willReturn(new Success([$action1]));
+        $provider2->provideActionsFor($item, $range, $token)->willReturn(new Success([$action2]));
 
         $aggregate = new AggregateCodeActionProvider($provider1->reveal(), $provider2->reveal());
 
         $actions = [];
-        foreach (wait($aggregate->provideActionsFor($item, $range)) as $action) {
+        foreach (wait($aggregate->provideActionsFor($item, $range, $token)) as $action) {
             $actions[] = $action;
         }
 
