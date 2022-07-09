@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Diagnostics;
 
+use Amp\CancellationToken;
 use Amp\Promise;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Psr\Log\LoggerInterface;
@@ -29,17 +30,21 @@ class AggregateDiagnosticsProvider implements DiagnosticsProvider
     /**
      * {@inheritDoc}
      */
-    public function provideDiagnostics(TextDocumentItem $textDocument): Promise
+    public function provideDiagnostics(TextDocumentItem $textDocument, CancellationToken $cancel): Promise
     {
-        return call(function () use ($textDocument) {
+        return call(function () use ($textDocument, $cancel) {
             $diagnostics = [];
             foreach ($this->providers as $provider) {
                 try {
                     $start = microtime(true);
                     $diagnostics = array_merge(
                         $diagnostics,
-                        yield $provider->provideDiagnostics($textDocument)
+                        yield $provider->provideDiagnostics($textDocument, $cancel)
                     );
+                    if ($cancel->isRequested()) {
+                        $this->logger->info('Diagnostics cancelled');
+                        return $diagnostics;
+                    }
                     $this->logger->debug(sprintf(
                         'Diagnostic finsihed in "%s" (%s)',
                         number_format(microtime(true) - $start, 2),

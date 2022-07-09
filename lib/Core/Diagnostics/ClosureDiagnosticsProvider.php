@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Core\Diagnostics;
 
+use Amp\CancellationToken;
 use Amp\Promise;
 use Closure;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
@@ -21,7 +22,7 @@ class ClosureDiagnosticsProvider implements DiagnosticsProvider
         $this->name = $name;
     }
 
-    public function provideDiagnostics(TextDocumentItem $textDocument): Promise
+    public function provideDiagnostics(TextDocumentItem $textDocument, CancellationToken $cancel): Promise
     {
         $closure = $this->closure;
 

@@ -2,7 +2,6 @@
 
 namespace Phpactor\LanguageServer\Middleware;
 
-use Amp\CancellationToken;
 use Amp\CancelledException;
 use Amp\Promise;
 use Amp\Success;

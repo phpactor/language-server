@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Example\Diagnostics;
 
+use Amp\CancellationToken;
 use Amp\Promise;
 use Phpactor\LanguageServerProtocol\Diagnostic;
 use Phpactor\LanguageServerProtocol\DiagnosticSeverity;
@@ -16,7 +17,7 @@ class SayHelloDiagnosticsProvider implements DiagnosticsProvider
     /**
      * {@inheritDoc}
      */
-    public function provideDiagnostics(TextDocumentItem $textDocument): Promise
+    public function provideDiagnostics(TextDocumentItem $textDocument, CancellationToken $cancel): Promise
     {
         return call(function () {
             return [

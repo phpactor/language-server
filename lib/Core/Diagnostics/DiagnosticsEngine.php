@@ -82,7 +82,7 @@ class DiagnosticsEngine
                     $this->next = null;
                 }
 
-                $diagnostics = yield $this->provider->provideDiagnostics($textDocument);
+                $diagnostics = yield $this->provider->provideDiagnostics($textDocument, $token);
 
                 $this->clientApi->diagnostics()->publishDiagnostics(
                     $textDocument->uri,

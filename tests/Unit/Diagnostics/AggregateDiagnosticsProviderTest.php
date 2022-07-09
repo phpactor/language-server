@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Diagnostics;
 
+use Amp\CancellationTokenSource;
 use Amp\Success;
 use PHPUnit\Framework\TestCase;
 use Phpactor\LanguageServerProtocol\Diagnostic;
@@ -35,7 +36,8 @@ class AggregateDiagnosticsProviderTest extends TestCase
         ];
 
         $aggregate = $this->createAggregate(...$providers);
-        $diagnostics = wait($aggregate->provideDiagnostics(ProtocolFactory::textDocumentItem('file:///', 'text')));
+        $cancel = (new CancellationTokenSource())->getToken();
+        $diagnostics = wait($aggregate->provideDiagnostics(ProtocolFactory::textDocumentItem('file:///', 'text'), $cancel));
         self::assertCount(3, $diagnostics);
     }
 
