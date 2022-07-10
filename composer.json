@@ -56,5 +56,10 @@
             "./vendor/bin/phpstan analyze",
             "./vendor/bin/php-cs-fixer fix"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true
+        }
     }
 }
