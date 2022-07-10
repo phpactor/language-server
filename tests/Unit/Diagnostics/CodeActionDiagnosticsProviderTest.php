@@ -29,11 +29,15 @@ class CodeActionDiagnosticsProviderTest extends TestCase
         $tester->initialize();
 
         $tester->textDocument()->open('file:///foobar', 'barfoo');
-        $tester->textDocument()->update('file:///foobar', 'bar');
 
-        wait(new Delayed(100));
+        wait(new Delayed(10));
 
         self::assertEquals(1, $tester->transmitter()->count());
+
+        $tester->textDocument()->update('file:///foobar', 'bar');
+        wait(new Delayed(10));
+
+        self::assertEquals(3, $tester->transmitter()->count());
         self::assertEquals('textDocument/publishDiagnostics', $tester->transmitter()->shiftNotification()->method);
     }
 }

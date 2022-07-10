@@ -50,6 +50,15 @@ class DiagnosticsEngine
         $this->sleepTime = $sleepTime;
     }
 
+    public function clear(TextDocumentItem $textDocument): void
+    {
+        $this->clientApi->diagnostics()->publishDiagnostics(
+            $textDocument->uri,
+            $textDocument->version,
+            []
+        );
+    }
+
     /**
      * @return Promise<bool>
      */
@@ -101,7 +110,7 @@ class DiagnosticsEngine
             $this->next = $textDocument;
             return;
         }
-        
+
         // resolving the promise will start PHPStan
         $this->running = true;
         $this->deferred->resolve($textDocument);
