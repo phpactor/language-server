@@ -85,6 +85,29 @@ final class LanguageServerTester
     }
 
     /**
+     * @param mixed $value
+     * @param string|int $id
+     * @return Promise<mixed>
+     */
+    public function respond($id, $value): Promise
+    {
+        $requestMessage = new ResponseMessage($id, $value);
+
+        return $this->dispatch($requestMessage);
+    }
+
+    /**
+     * @param mixed $value
+     * @param string|int $id
+     * @return mixed
+     */
+    public function respondAndWait($id, $value)
+    {
+        return wait($this->respond($id, $value));
+    }
+
+
+    /**
      * @param array|object $params
      * @return Promise<ResponseMessage|null>
      */
