@@ -29,6 +29,6 @@ final class DTLArgumentResolver implements ArgumentResolver
             return [];
         }
 
-        return $this->dtlArgumnetResolver->resolveArguments(get_class($object), $method, $message->params);
+        return $this->dtlArgumnetResolver->resolveArguments(get_class($object), $method, $message->params ?? []);
     }
 }
