@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 
 final class ChainArgumentResolver implements ArgumentResolver
 {
@@ -17,7 +18,7 @@ final class ChainArgumentResolver implements ArgumentResolver
         $this->resolvers = $resolvers;
     }
 
-    public function resolveArguments(object $object, string $method, array $arguments): array
+    public function resolveArguments(object $object, string $method, Message $request): array
     {
         if (empty($this->resolvers)) {
             throw new CouldNotResolveArguments('No resolvers defined in chain resolver, chain resolver cannot resolve anything');
@@ -25,7 +26,7 @@ final class ChainArgumentResolver implements ArgumentResolver
 
         foreach ($this->resolvers as $resolver) {
             try {
-                return $resolver->resolveArguments($object, $method, $arguments);
+                return $resolver->resolveArguments($object, $method, $request);
             } catch (CouldNotResolveArguments $couldNotResolve) {
                 $lastException = $couldNotResolve;
             }

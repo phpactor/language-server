@@ -4,6 +4,9 @@ namespace Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Dispatcher\Exception\CouldNotResolveArguments;
+use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use ReflectionClass;
 use ReflectionNamedType;
 
@@ -12,9 +15,14 @@ final class LanguageSeverProtocolParamsResolver implements ArgumentResolver
     /**
      * {@inheritDoc}
      */
-    public function resolveArguments(object $object, string $method, array $arguments): array
+    public function resolveArguments(object $object, string $method, Message $message): array
     {
+        if (!$message instanceof RequestMessage && !$message instanceof NotificationMessage) {
+            return [];
+        }
+
         $reflection = new ReflectionClass($object);
+        $arguments = $message->params;
 
         if (!$reflection->hasMethod($method)) {
             throw new CouldNotResolveArguments(sprintf(
@@ -37,6 +45,14 @@ final class LanguageSeverProtocolParamsResolver implements ArgumentResolver
 
             /** @var class-string */
             $classFqn = $type->getName();
+
+            if ($classFqn === RequestMessage::class && $message instanceof RequestMessage) {
+                return [$message];
+            }
+
+            if ($classFqn === NotificationMessage::class && $message instanceof NotificationMessage) {
+                return [$message];
+            }
 
             if (preg_match('{^Phpactor\\\LanguageServerProtocol\\\.*Params$}', $classFqn)) {
                 return $this->doResolveArguments($classFqn, $parameter->getName(), $arguments);

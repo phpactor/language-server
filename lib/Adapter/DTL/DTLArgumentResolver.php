@@ -5,6 +5,9 @@ namespace Phpactor\LanguageServer\Adapter\DTL;
 use DTL\ArgumentResolver\ArgumentResolver as UpstreamArgumentResolver;
 use DTL\ArgumentResolver\ParamConverter\RecursiveInstantiator;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
+use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
+use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 final class DTLArgumentResolver implements ArgumentResolver
 {
@@ -20,8 +23,12 @@ final class DTLArgumentResolver implements ArgumentResolver
         ], UpstreamArgumentResolver::ALLOW_UNKNOWN_ARGUMENTS | UpstreamArgumentResolver::MATCH_TYPE);
     }
 
-    public function resolveArguments(object $object, string $method, array $arguments): array
+    public function resolveArguments(object $object, string $method, Message $message): array
     {
-        return $this->dtlArgumnetResolver->resolveArguments(get_class($object), $method, $arguments);
+        if (!$message instanceof RequestMessage && !$message instanceof NotificationMessage) {
+            return [];
+        }
+
+        return $this->dtlArgumnetResolver->resolveArguments(get_class($object), $method, $message->params ?? []);
     }
 }

@@ -10,6 +10,7 @@ use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 final class ProtocolFactory
@@ -40,6 +41,11 @@ final class ProtocolFactory
     public static function requestMessage(string $method, array $params): RequestMessage
     {
         return new RequestMessage(uniqid(), $method, $params);
+    }
+
+    public static function notificationMessage(string $method, array $params): NotificationMessage
+    {
+        return new NotificationMessage($method, $params);
     }
 
     public static function range(int $line1, int $col1, int $line2, int $col2): Range
