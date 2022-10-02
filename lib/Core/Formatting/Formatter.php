@@ -9,7 +9,7 @@ use Phpactor\LanguageServerProtocol\TextEdit;
 interface Formatter
 {
     /**
-     * @return Promise<list<TextEdit>>
+     * @return Promise<list<TextEdit>|null>
      */
     public function format(TextDocumentItem $textDocument): Promise;
 }
