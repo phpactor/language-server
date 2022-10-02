@@ -9,6 +9,7 @@ use Phpactor\LanguageServerProtocol\Position;
 use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
+use Phpactor\LanguageServerProtocol\TextEdit;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
@@ -48,21 +49,26 @@ final class ProtocolFactory
         return new NotificationMessage($method, $params);
     }
 
-    public static function range(int $line1, int $col1, int $line2, int $col2): Range
+    public static function range(int $line1, int $char1, int $line2, int $char2): Range
     {
         return new Range(
-            self::position($line1, $col1),
-            self::position($line2, $col2)
+            self::position($line1, $char1),
+            self::position($line2, $char2)
         );
     }
 
-    public static function position(int $lineNb, int $colNb): Position
+    public static function position(int $line, int $char): Position
     {
-        return new Position($lineNb, $colNb);
+        return new Position($line, $char);
     }
 
     public static function diagnostic(Range $range, string $message): Diagnostic
     {
         return new Diagnostic($range, $message);
+    }
+
+    public static function textEdit(int $line1, int $char1, int $line2, int $char2, string $text): TextEdit
+    {
+        return new TextEdit(self::range($line1, $char1, $line2, $char2), $text);
     }
 }
