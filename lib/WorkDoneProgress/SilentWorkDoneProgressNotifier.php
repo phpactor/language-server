@@ -7,7 +7,7 @@ use Amp\Success;
 use Ramsey\Uuid\Uuid;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
-class NullWorkDoneProgressNotifier implements ProgressNotifier
+class SilentWorkDoneProgressNotifier implements ProgressNotifier
 {
     public function create(WorkDoneToken $token): Promise
     {
