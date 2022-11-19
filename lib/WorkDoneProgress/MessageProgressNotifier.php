@@ -7,7 +7,6 @@ use Amp\Success;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\Client\MessageClient;
-use Ramsey\Uuid\Uuid;
 
 final class MessageProgressNotifier implements ProgressNotifier
 {
@@ -27,7 +26,7 @@ final class MessageProgressNotifier implements ProgressNotifier
     public function create(WorkDoneToken $token): Promise
     {
         return new Success(new ResponseMessage(
-            Uuid::uuid4(),
+            $token->__toString(),
             null,
         ));
     }

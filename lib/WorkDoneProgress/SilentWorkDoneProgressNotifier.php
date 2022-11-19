@@ -4,15 +4,16 @@ namespace Phpactor\LanguageServer\WorkDoneProgress;
 
 use Amp\Promise;
 use Amp\Success;
-use Ramsey\Uuid\Uuid;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
 class SilentWorkDoneProgressNotifier implements ProgressNotifier
 {
     public function create(WorkDoneToken $token): Promise
     {
+        // yield a response _as if_ a message were sent to the client to start
+        // the progress.
         return new Success(new ResponseMessage(
-            Uuid::uuid4(),
+            $token->__toString(),
             null,
         ));
     }
