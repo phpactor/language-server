@@ -20,19 +20,13 @@ use function Amp\call;
 
 class ErrorHandlingMiddleware implements Middleware
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function process(Message $request, RequestHandler $handler): Promise
     {
         return call(function () use ($request, $handler) {
@@ -55,13 +49,14 @@ class ErrorHandlingMiddleware implements Middleware
                 ));
             } catch (Throwable $error) {
                 $message = sprintf('Exception [%s] %s', get_class($error), $error->getMessage());
+                $this->logger->error(sprintf(
+                    'Error when handling "%s" (%s): %s',
+                    get_class($request),
+                    json_encode($request),
+                    $message
+                ));
+
                 if (!$request instanceof RequestMessage) {
-                    $this->logger->error(sprintf(
-                        'Error when handling "%s" (%s): %s',
-                        get_class($request),
-                        json_encode($request),
-                        $message
-                    ));
                     return new Success(null);
                 }
 
