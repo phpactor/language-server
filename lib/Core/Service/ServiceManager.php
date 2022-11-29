@@ -12,7 +12,6 @@ use function Amp\asyncCall;
 
 class ServiceManager
 {
-
     /**
      * @var array
      */
