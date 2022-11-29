@@ -12,7 +12,7 @@ final class LspMessageSerializer implements MessageSerializer
     {
         $data = $this->normalize($message);
         if ($message instanceof ResponseMessage) {
-            $data = $this->ensureResultIsSet($data);
+            $data = $this->ensureOnlyResultOrErrorSet($data);
         }
         $decoded = json_encode($data);
 
@@ -49,9 +49,14 @@ final class LspMessageSerializer implements MessageSerializer
         });
     }
 
-    private function ensureResultIsSet(array $data): array
+    private function ensureOnlyResultOrErrorSet(array $data): array
     {
-        if (!array_key_exists('result', $data)) {
+        if (array_key_exists('error', $data) && array_key_exists('result', $data)) {
+            unset($data['result']);
+            return $data;
+        }
+
+        if (!array_key_exists('error', $data) && !array_key_exists('result', $data)) {
             $data['result'] = null;
         }
 

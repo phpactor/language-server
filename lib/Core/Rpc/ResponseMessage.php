@@ -36,12 +36,13 @@ final class ResponseMessage extends Message implements JsonSerializable
     {
         $response = [
             'jsonrpc' => $this->jsonrpc,
-            'id' => $this->id,
-            'result' => $this->result,
+            'id' => $this->id
         ];
 
         if (null !== $this->error) {
             $response['error'] = $this->error;
+        } else {
+            $response['result'] = $this->result;
         }
 
         return $response;

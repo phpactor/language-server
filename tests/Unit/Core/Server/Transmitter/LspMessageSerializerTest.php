@@ -36,7 +36,7 @@ class LspMessageSerializerTest extends TestCase
     {
         yield 'response message' => [
             new ResponseMessage(1, [], new ResponseError(1, 'foobar', [])),
-            '{"id":1,"result":[],"error":{"code":1,"message":"foobar","data":[]},"jsonrpc":"2.0"}',
+            '{"id":1,"error":{"code":1,"message":"foobar","data":[]},"jsonrpc":"2.0"}',
         ];
 
         yield 'response message with null result' => [
