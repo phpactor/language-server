@@ -74,6 +74,11 @@ class DiagnosticsEngine
 
                 $textDocument = yield $this->deferred->promise();
 
+                if ($this->next) {
+                    $textDocument = $this->next;
+                    $this->next = null;
+                }
+
                 $this->deferred = new Deferred();
 
                 // after we have reset deferred, we can safely set linting to
@@ -86,11 +91,7 @@ class DiagnosticsEngine
                     yield delay($this->sleepTime);
                 }
 
-                if ($this->next) {
-                    $textDocument = $this->next;
-                    $this->next = null;
-                }
-
+                dump('ANALUZE: ' . $textDocument->text);
                 $diagnostics = yield $this->provider->provideDiagnostics($textDocument, $token);
 
                 $this->clientApi->diagnostics()->publishDiagnostics(
@@ -104,12 +105,15 @@ class DiagnosticsEngine
 
     public function enqueue(TextDocumentItem $textDocument): void
     {
+        dump('Pre: ' . $textDocument->text);
         // if we are already linting then store whatever comes afterwards in
         // next, overwriting the redundant update
         if ($this->running === true) {
+            dump('Deferred');
             $this->next = $textDocument;
             return;
         }
+        dump('Immediate');
 
         // resolving the promise will start PHPStan
         $this->running = true;
