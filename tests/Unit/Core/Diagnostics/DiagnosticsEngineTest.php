@@ -11,6 +11,7 @@ use Phpactor\LanguageServer\Core\Diagnostics\ClosureDiagnosticsProvider;
 use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
+use function Amp\asyncCall;
 use function Amp\call;
 use function Amp\delay;
 
@@ -74,7 +75,6 @@ class DiagnosticsEngineTest extends AsyncTestCase
         $token = new CancellationTokenSource();
         $promise = $engine->run($token->getToken());
 
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'bazboo'));
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
 
@@ -107,13 +107,53 @@ class DiagnosticsEngineTest extends AsyncTestCase
         self::assertEquals(2, $tester->transmitter()->count());
     }
 
-    private function createEngine(LanguageServerTesterBuilder $tester, int $delay = 0, int $sleepTime = 0): DiagnosticsEngine
+    /**
+     * Note that this test was added in relation to the race condition in
+     * https://github.com/phpactor/phpactor/issues/1974
+     *
+     * It DOES NOT reproduce the race condition sadly.
+     *
+     * See the commit this change was introduced to see what it SHOULD have covered.
+     *
+     * @return Generator<mixed>
+     */
+    public function testAlwaysAnalyzesTheLastChangeLast(): Generator
     {
-        $engine = new DiagnosticsEngine($tester->clientApi(), new ClosureDiagnosticsProvider(function (TextDocumentItem $item) use ($delay) {
-            return call(function () use ($delay) {
+        $tester = LanguageServerTesterBuilder::create();
+        $lastDocument = '';
+        $engine = $this->createEngine($tester, 5, 0, $lastDocument);
+
+        $token = new CancellationTokenSource();
+        asyncCall(function () use ($engine, $token) {
+            yield $engine->run($token->getToken());
+        });
+        yield new Delayed(1);
+
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '1'));
+        yield new Delayed(1);
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '2'));
+        yield new Delayed(10);
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '3'));
+        yield new Delayed(1);
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '4'));
+        yield new Delayed(0);
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '5'));
+
+        yield new Delayed(100);
+
+        $token->cancel();
+
+        self::assertEquals('5', $lastDocument);
+    }
+
+    private function createEngine(LanguageServerTesterBuilder $tester, int $delay = 0, int $sleepTime = 0, string &$lastDocument = null): DiagnosticsEngine
+    {
+        $engine = new DiagnosticsEngine($tester->clientApi(), new ClosureDiagnosticsProvider(function (TextDocumentItem $item) use ($delay, &$lastDocument) {
+            return call(function () use ($delay, $item, &$lastDocument) {
                 if ($delay) {
                     yield delay($delay);
                 }
+                $lastDocument = $item->text;
                 return [
                     ProtocolFactory::diagnostic(
                         ProtocolFactory::range(0, 0, 0, 0),
