@@ -91,7 +91,6 @@ class DiagnosticsEngine
                     yield delay($this->sleepTime);
                 }
 
-                dump('ANALUZE: ' . $textDocument->text);
                 $diagnostics = yield $this->provider->provideDiagnostics($textDocument, $token);
 
                 $this->clientApi->diagnostics()->publishDiagnostics(
@@ -105,15 +104,12 @@ class DiagnosticsEngine
 
     public function enqueue(TextDocumentItem $textDocument): void
     {
-        dump('Pre: ' . $textDocument->text);
         // if we are already linting then store whatever comes afterwards in
         // next, overwriting the redundant update
         if ($this->running === true) {
-            dump('Deferred');
             $this->next = $textDocument;
             return;
         }
-        dump('Immediate');
 
         // resolving the promise will start PHPStan
         $this->running = true;
