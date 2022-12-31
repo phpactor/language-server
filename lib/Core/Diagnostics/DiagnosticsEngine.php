@@ -74,11 +74,6 @@ class DiagnosticsEngine
 
                 $textDocument = yield $this->deferred->promise();
 
-                if ($this->next) {
-                    $textDocument = $this->next;
-                    $this->next = null;
-                }
-
                 $this->deferred = new Deferred();
 
                 // after we have reset deferred, we can safely set linting to
@@ -89,6 +84,11 @@ class DiagnosticsEngine
 
                 if ($this->sleepTime > 0) {
                     yield delay($this->sleepTime);
+                }
+
+                if ($this->next) {
+                    $textDocument = $this->next;
+                    $this->next = null;
                 }
 
                 $diagnostics = yield $this->provider->provideDiagnostics($textDocument, $token);
