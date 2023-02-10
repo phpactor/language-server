@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Event;
 
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
-use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 
 class TextDocumentSaved
 {
