@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Example\CodeAction;
 use Amp\CancellationToken;
 use Amp\Promise;
 use Phpactor\LanguageServerProtocol\CodeAction;
+use Phpactor\LanguageServerProtocol\CodeActionKind;
 use Phpactor\LanguageServerProtocol\Command;
 use Phpactor\LanguageServerProtocol\Range;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
@@ -38,6 +39,6 @@ class SayHelloCodeActionProvider implements CodeActionProvider
      */
     public function kinds(): array
     {
-        return ['example'];
+        return [CodeActionKind::QUICK_FIX];
     }
 }
