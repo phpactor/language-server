@@ -5,7 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Server;
 use Amp\PHPUnit\AsyncTestCase;
 use Closure;
 use Generator;
-use Phpactor\LanguageServerProtocol\ApplyWorkspaceEditResponse;
+use Phpactor\LanguageServerProtocol\ApplyWorkspaceEditResult;
 use Phpactor\LanguageServerProtocol\DidChangeWatchedFilesRegistrationOptions;
 use Phpactor\LanguageServerProtocol\FileSystemWatcher;
 use Phpactor\LanguageServerProtocol\MessageActionItem;
@@ -145,7 +145,7 @@ class ClientApiTest extends AsyncTestCase
                 self::assertEquals('workspace/applyEdit', $message->method);
 
                 $result = \Amp\Promise\wait($result);
-                self::assertInstanceOf(ApplyWorkspaceEditResponse::class, $result);
+                self::assertInstanceOf(ApplyWorkspaceEditResult::class, $result);
                 self::assertFalse($result->applied);
                 self::assertEquals('sorry', $result->failureReason);
             }
