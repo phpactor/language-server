@@ -50,7 +50,7 @@ class DidChangeWatchedFilesListener implements ListenerProviderInterface
 
     public function registerCapability(Initialized $initialized): void
     {
-        if (!($this->clientCapabilities->workspace['didChangeWatchedFiles']['dynamicRegistration'] ?? false)) {
+        if (!($this->clientCapabilities?->workspace?->didChangeWatchedFiles?->dynamicRegistration ?? false)) {
             return;
         }
 

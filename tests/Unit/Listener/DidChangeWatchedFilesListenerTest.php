@@ -3,9 +3,11 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Listener;
 
 use Phpactor\LanguageServerProtocol\ClientCapabilities;
+use Phpactor\LanguageServerProtocol\DidChangeWatchedFilesClientCapabilities;
 use Phpactor\LanguageServerProtocol\DidChangeWatchedFilesRegistrationOptions;
 use Phpactor\LanguageServerProtocol\FileSystemWatcher;
 use Phpactor\LanguageServerProtocol\Registration;
+use Phpactor\LanguageServerProtocol\WorkspaceClientCapabilities;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Server\RpcClient\TestRpcClient;
 use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
@@ -27,9 +29,11 @@ class DidChangeWatchedFilesListenerTest extends TestCase
 
     public function testDynamicallyRegisterIfSupported(): void
     {
-        $this->initListener(new ClientCapabilities([
-            'didChangeWatchedFiles' => ['dynamicRegistration' => true],
-        ]));
+        $this->initListener(new ClientCapabilities(
+            workspace: new WorkspaceClientCapabilities(
+                didChangeWatchedFiles: new DidChangeWatchedFilesClientCapabilities(dynamicRegistration: true),
+            )
+        ));
         $this->dispatch(
             new Initialized(),
         );
