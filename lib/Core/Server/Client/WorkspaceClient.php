@@ -4,7 +4,7 @@ namespace Phpactor\LanguageServer\Core\Server\Client;
 
 use Amp\Promise;
 use DTL\Invoke\Invoke;
-use Phpactor\LanguageServerProtocol\ApplyWorkspaceEditResponse;
+use Phpactor\LanguageServerProtocol\ApplyWorkspaceEditResult;
 use Phpactor\LanguageServerProtocol\WorkspaceEdit;
 use Phpactor\LanguageServer\Core\Server\RpcClient;
 
@@ -21,7 +21,7 @@ final class WorkspaceClient
     }
 
     /**
-     * @return Promise<ApplyWorkspaceEditResponse>
+     * @return Promise<ApplyWorkspaceEditResult>
      */
     public function applyEdit(WorkspaceEdit $edit, ?string $label = null): Promise
     {
@@ -34,7 +34,7 @@ final class WorkspaceClient
                 ]
             );
 
-            return Invoke::new(ApplyWorkspaceEditResponse::class, (array)$response->result);
+            return Invoke::new(ApplyWorkspaceEditResult::class, (array)$response->result);
         });
     }
 

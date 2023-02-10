@@ -2,6 +2,7 @@
 
 namespace Phpactor\LanguageServer\Tests\Unit\Core\Workspace;
 
+use Generator;
 use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
@@ -40,14 +41,14 @@ class WorkspaceTest extends TestCase
     {
         $this->expectException(UnknownDocument::class);
 
-        $expectedDocument = new VersionedTextDocumentIdentifier('foobar');
+        $expectedDocument = new VersionedTextDocumentIdentifier(version: 1, uri: 'foobar');
         $this->workspace->update($expectedDocument, 'foobar');
     }
 
     public function testUpdatesDocument(): void
     {
         $originalDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
-        $expectedDocument = new VersionedTextDocumentIdentifier($originalDocument->uri);
+        $expectedDocument = new VersionedTextDocumentIdentifier(1, $originalDocument->uri);
         $this->workspace->open($originalDocument);
         $this->workspace->update($expectedDocument, 'my new text');
         $document = $this->workspace->get('foobar');
@@ -59,7 +60,7 @@ class WorkspaceTest extends TestCase
     public function testUpdatesDocumentVersion(): void
     {
         $originalDocument = new TextDocumentItem('foobar', 'php', 1, 'foo');
-        $expectedDocument = new VersionedTextDocumentIdentifier($originalDocument->uri, 5);
+        $expectedDocument = new VersionedTextDocumentIdentifier(5, $originalDocument->uri);
         $this->workspace->open($originalDocument);
         $this->workspace->update($expectedDocument, 'my new text');
         $document = $this->workspace->get('foobar');
@@ -70,13 +71,13 @@ class WorkspaceTest extends TestCase
     /**
      * @dataProvider provideDoesNotUpdateDocumentWithLowerVersionThanExistingDocument
      */
-    public function testDoesNotUpdateDocumentWithLowerVersionThanExistingDocument(int $originalVersion, ?int $newVersion, bool $shouldBeNewer): void
+    public function testDoesNotUpdateDocumentWithLowerVersionThanExistingDocument(int $originalVersion, int $newVersion, bool $shouldBeNewer): void
     {
         $originalDocument = new TextDocumentItem('foobar', 'php', $originalVersion, 'original document');
 
         $this->workspace->open($originalDocument);
 
-        $oldDocument = new VersionedTextDocumentIdentifier($originalDocument->uri, $newVersion);
+        $oldDocument = new VersionedTextDocumentIdentifier($newVersion, $originalDocument->uri);
 
         $this->workspace->update($oldDocument, 'new document');
 
@@ -85,7 +86,9 @@ class WorkspaceTest extends TestCase
         $this->assertEquals($oldDocument->uri, $document->uri);
         $this->assertEquals($shouldBeNewer ? 'new document' : 'original document', $document->text);
     }
-
+    /**
+     * @return Generator<string,array{int,int,bool}|array{int,null,bool}>
+     */
     public function provideDoesNotUpdateDocumentWithLowerVersionThanExistingDocument()
     {
         yield 'older document does not overwrite' => [
@@ -97,12 +100,6 @@ class WorkspaceTest extends TestCase
         yield 'same versioned document overwrites' => [
             5,
             5,
-            true
-        ];
-
-        yield 'null overwrites the document' => [
-            5,
-            null,
             true
         ];
     }

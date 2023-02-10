@@ -57,7 +57,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
     public function testUpdatesDocument(): void
     {
         $textDocument = ProtocolFactory::textDocumentItem('foobar', 'foo');
-        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar');
+        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar', 1);
 
         $this->dispatch('textDocument/didChange', [
             'textDocument' => $identifier,
@@ -100,7 +100,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
 
     public function testSavesDocument(): void
     {
-        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar');
+        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('foobar', 1);
         $this->dispatch('textDocument/didSave', [
             'textDocument' => $identifier,
             'text' => 'hello',

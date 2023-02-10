@@ -21,9 +21,9 @@ final class ProtocolFactory
         return new TextDocumentItem($uri, 'php', 1, $content);
     }
 
-    public static function versionedTextDocumentIdentifier(?string $uri = 'foobar', ?int $version = null): VersionedTextDocumentIdentifier
+    public static function versionedTextDocumentIdentifier(string $uri, int $version): VersionedTextDocumentIdentifier
     {
-        return new VersionedTextDocumentIdentifier($uri, $version);
+        return new VersionedTextDocumentIdentifier($version, $uri);
     }
 
     public static function textDocumentIdentifier(string $uri): TextDocumentIdentifier
