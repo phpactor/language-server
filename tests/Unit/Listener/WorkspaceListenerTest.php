@@ -3,7 +3,6 @@
 namespace Phpactor\LanguageServer\Tests\Unit\Listener;
 
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
-use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Listener\WorkspaceListener;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
@@ -54,7 +53,7 @@ class WorkspaceListenerTest extends TestCase
 
     public function testUpdated(): void
     {
-        $identifier = new VersionedTextDocumentIdentifier('file://test', 1);
+        $identifier = ProtocolFactory::versionedTextDocumentIdentifier('file://test', 1);
         $this->workspace->update(
             $identifier,
             'new text'
