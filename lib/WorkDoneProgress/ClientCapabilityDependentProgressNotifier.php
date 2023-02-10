@@ -58,7 +58,7 @@ final class ClientCapabilityDependentProgressNotifier implements ProgressNotifie
 
     private function createNotifier(ClientApi $api, ClientCapabilities $capabilities): ProgressNotifier
     {
-        if ($capabilities->window['workDoneProgress'] ?? false) {
+        if ($capabilities->window->workDoneProgress ?? false) {
             return new WorkDoneProgressNotifier($api);
         }
 
