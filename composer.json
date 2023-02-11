@@ -13,7 +13,7 @@
         "amphp/socket": "^1.1",
         "dantleech/argument-resolver": "^1.1",
         "dantleech/invoke": "^2.0",
-        "phpactor/language-server-protocol": "dev-3.17-2",
+        "phpactor/language-server-protocol": "^3.17",
         "psr/event-dispatcher": "^1.0",
         "psr/log": "^1.0",
         "ramsey/uuid": "^4.0",
