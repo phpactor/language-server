@@ -37,7 +37,7 @@ class CommandHandler implements Handler, CanRegisterCapabilities
      */
     public function executeCommand(ExecuteCommandParams $params): Promise
     {
-        return $this->dispatcher->dispatch($params->command, $params->arguments);
+        return $this->dispatcher->dispatch($params->command, $params->arguments ?? []);
     }
 
     public function registerCapabiltiies(ServerCapabilities $capabilities): void

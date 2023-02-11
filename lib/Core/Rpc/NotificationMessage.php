@@ -10,7 +10,7 @@ final class NotificationMessage extends Message
     public $method;
 
     /**
-     * @var array
+     * @var array<string,mixed>|null
      */
     public $params;
 

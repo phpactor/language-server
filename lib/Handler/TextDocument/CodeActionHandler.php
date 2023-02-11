@@ -55,6 +55,7 @@ class CodeActionHandler implements Handler, CanRegisterCapabilities
      */
     public function codeAction(CodeActionParams $params, CancellationToken $cancel): Promise
     {
+        /** @phpstan-ignore-next-line */
         return call(function () use ($params, $cancel) {
             $document = $this->workspace->get($params->textDocument->uri);
             return $this->provider->provideActionsFor($document, $params->range, $cancel);

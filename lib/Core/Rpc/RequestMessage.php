@@ -15,7 +15,7 @@ final class RequestMessage extends Message
     public $method;
 
     /**
-     * @var array
+     * @var array<string,mixed>|null
      */
     public $params;
 
@@ -30,6 +30,9 @@ final class RequestMessage extends Message
         $this->params = $params;
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function toArray(): array
     {
         return [

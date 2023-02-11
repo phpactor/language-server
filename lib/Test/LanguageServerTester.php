@@ -85,6 +85,23 @@ final class LanguageServerTester
     }
 
     /**
+     * @param array|object $params
+     */
+    public function mustRequestAndWait(string $method, mixed $params, int|string $id = null): ResponseMessage
+    {
+        $response = $this->requestAndWait($method, $params);
+
+        if (null === $response) {
+            throw new RuntimeException(sprintf(
+                'Expected request to method "%s" to return a response, but it did not!',
+                $method
+            ));
+        }
+
+        return $response;
+    }
+
+    /**
      * @param mixed $value
      * @param string|int $id
      * @return Promise<mixed>
@@ -137,11 +154,19 @@ final class LanguageServerTester
      */
     public function initialize(): InitializeResult
     {
-        $response = $this->requestAndWait('initialize', $this->initializeParams);
+        $response = $this->mustRequestAndWait('initialize', $this->initializeParams);
         $this->assertSuccess($response);
         $this->notifyAndWait('initialized', []);
 
-        return $response->result;
+        $result = $response->result;
+        if (!$result instanceof InitializeResult) {
+            throw new RuntimeException(sprintf(
+                'Initialize did not return an InitializeResult, got "%s"',
+                is_object($result) ? get_class($result) : gettype($result)
+            ));
+        }
+
+        return $result;
     }
 
     public function services(): ServicesTester
@@ -190,6 +215,14 @@ final class LanguageServerTester
             return $params;
         }
 
-        return $this->messageSerializer->normalize($params);
+        $params =  $this->messageSerializer->normalize($params);
+        if (!is_array($params)) {
+            throw new RuntimeException(sprintf(
+                'Could not normalize params, returned as type %s',
+                gettype($params)
+            ));
+        }
+
+        return $params;
     }
 }

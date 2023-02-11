@@ -36,7 +36,7 @@ class CancellationMiddleware implements Middleware
         ) {
             $id = $message->params['id'] ?? null;
 
-            if (null === $id) {
+            if (!is_int($id) && !is_string($id)) {
                 throw new RuntimeException(
                     'ID parameter not present in cancel notification'
                 );

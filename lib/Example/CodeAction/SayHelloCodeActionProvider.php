@@ -16,7 +16,8 @@ class SayHelloCodeActionProvider implements CodeActionProvider
 {
     public function provideActionsFor(TextDocumentItem $textDocument, Range $range, CancellationToken $cancel): Promise
     {
-        return call(function () {
+        /** @phpstan-ignore-next-line */
+        return call(function (): array {
             return [
                 CodeAction::fromArray([
                     'title' => 'Alice',

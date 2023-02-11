@@ -11,6 +11,9 @@ final class LspMessageSerializer implements MessageSerializer
     public function serialize(Message $message): string
     {
         $data = $this->normalize($message);
+        if (!is_array($data)) {
+            throw new RuntimeException('Expected an array');
+        }
         if ($message instanceof ResponseMessage) {
             $data = $this->ensureOnlyResultOrErrorSet($data);
         }
@@ -31,10 +34,8 @@ final class LspMessageSerializer implements MessageSerializer
      * and removing null values
      *
      * @param mixed $message
-     *
-     * @return mixed
      */
-    public function normalize($message)
+    public function normalize($message): mixed
     {
         if (is_object($message)) {
             $message = (array) $message;

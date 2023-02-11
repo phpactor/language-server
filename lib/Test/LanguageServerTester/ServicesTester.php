@@ -18,11 +18,17 @@ class ServicesTester
 
     /**
      * Return running services
+     *
+     * @return list<string>
      */
     public function listRunning(): array
     {
-        $response = $this->tester->requestAndWait('phpactor/service/running', []);
-        return $response->result;
+        $response = $this->tester->mustRequestAndWait('phpactor/service/running', []);
+        $running = $response->result;
+        if (!is_array($running)) {
+            return [];
+        }
+        return $running;
     }
 
     /**

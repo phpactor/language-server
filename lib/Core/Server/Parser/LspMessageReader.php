@@ -132,6 +132,13 @@ final class LspMessageReader implements RequestReader
             ));
         }
 
+        if (!is_array($array)) {
+            throw new CouldNotDecodeBody(sprintf(
+                'Expected an array got "%s"',
+                gettype($array)
+            ));
+        }
+
         return $array;
     }
 }

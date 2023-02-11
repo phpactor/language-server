@@ -25,6 +25,7 @@ class ClosureMiddleware implements Middleware
      */
     public function process(Message $request, RequestHandler $handler): Promise
     {
+        /** @phpstan-ignore-next-line */
         return $this->closure->__invoke($request, $handler);
     }
 }

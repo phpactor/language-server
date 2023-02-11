@@ -26,6 +26,6 @@ final class RequestInitializer implements Initializer
             ));
         }
 
-        return InitializeParams::fromArray($request->params, true);
+        return InitializeParams::fromArray($request->params ?? [], true);
     }
 }

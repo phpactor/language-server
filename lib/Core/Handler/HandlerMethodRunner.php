@@ -38,7 +38,7 @@ final class HandlerMethodRunner implements MethodRunner
     private $logger;
 
     /**
-     * @var ArgumentResolver|null
+     * @var ArgumentResolver
      */
     private $argumentResolver;
 

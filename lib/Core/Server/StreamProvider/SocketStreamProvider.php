@@ -8,6 +8,7 @@ use Amp\Socket\Server;
 use Amp\Socket\Socket;
 use Phpactor\LanguageServer\Core\Server\Stream\SocketDuplexStream;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 final class SocketStreamProvider implements StreamProvider
 {
@@ -32,8 +33,8 @@ final class SocketStreamProvider implements StreamProvider
         $promise = $this->server->accept();
 
         $deferred = new Deferred();
-        $promise->onResolve(function ($reason, ?Socket $socket) use ($deferred): void {
-            if (null === $socket) {
+        $promise->onResolve(function (?Throwable $reason, mixed $socket) use ($deferred): void {
+            if (!$socket instanceof Socket) {
                 return;
             }
 

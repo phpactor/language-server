@@ -41,7 +41,7 @@ final class MessageProgressNotifier implements ProgressNotifier
         ?int $percentage = null,
         ?bool $cancellable = null
     ): void {
-        $this->api->info($message);
+        $this->api->info($message ?? '');
     }
 
     /**
@@ -54,6 +54,6 @@ final class MessageProgressNotifier implements ProgressNotifier
 
     public function end(WorkDoneToken $token, ?string $message = null): void
     {
-        $this->api->info($message);
+        $this->api->info($message ?? '');
     }
 }
