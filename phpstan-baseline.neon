@@ -1,0 +1,306 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Adapter\\\\DTL\\\\DTLArgumentResolver\\:\\:resolveArguments\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Adapter/DTL/DTLArgumentResolver.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Command\\\\CommandDispatcher\\:\\:\\$commandMap type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Command/CommandDispatcher.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\ArgumentResolver\\:\\:resolveArguments\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Dispatcher/ArgumentResolver.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\ArgumentResolver\\\\ChainArgumentResolver\\:\\:resolveArguments\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Dispatcher/ArgumentResolver/ChainArgumentResolver.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\ArgumentResolver\\\\LanguageSeverProtocolParamsResolver\\:\\:doResolveArguments\\(\\) has parameter \\$arguments with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Dispatcher/ArgumentResolver/LanguageSeverProtocolParamsResolver.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\ArgumentResolver\\\\LanguageSeverProtocolParamsResolver\\:\\:doResolveArguments\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Dispatcher/ArgumentResolver/LanguageSeverProtocolParamsResolver.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\ArgumentResolver\\\\LanguageSeverProtocolParamsResolver\\:\\:resolveArguments\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Dispatcher/ArgumentResolver/LanguageSeverProtocolParamsResolver.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\ArgumentResolver\\\\PassThroughArgumentResolver\\:\\:resolveArguments\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Dispatcher/ArgumentResolver/PassThroughArgumentResolver.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\Dispatcher\\\\MiddlewareDispatcher\\:\\:\\$middleware type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Dispatcher/Dispatcher/MiddlewareDispatcher.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Handler\\\\Handlers\\:\\:\\$methods type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Handler/Handlers.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Middleware\\\\RequestHandler\\:\\:__construct\\(\\) has parameter \\$queue with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Middleware/RequestHandler.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\NotificationMessage\\:\\:__construct\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/NotificationMessage.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:__construct\\(\\) has parameter \\$body with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/RawMessage.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:__construct\\(\\) has parameter \\$headers with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/RawMessage.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:body\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/RawMessage.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:headers\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/RawMessage.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:\\$body type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/RawMessage.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:\\$headers type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/RawMessage.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RequestMessage\\:\\:__construct\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/RequestMessage.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\ResponseMessage\\:\\:jsonSerialize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Rpc/ResponseMessage.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\Client\\\\DiagnosticsClient\\:\\:publishDiagnostics\\(\\) has parameter \\$diagnostics with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/Client/DiagnosticsClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\Client\\\\WorkDoneProgressClient\\:\\:notify\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/Client/WorkDoneProgressClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\Client\\\\WorkspaceClient\\:\\:executeCommand\\(\\) has parameter \\$arguments with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/Client/WorkspaceClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\Parser\\\\LspMessageReader\\:\\:decodeBody\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/Parser/LspMessageReader.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\Parser\\\\LspMessageReader\\:\\:parseHeaders\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/Parser/LspMessageReader.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\ResponseWatcher\\\\TestResponseWatcher\\:\\:\\$requestIds type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/ResponseWatcher/TestResponseWatcher.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\RpcClient\\:\\:notification\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/RpcClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\RpcClient\\:\\:request\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/RpcClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\RpcClient\\\\JsonRpcClient\\:\\:notification\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/RpcClient/JsonRpcClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\RpcClient\\\\JsonRpcClient\\:\\:request\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/RpcClient/JsonRpcClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\RpcClient\\\\TestRpcClient\\:\\:notification\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/RpcClient/TestRpcClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\RpcClient\\\\TestRpcClient\\:\\:request\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/RpcClient/TestRpcClient.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\Transmitter\\\\LspMessageSerializer\\:\\:ensureOnlyResultOrErrorSet\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/Transmitter/LspMessageSerializer.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Server\\\\Transmitter\\\\LspMessageSerializer\\:\\:ensureOnlyResultOrErrorSet\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Server/Transmitter/LspMessageSerializer.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Service\\\\ServiceManager\\:\\:\\$cancellations type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Service/ServiceManager.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Service\\\\ServiceProvider\\:\\:services\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Core/Service/ServiceProvider.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Event\\\\FilesChanged\\:\\:events\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Event/FilesChanged.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Event\\\\FilesChanged\\:\\:\\$events type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Event/FilesChanged.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Example\\\\Service\\\\PingProvider\\:\\:services\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Example/Service/PingProvider.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Handler\\\\System\\\\ServiceHandler\\:\\:runningServices\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Handler/System/ServiceHandler.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\LanguageServerTesterBuilder\\:\\:\\$commands type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/LanguageServerTesterBuilder.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\LanguageServerTesterBuilder\\:\\:\\$serviceProviders type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/LanguageServerTesterBuilder.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Listener\\\\DidChangeWatchedFilesListener\\:\\:__construct\\(\\) has parameter \\$globPatterns with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Listener/DidChangeWatchedFilesListener.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Listener\\\\DidChangeWatchedFilesListener\\:\\:getListenersForEvent\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: lib/Listener/DidChangeWatchedFilesListener.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Listener\\\\DidChangeWatchedFilesListener\\:\\:\\$globPatterns type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Listener/DidChangeWatchedFilesListener.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Listener\\\\ServiceListener\\:\\:getListenersForEvent\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: lib/Listener/ServiceListener.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Listener\\\\WorkspaceListener\\:\\:getListenersForEvent\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: lib/Listener/WorkspaceListener.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Middleware\\\\MethodAliasMiddleware\\:\\:__construct\\(\\) has parameter \\$aliasMap with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Middleware/MethodAliasMiddleware.php
+
+		-
+			message: "#^Property Phpactor\\\\LanguageServer\\\\Middleware\\\\MethodAliasMiddleware\\:\\:\\$aliasMap type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Middleware/MethodAliasMiddleware.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Service\\\\DiagnosticsService\\:\\:getListenersForEvent\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: lib/Service/DiagnosticsService.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Service\\\\DiagnosticsService\\:\\:services\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Service/DiagnosticsService.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\LanguageServerTester\\:\\:mustRequestAndWait\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/LanguageServerTester.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\LanguageServerTester\\:\\:normalizeParams\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/LanguageServerTester.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\LanguageServerTester\\:\\:notify\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/LanguageServerTester.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\LanguageServerTester\\:\\:notifyAndWait\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/LanguageServerTester.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\LanguageServerTester\\:\\:request\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/LanguageServerTester.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\LanguageServerTester\\:\\:requestAndWait\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/LanguageServerTester.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\LanguageServerTester\\\\WorkspaceTester\\:\\:executeCommand\\(\\) has parameter \\$args with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/LanguageServerTester/WorkspaceTester.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\ListenerProvider\\\\RecordingListenerProvider\\:\\:getListenersForEvent\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: lib/Test/ListenerProvider/RecordingListenerProvider.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\ProtocolFactory\\:\\:notificationMessage\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/ProtocolFactory.php
+
+		-
+			message: "#^Method Phpactor\\\\LanguageServer\\\\Test\\\\ProtocolFactory\\:\\:requestMessage\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Test/ProtocolFactory.php
