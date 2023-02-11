@@ -176,11 +176,6 @@ parameters:
 			path: lib/Core/Service/ServiceManager.php
 
 		-
-			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Service\\\\ServiceProvider\\:\\:services\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Service/ServiceProvider.php
-
-		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Event\\\\FilesChanged\\:\\:events\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Event/FilesChanged.php
@@ -189,11 +184,6 @@ parameters:
 			message: "#^Property Phpactor\\\\LanguageServer\\\\Event\\\\FilesChanged\\:\\:\\$events type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Event/FilesChanged.php
-
-		-
-			message: "#^Method Phpactor\\\\LanguageServer\\\\Example\\\\Service\\\\PingProvider\\:\\:services\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Example/Service/PingProvider.php
 
 		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Handler\\\\System\\\\ServiceHandler\\:\\:runningServices\\(\\) return type has no value type specified in iterable type array\\.$#"
@@ -247,11 +237,6 @@ parameters:
 
 		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Service\\\\DiagnosticsService\\:\\:getListenersForEvent\\(\\) return type has no value type specified in iterable type iterable\\.$#"
-			count: 1
-			path: lib/Service/DiagnosticsService.php
-
-		-
-			message: "#^Method Phpactor\\\\LanguageServer\\\\Service\\\\DiagnosticsService\\:\\:services\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Service/DiagnosticsService.php
 

@@ -6,3 +6,6 @@ parameters:
         - lib
         - example
         - bin
+
+includes:
+    - phpstan-baseline.neon

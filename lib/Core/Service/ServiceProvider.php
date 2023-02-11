@@ -25,6 +25,8 @@ interface ServiceProvider
      *         // exit immediately
      *         return new Success();
      *     }
+     *
+     * @return list<string>
      */
     public function services(): array;
 }
