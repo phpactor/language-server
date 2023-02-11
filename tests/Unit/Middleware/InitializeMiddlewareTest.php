@@ -83,7 +83,8 @@ class InitializeMiddlewareTest extends AsyncTestCase
     public function testReturnsInitializedResponse(): Generator
     {
         $middleware = $this->createMiddleware([], [
-            'server_info' => 'please',
+            'name' => 'test',
+            'version' => '12a'
         ]);
 
         $response = yield $middleware->process(
@@ -95,7 +96,8 @@ class InitializeMiddlewareTest extends AsyncTestCase
         self::assertInstanceOf(ResponseMessage::class, $response);
         self::assertInstanceOf(InitializeResult::class, $response->result);
         self::assertEquals([
-            'server_info' => 'please',
+            'name' => 'test',
+            'version' => '12a'
         ], $response->result->serverInfo);
     }
 
