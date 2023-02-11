@@ -148,7 +148,8 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         return new MiddlewareDispatcher(
             new ErrorHandlingMiddleware($logger),
             new InitializeMiddleware($handlers, $eventDispatcher, [
-                'version' => 1,
+                'name' => 'phpactor',
+                'version' => '1',
             ]),
             new CancellationMiddleware($runner),
             new ResponseHandlingMiddleware($responseWatcher),

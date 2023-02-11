@@ -81,7 +81,8 @@ class AcmeLsDispatcherFactory implements DispatcherFactory
         return new MiddlewareDispatcher(
             new ErrorHandlingMiddleware($this->logger),
             new InitializeMiddleware($handlers, $eventDispatcher, [
-                'version' => 1,
+                'name' => 'acme',
+                'version' => '1',
             ]),
             new ShutdownMiddleware($eventDispatcher),
             new ResponseHandlingMiddleware($responseWatcher),

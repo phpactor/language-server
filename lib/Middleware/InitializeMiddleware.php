@@ -24,26 +24,14 @@ class InitializeMiddleware implements Middleware
     private const METHOD_INITIALIZE = 'initialize';
 
     /**
-     * @var Handlers
-     */
-    private $handlers;
-
-    /**
      * @var bool
      */
     private $initialized = false;
 
     /**
-     * @var EventDispatcherInterface
+     * @param array{name?:string,version?:string} $serverInfo
      */
-    private $dispatcher;
-
-    /**
-     * @var array
-     */
-    private $serverInfo;
-
-    public function __construct(Handlers $handlers, EventDispatcherInterface $dispatcher, array $serverInfo = [])
+    public function __construct(private Handlers $handlers, private EventDispatcherInterface $dispatcher, private array $serverInfo = [])
     {
         $this->handlers = $handlers;
         $this->dispatcher = $dispatcher;
@@ -88,7 +76,10 @@ class InitializeMiddleware implements Middleware
         return new Success(
             new ResponseMessage(
                 $request->id,
-                new InitializeResult($serverCapabilities, $this->serverInfo)
+                new InitializeResult($serverCapabilities, array_merge([
+                    'name' => 'unspecified',
+                    'version' => 'unspecified',
+                ], $this->serverInfo))
             )
         );
     }
