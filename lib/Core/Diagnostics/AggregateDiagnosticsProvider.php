@@ -65,11 +65,19 @@ class AggregateDiagnosticsProvider implements DiagnosticsProvider
         });
     }
 
-    public function name(): string
+    /**
+     * @return list<string>
+     */
+    public function names(): array
     {
-        return implode(', ', array_map(
+        return array_map(
             fn (DiagnosticsProvider $provider) => $provider->name(),
             $this->providers
-        ));
+        );
+    }
+
+    public function name(): string
+    {
+        return implode(', ', $this->names());
     }
 }
