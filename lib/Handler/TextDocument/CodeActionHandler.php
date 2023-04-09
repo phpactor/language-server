@@ -50,7 +50,7 @@ class CodeActionHandler implements Handler, CanRegisterCapabilities
     {
         return call(function () use ($params, $cancel) {
             $token = WorkDoneToken::generate();
-            $this->notifier->create($token);
+            yield $this->notifier->create($token);
             $document = $this->workspace->get($params->textDocument->uri);
             $this->notifier->begin($token, title: 'Resolving code actions');
             $actions = yield $this->provider->provideActionsFor($document, $params->range, $cancel);
