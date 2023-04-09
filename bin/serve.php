@@ -133,7 +133,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
             new DidChangeWatchedFilesHandler($eventDispatcher),
             new CodeActionHandler(new AggregateCodeActionProvider(
                 new SayHelloCodeActionProvider()
-            ), $workspace),
+            ), $workspace, $clientApi),
             new ExitHandler()
         );
 

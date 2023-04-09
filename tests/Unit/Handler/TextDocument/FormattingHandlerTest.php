@@ -24,7 +24,8 @@ class FormattingHandlerTest extends TestCase
             $tester->workspace(),
             new TestFormatter(
                 ProtocolFactory::textEdit(0, 0, 0, 0, 'Hello'),
-            )
+            ),
+            $tester->clientApi(),
         ));
 
         $tester = $tester->build();

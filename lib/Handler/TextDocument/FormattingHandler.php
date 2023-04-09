@@ -10,20 +10,15 @@ use Phpactor\LanguageServerProtocol\TextEdit;
 use Phpactor\LanguageServer\Core\Formatting\Formatter;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
+use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 use function Amp\call;
 
 class FormattingHandler implements Handler, CanRegisterCapabilities
 {
-    private Workspace $workspace;
-
-    private Formatter $formatter;
-
-
-    public function __construct(Workspace $workspace, Formatter $formatter)
+    public function __construct(private Workspace $workspace, private Formatter $formatter, private ClientApi $client)
     {
-        $this->workspace = $workspace;
-        $this->formatter = $formatter;
     }
 
     public function methods(): array
@@ -37,8 +32,12 @@ class FormattingHandler implements Handler, CanRegisterCapabilities
     public function formatting(TextDocumentIdentifier $textDocument, FormattingOptions $options): Promise
     {
         return call(function () use ($textDocument) {
+            $token = WorkDoneToken::generate();
+            $this->client->workDoneProgress()->create($token);
             $document = $this->workspace->get($textDocument->uri);
+            $this->client->workDoneProgress()->begin($token, 'Formatting document');
             $formatted = yield $this->formatter->format($document);
+            $this->client->workDoneProgress()->end($token);
 
             return $formatted;
         });
