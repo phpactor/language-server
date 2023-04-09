@@ -24,4 +24,6 @@ interface CodeActionProvider
      * @return string[]
      */
     public function kinds(): array;
+
+    public function describe(): string;
 }

@@ -58,4 +58,9 @@ class AggregateCodeActionProvider implements CodeActionProvider
             )
         );
     }
+
+    public function describe(): string
+    {
+        return sprintf('aggregate code action proivder with %s providers', count($this->providers));
+    }
 }

@@ -68,4 +68,9 @@ class TestCodeActionProvider implements CodeActionProvider
     {
         return ['foo'];
     }
+
+    public function describe(): string
+    {
+        return 'test';
+    }
 }
