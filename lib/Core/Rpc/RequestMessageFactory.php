@@ -26,6 +26,9 @@ final class RequestMessageFactory
             return Invoke::new(ResponseMessage::class, $body);
         }
 
+        /**
+         * @phpstan-ignore-next-line
+         */
         if (!isset($body['id']) || is_null($body['id'])) {
             unset($body['id']);
             return Invoke::new(NotificationMessage::class, $body);
