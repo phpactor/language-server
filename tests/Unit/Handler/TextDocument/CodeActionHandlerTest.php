@@ -21,7 +21,8 @@ class CodeActionHandlerTest extends TestCase
             new AggregateCodeActionProvider(
                 new SayHelloCodeActionProvider()
             ),
-            $tester->workspace()
+            $tester->workspace(),
+            $tester->clientApi(),
         ));
         $tester = $tester->build();
 

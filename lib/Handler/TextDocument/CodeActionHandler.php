@@ -12,26 +12,15 @@ use Phpactor\LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServer\Core\CodeAction\CodeActionProvider;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
+use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
+use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 use function Amp\call;
 
 class CodeActionHandler implements Handler, CanRegisterCapabilities
 {
-    /**
-     * @var CodeActionProvider
-     */
-    private $provider;
-
-    /**
-     * @var Workspace
-     */
-    private $workspace;
-
-
-    public function __construct(CodeActionProvider $provider, Workspace $workspace)
+    public function __construct(private CodeActionProvider $provider, private Workspace $workspace, private ClientApi $client)
     {
-        $this->provider = $provider;
-        $this->workspace = $workspace;
     }
 
     /**
@@ -55,10 +44,14 @@ class CodeActionHandler implements Handler, CanRegisterCapabilities
      */
     public function codeAction(CodeActionParams $params, CancellationToken $cancel): Promise
     {
-        /** @phpstan-ignore-next-line */
         return call(function () use ($params, $cancel) {
+            $token = WorkDoneToken::generate();
+            $this->client->workDoneProgress()->create($token);
             $document = $this->workspace->get($params->textDocument->uri);
-            return $this->provider->provideActionsFor($document, $params->range, $cancel);
+            $this->client->workDoneProgress()->begin($token, title: 'Resolving code actions');
+            $actions = yield $this->provider->provideActionsFor($document, $params->range, $cancel);
+            $this->client->workDoneProgress()->end($token);
+            return $actions;
         });
     }
 }
