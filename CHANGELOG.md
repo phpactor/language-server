@@ -1,12 +1,6 @@
 CHANGELOG
 =========
 
-6.0
----
-
-- Code action and formatting handlers now require the `ClientApi` in order to
-  provide progress notification.
-
 5.0
 ---
 

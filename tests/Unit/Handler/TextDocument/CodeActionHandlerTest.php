@@ -22,7 +22,6 @@ class CodeActionHandlerTest extends TestCase
                 new SayHelloCodeActionProvider()
             ),
             $tester->workspace(),
-            $tester->clientApi(),
         ));
         $tester = $tester->build();
 
