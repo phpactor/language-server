@@ -40,8 +40,11 @@ class FormattingHandler implements Handler, CanRegisterCapabilities
             yield $this->notifier->create($token);
             $document = $this->workspace->get($textDocument->uri);
             $this->notifier->begin($token, 'Formatting document');
-            $formatted = yield $this->formatter->format($document);
-            $this->notifier->end($token);
+            try {
+                $formatted = yield $this->formatter->format($document);
+            } finally {
+                $this->notifier->end($token);
+            }
 
             return $formatted;
         });
