@@ -14,6 +14,7 @@ use Generator;
 use PHPUnit\Framework\Assert;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher\ClosureDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\Factory\ClosureDispatcherFactory;
+use Phpactor\LanguageServer\Core\Rpc\Message;
 use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
@@ -23,12 +24,18 @@ use Phpactor\LanguageServer\Core\Server\Parser\LspMessageReader;
 use Phpactor\LanguageServer\Core\Server\StreamProvider\ResourceStreamProvider;
 use Phpactor\LanguageServer\Core\Server\Stream\ResourceDuplexStream;
 use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageFormatter;
+use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageSerializer;
+use Phpactor\LanguageServer\Core\Server\Transmitter\MessageSerializer;
+use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageSerializer;
 use Psr\Log\NullLogger;
 use function Amp\Iterator\fromIterable;
 use function Amp\call;
 
 class LanguageServerTest extends AsyncTestCase
 {
+    /**
+     * @return Generator<Promise<string>>
+     */
     public function testDispatchesRequest(): Generator
     {
         $response = yield $this->dispatchRequest(
@@ -44,16 +51,36 @@ class LanguageServerTest extends AsyncTestCase
         Assert::assertInstanceOf(RawMessage::class, $response);
         Assert::assertEquals(['foo' => 'bar'], $response->body()['result']);
     }
+    /**
+     * @return Generator<Promise<string>>
+     */
+    public function testHandlesMalformedRequest(): Generator
+    {
+        $serializer = new TestMessageSerializer('{"foo":"bar"}');
+        $response = yield $this->dispatchRequest(
+            new RequestMessage(1, 'foobar', []),
+            function (RequestMessage $message) {
+                return new Success(new ResponseMessage(1, [
+                    'foo' => 'bar',
+                ]));
+            },
+            $serializer
+        );
 
+        Assert::assertInstanceOf(RawMessage::class, $response);
+        Assert::assertEquals(['foo' => 'bar'], $response->body()['result']);
+    }
     /**
      * @return Promise<string>
+     * @param Closure(Message): Promise<ResponseMessage|null> $handler
      */
-    private function dispatchRequest(RequestMessage $request, Closure $handler): Promise
+    private function dispatchRequest(RequestMessage $request, Closure $handler, ?MessageSerializer $serializer = null): Promise
     {
-        return call(function () use ($handler, $request) {
+        $serializer = $serializer ?: new LspMessageSerializer();
+        return call(function () use ($handler, $request, $serializer) {
             $this->setTimeout(100);
 
-            $formatter = new LspMessageFormatter();
+            $formatter = new LspMessageFormatter($serializer);
             $message = $formatter->format($request);
 
             $output = new OutputBuffer();

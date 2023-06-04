@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Rpc;
 
 use DTL\Invoke\Invoke;
+use Error;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
 use RuntimeException;
 
@@ -12,7 +13,7 @@ final class RequestMessageFactory
     {
         try {
             return self::doFromRequest($request);
-        } catch (RuntimeException $error) {
+        } catch (Error $error) {
             throw new CouldNotCreateMessage($error->getMessage(), 0, $error);
         }
     }
