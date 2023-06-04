@@ -67,6 +67,7 @@ class RequestMessageFactoryTest extends TestCase
         self::assertInstanceOf(ResponseMessage::class, $response);
         $this->assertEquals('foobar', $response->result);
     }
+
     public function testReturnsRequestMessageForResponseWithoutResultButWithError(): void
     {
         $response = new RawMessage([], [
@@ -79,6 +80,7 @@ class RequestMessageFactoryTest extends TestCase
         ]);
         $response = RequestMessageFactory::fromRequest($response);
         self::assertInstanceOf(ResponseMessage::class, $response);
+        assert($response instanceof ResponseMessage);
         $this->assertEquals(123, $response->error->code);
     }
 }
