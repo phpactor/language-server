@@ -67,4 +67,18 @@ class RequestMessageFactoryTest extends TestCase
         self::assertInstanceOf(ResponseMessage::class, $response);
         $this->assertEquals('foobar', $response->result);
     }
+    public function testReturnsRequestMessageForResponseWithoutResultButWithError(): void
+    {
+        $response = new RawMessage([], [
+            'jsonrpc' => 2.0,
+            'id' => 123,
+            'error' => [
+                'code' => 123,
+                'message' => 'foo',
+            ],
+        ]);
+        $response = RequestMessageFactory::fromRequest($response);
+        self::assertInstanceOf(ResponseMessage::class, $response);
+        $this->assertEquals(123, $response->error->code);
+    }
 }
