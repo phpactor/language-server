@@ -6,6 +6,7 @@ use DTL\Invoke\Invoke;
 use Error;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
 use RuntimeException;
+use Throwable;
 
 final class RequestMessageFactory
 {
@@ -13,7 +14,7 @@ final class RequestMessageFactory
     {
         try {
             return self::doFromRequest($request);
-        } catch (Error $error) {
+        } catch (Throwable $error) {
             throw new CouldNotCreateMessage($error->getMessage(), 0, $error);
         }
     }

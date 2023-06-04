@@ -30,6 +30,7 @@ use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageSerializer;
 use Psr\Log\NullLogger;
 use function Amp\Iterator\fromIterable;
 use function Amp\call;
+use Exception;
 
 class LanguageServerTest extends AsyncTestCase
 {
@@ -40,7 +41,10 @@ class LanguageServerTest extends AsyncTestCase
     {
         $response = yield $this->dispatchRequest(
             new RequestMessage(1, 'foobar', []),
-            function (RequestMessage $message) {
+            function (Message $message) {
+                if (!$message instanceof RequestMessage) {
+                    throw new Exception('not a request');
+                }
                 Assert::assertEquals('foobar', $message->method);
                 return new Success(new ResponseMessage(1, [
                     'foo' => 'bar',
@@ -56,10 +60,10 @@ class LanguageServerTest extends AsyncTestCase
      */
     public function testHandlesMalformedRequest(): Generator
     {
-        $serializer = new TestMessageSerializer('{"foo":"bar"}');
+        $serializer = new TestMessageSerializer('{"id":3,"foo":"bar"}');
         $response = yield $this->dispatchRequest(
             new RequestMessage(1, 'foobar', []),
-            function (RequestMessage $message) {
+            function (Message $message) {
                 return new Success(new ResponseMessage(1, [
                     'foo' => 'bar',
                 ]));
@@ -68,7 +72,8 @@ class LanguageServerTest extends AsyncTestCase
         );
 
         Assert::assertInstanceOf(RawMessage::class, $response);
-        Assert::assertEquals(['foo' => 'bar'], $response->body()['result']);
+        self::assertEquals(255, $response->body()['error']['code']);
+
     }
     /**
      * @return Promise<string>
