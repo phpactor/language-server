@@ -22,7 +22,12 @@ final class RequestMessageFactory
         $body = $request->body();
         unset($body['jsonrpc']);
 
-        if (array_key_exists('result', $body)) {
+        if (array_key_exists('result', $body) || array_key_exists('error', $body)) {
+            $body['result'] = $body['result'] ?? null;
+            if ($body['error'] ?? null) {
+                $body['error'] = Invoke::new(ResponseError::class, $body['error']);
+            }
+
             return Invoke::new(ResponseMessage::class, $body);
         }
 
