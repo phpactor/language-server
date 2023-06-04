@@ -8,6 +8,7 @@ use Exception;
 use Generator;
 use Phpactor\LanguageServer\Core\Rpc\Exception\CouldNotCreateMessage;
 use Phpactor\LanguageServer\Core\Rpc\Message;
+use Phpactor\LanguageServer\Core\Rpc\ResponseError;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Transmitter\ConnectionMessageTransmitter;
 use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
@@ -195,6 +196,7 @@ final class LanguageServer
                     $transmitter->transmit(new ResponseMessage(
                         $request->body()['id'] ?? 0,
                         [],
+                        new ResponseError(255, $e->getMessage()),
                     ));
                     continue;
                 }
