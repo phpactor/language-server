@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+6.0
+---
+
+- Refactored diagnostics engine to execute diagnostic providers in parallel
+
 5.0
 ---
 
