@@ -86,7 +86,7 @@ class DiagnosticsEngine
                     $this->next = null;
                 }
 
-                foreach ($this->providers as $provider) {
+                foreach ($this->providers as $i => $provider) {
                     asyncCall(function () use ($provider, $token, $textDocument) {
                         $this->diagnostics = array_merge(
                             $this->diagnostics,
