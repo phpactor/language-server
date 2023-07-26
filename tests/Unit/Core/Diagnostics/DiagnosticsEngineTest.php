@@ -148,20 +148,18 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
     private function createEngine(LanguageServerTesterBuilder $tester, int $delay = 0, int $sleepTime = 0, string &$lastDocument = null): DiagnosticsEngine
     {
-        $engine = new DiagnosticsEngine($tester->clientApi(), new ClosureDiagnosticsProvider(function (TextDocumentItem $item) use ($delay, &$lastDocument) {
-            return call(function () use ($delay, $item, &$lastDocument) {
-                if ($delay) {
-                    yield delay($delay);
-                }
-                $lastDocument = $item->text;
-                return [
-                    ProtocolFactory::diagnostic(
-                        ProtocolFactory::range(0, 0, 0, 0),
-                        'Foobar is broken'
-                    )
-                ];
-            });
-        }), $sleepTime);
-        return $engine;
+        return new DiagnosticsEngine($tester->clientApi(), [
+            new ClosureDiagnosticsProvider(function (TextDocumentItem $item) use ($delay, &$lastDocument) {
+                return call(function () use ($delay, $item, &$lastDocument) {
+                    if ($delay) {
+                        yield delay($delay);
+                    }
+                    $lastDocument = $item->text;
+                    return [
+                        ProtocolFactory::diagnostic(ProtocolFactory::range(0, 0, 0, 0), 'Foobar is broken')
+                    ];
+                });
+            })
+        ], $sleepTime);
     }
 }
