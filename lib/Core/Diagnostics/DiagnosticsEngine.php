@@ -15,32 +15,17 @@ class DiagnosticsEngine
     /**
      * @var Deferred<TextDocumentItem>
      */
-    private $deferred;
+    private Deferred $deferred;
 
-    /**
-     * @var bool
-     */
-    private $running = false;
+    private bool $running = false;
 
-    /**
-     * @var ?TextDocumentItem
-     */
-    private $next;
+    private ?TextDocumentItem $next = null;
 
-    /**
-     * @var DiagnosticsProvider
-     */
-    private $provider;
+    private DiagnosticsProvider $provider;
 
-    /**
-     * @var ClientApi
-     */
-    private $clientApi;
+    private ClientApi $clientApi;
 
-    /**
-     * @var int
-     */
-    private $sleepTime;
+    private int $sleepTime;
 
     public function __construct(ClientApi $clientApi, DiagnosticsProvider $provider, int $sleepTime = 1000)
     {
