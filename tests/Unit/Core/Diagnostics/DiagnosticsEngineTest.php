@@ -5,6 +5,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Diagnostics;
 use Amp\CancellationTokenSource;
 use Amp\Delayed;
 use Amp\PHPUnit\AsyncTestCase;
+use Amp\Success;
 use Generator;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Diagnostics\ClosureDiagnosticsProvider;
@@ -61,7 +62,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        self::assertEquals(3, $tester->transmitter()->count());
+        self::assertEquals(6, $tester->transmitter()->count());
     }
 
     /**
@@ -82,7 +83,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        self::assertEquals(1, $tester->transmitter()->count());
+        self::assertEquals(3, $tester->transmitter()->count());
     }
 
     /**
@@ -104,7 +105,34 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        self::assertEquals(2, $tester->transmitter()->count());
+        self::assertEquals(4, $tester->transmitter()->count());
+    }
+
+    public function testAggregatesResultsFromMultipleProviders(): Generator
+    {
+        $tester = LanguageServerTesterBuilder::create();
+        $engine = new DiagnosticsEngine($tester->clientApi(), [
+            new ClosureDiagnosticsProvider(function (TextDocumentItem $item) {
+                return new Success([
+                    ProtocolFactory::diagnostic(ProtocolFactory::range(0, 0, 0, 0), 'Foobar is broken')
+                ]);
+            }),
+            new ClosureDiagnosticsProvider(function (TextDocumentItem $item) {
+                return new Success([
+                    ProtocolFactory::diagnostic(ProtocolFactory::range(0, 0, 0, 0), 'Barfoo is broken')
+                ]);
+            })
+        ], 10);
+
+        $token = new CancellationTokenSource();
+        $promise = $engine->run($token->getToken());
+
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'bazboo'));
+
+        yield new Delayed(100);
+
+        self::assertEquals(3, $tester->transmitter()->count());
+
     }
 
     /**

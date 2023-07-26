@@ -32,12 +32,12 @@ class CodeActionDiagnosticsProviderTest extends TestCase
 
         wait(new Delayed(10));
 
-        self::assertEquals(1, $tester->transmitter()->count());
+        self::assertEquals(2, $tester->transmitter()->count());
 
         $tester->textDocument()->update('file:///foobar', 'bar');
         wait(new Delayed(10));
 
-        self::assertEquals(3, $tester->transmitter()->count());
+        self::assertEquals(5, $tester->transmitter()->count());
         self::assertEquals('textDocument/publishDiagnostics', $tester->transmitter()->shiftNotification()->method);
     }
 }
