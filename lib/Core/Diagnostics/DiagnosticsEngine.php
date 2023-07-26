@@ -8,6 +8,7 @@ use Amp\Promise;
 use Amp\CancellationToken;
 use Amp\Deferred;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
+use function Amp\asyncCall;
 use function Amp\delay;
 
 class DiagnosticsEngine
@@ -21,16 +22,24 @@ class DiagnosticsEngine
 
     private ?TextDocumentItem $next = null;
 
-    private DiagnosticsProvider $provider;
+    /**
+     * @var DiagnosticsProvider[]
+     */
+    private array $providers;
 
     private ClientApi $clientApi;
 
     private int $sleepTime;
 
-    public function __construct(ClientApi $clientApi, DiagnosticsProvider $provider, int $sleepTime = 1000)
+    private array $diagnostics = [];
+
+    /**
+     * @param DiagnosticsProvider[] $providers
+     */
+    public function __construct(ClientApi $clientApi, array $providers, int $sleepTime = 1000)
     {
         $this->deferred = new Deferred();
-        $this->provider = $provider;
+        $this->providers = $providers;
         $this->clientApi = $clientApi;
         $this->sleepTime = $sleepTime;
     }
@@ -59,6 +68,7 @@ class DiagnosticsEngine
 
                 $textDocument = yield $this->deferred->promise();
 
+                $this->diagnostics = [];
                 $this->deferred = new Deferred();
 
                 // after we have reset deferred, we can safely set linting to
@@ -76,13 +86,20 @@ class DiagnosticsEngine
                     $this->next = null;
                 }
 
-                $diagnostics = yield $this->provider->provideDiagnostics($textDocument, $token);
+                foreach ($this->providers as $provider) {
+                    asyncCall(function () use ($provider, $token, $textDocument) {
+                        $this->diagnostics = array_merge(
+                            $this->diagnostics,
+                            yield $provider->provideDiagnostics($textDocument, $token)
+                        );
 
-                $this->clientApi->diagnostics()->publishDiagnostics(
-                    $textDocument->uri,
-                    $textDocument->version,
-                    $diagnostics
-                );
+                        $this->clientApi->diagnostics()->publishDiagnostics(
+                            $textDocument->uri,
+                            $textDocument->version,
+                            $this->diagnostics
+                        );
+                    });
+                }
             }
         });
     }
