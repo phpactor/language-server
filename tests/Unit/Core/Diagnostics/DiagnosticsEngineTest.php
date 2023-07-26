@@ -70,7 +70,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
     public function testDeduplicatesSuccessiveChangesToSameFile(): Generator
     {
         $tester = LanguageServerTesterBuilder::create();
-        $engine = $this->createEngine($tester, 5, 0);
+        $engine = $this->createEngine($tester, 10, 0);
 
         $token = new CancellationTokenSource();
         $promise = $engine->run($token->getToken());
@@ -136,7 +136,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '3'));
         yield new Delayed(1);
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '4'));
-        yield new Delayed(0);
+        yield new Delayed(1);
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '5'));
 
         yield new Delayed(100);
