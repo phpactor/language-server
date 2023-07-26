@@ -24,16 +24,18 @@ class DiagnosticsServiceTest extends TestCase
         $service = new DiagnosticsService(
             new DiagnosticsEngine(
                 $tester->clientApi(),
-                new ClosureDiagnosticsProvider(function () {
-                    return call(function () {
-                        return [
-                            ProtocolFactory::diagnostic(
-                                ProtocolFactory::range(0, 0, 0, 0),
-                                'Foobar is bust'
-                            )
-                        ];
-                    });
-                }),
+                [
+                    new ClosureDiagnosticsProvider(function () {
+                        return call(function () {
+                            return [
+                                ProtocolFactory::diagnostic(
+                                    ProtocolFactory::range(0, 0, 0, 0),
+                                    'Foobar is bust'
+                                )
+                            ];
+                        });
+                    }),
+                ],
                 0
             ),
             true,
@@ -54,7 +56,7 @@ class DiagnosticsServiceTest extends TestCase
         assert($notification instanceof NotificationMessage);
         self::assertEquals('textDocument/publishDiagnostics', $notification->method);
 
-        $tester->textDocument()->save('file:///foobar', 'foobar');
+        $tester->textDocument()->save('file:///foobar');
         wait(new Delayed(100));
         $notification = $tester->transmitter()->shift();
         assert($notification instanceof NotificationMessage);
