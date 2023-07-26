@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Diagnostics;
 
 use Amp\CancelledException;
+use Phpactor\LanguageServerProtocol\Diagnostic;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Amp\Promise;
 use Amp\CancellationToken;
@@ -31,6 +32,9 @@ class DiagnosticsEngine
 
     private int $sleepTime;
 
+    /**
+     * @var array<int|string,list<Diagnostic>>
+     */
     private array $diagnostics = [];
 
     /**
@@ -68,7 +72,14 @@ class DiagnosticsEngine
 
                 $textDocument = yield $this->deferred->promise();
 
-                $this->diagnostics = [];
+                // clear diagnostics for document
+                $this->diagnostics[$textDocument->uri] = [];
+                $this->clientApi->diagnostics()->publishDiagnostics(
+                    $textDocument->uri,
+                    $textDocument->version,
+                    $this->diagnostics[$textDocument->uri],
+                );
+
                 $this->deferred = new Deferred();
 
                 // after we have reset deferred, we can safely set linting to
@@ -88,16 +99,20 @@ class DiagnosticsEngine
 
                 foreach ($this->providers as $i => $provider) {
                     asyncCall(function () use ($provider, $token, $textDocument) {
-                        $this->diagnostics = array_merge(
-                            $this->diagnostics,
-                            yield $provider->provideDiagnostics($textDocument, $token)
+                        /** @var Diagnostic[] $diagnostics */
+                        $diagnostics =yield $provider->provideDiagnostics($textDocument, $token) ;
+
+                        $this->diagnostics[$textDocument->uri] = array_merge(
+                            $this->diagnostics[$textDocument->uri] ?? [],
+                            $diagnostics
                         );
 
                         $this->clientApi->diagnostics()->publishDiagnostics(
                             $textDocument->uri,
                             $textDocument->version,
-                            $this->diagnostics
+                            $this->diagnostics[$textDocument->uri]
                         );
+
                     });
                 }
             }
