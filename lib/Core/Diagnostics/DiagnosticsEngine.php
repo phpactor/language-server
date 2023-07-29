@@ -85,13 +85,14 @@ class DiagnosticsEngine
                 $textDocument = yield $this->deferred->promise();
                 $this->versions[$textDocument->uri] = $textDocument->version;
 
-                // clear diagnostics for document
+                if (isset($this->diagnostics[$textDocument->uri])) {
+                    $this->clientApi->diagnostics()->publishDiagnostics(
+                        $textDocument->uri,
+                        $textDocument->version,
+                        $this->diagnostics[$textDocument->uri],
+                    );
+                }
                 $this->diagnostics[$textDocument->uri] = [];
-                $this->clientApi->diagnostics()->publishDiagnostics(
-                    $textDocument->uri,
-                    $textDocument->version,
-                    $this->diagnostics[$textDocument->uri],
-                );
 
                 $this->deferred = new Deferred();
 
@@ -125,6 +126,10 @@ class DiagnosticsEngine
                             $lock->resolve(true);
                         }
 
+                        if (!$diagnostics) {
+                            return;
+                        }
+
                         $elapsed = (int)round((microtime(true) - $start) / 1000);
 
                         $this->diagnostics[$textDocument->uri] = array_merge(
@@ -147,7 +152,6 @@ class DiagnosticsEngine
                             $textDocument->version,
                             $this->diagnostics[$textDocument->uri]
                         );
-
                     });
                 }
             }
