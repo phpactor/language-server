@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Core\Diagnostics;
 
 use Amp\CancelledException;
 use Phpactor\LanguageServerProtocol\Diagnostic;
+use Phpactor\LanguageServerProtocol\TextDocument;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Amp\Promise;
 use Amp\CancellationToken;
@@ -38,6 +39,11 @@ class DiagnosticsEngine
     private array $diagnostics = [];
 
     /**
+     * @var array<int|string,int|string>
+     */
+    private array $versions = [];
+
+    /**
      * @param DiagnosticsProvider[] $providers
      */
     public function __construct(ClientApi $clientApi, array $providers, int $sleepTime = 1000)
@@ -70,7 +76,9 @@ class DiagnosticsEngine
                     return;
                 }
 
+                /** @var TextDocumentItem $textDocument */
                 $textDocument = yield $this->deferred->promise();
+                $this->versions[$textDocument->uri] = $textDocument->version;
 
                 // clear diagnostics for document
                 $this->diagnostics[$textDocument->uri] = [];
@@ -86,12 +94,6 @@ class DiagnosticsEngine
                 // `false` and let another resolve happen
                 $this->running = false;
 
-                assert($textDocument instanceof TextDocumentItem);
-
-                if ($this->sleepTime > 0) {
-                    yield delay($this->sleepTime);
-                }
-
                 if ($this->next) {
                     $textDocument = $this->next;
                     $this->next = null;
@@ -99,13 +101,26 @@ class DiagnosticsEngine
 
                 foreach ($this->providers as $i => $provider) {
                     asyncCall(function () use ($provider, $token, $textDocument) {
+                        $start = microtime(true);
+
                         /** @var Diagnostic[] $diagnostics */
-                        $diagnostics =yield $provider->provideDiagnostics($textDocument, $token) ;
+                        $diagnostics = yield $provider->provideDiagnostics($textDocument, $token) ;
+                        $elapsed = (int)round((microtime(true) - $start) / 1000);
 
                         $this->diagnostics[$textDocument->uri] = array_merge(
                             $this->diagnostics[$textDocument->uri] ?? [],
                             $diagnostics
                         );
+
+                        $timeToSleep = $this->sleepTime - $elapsed;
+
+                        if ($timeToSleep > 0) {
+                            yield delay($timeToSleep);
+                        }
+
+                        if ($textDocument->version !== ($this->versions[$textDocument->uri] ?? -1)) {
+                            return;
+                        }
 
                         $this->clientApi->diagnostics()->publishDiagnostics(
                             $textDocument->uri,
