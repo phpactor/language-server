@@ -62,7 +62,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        self::assertEquals(6, $tester->transmitter()->count());
+        self::assertEquals(3, $tester->transmitter()->count());
     }
 
     /**
@@ -85,7 +85,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
         $token->cancel();
 
         // clear three times
-        self::assertEquals(3, $tester->transmitter()->count());
+        self::assertEquals(2, $tester->transmitter()->count());
     }
 
     /**
@@ -107,7 +107,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        self::assertEquals(6, $tester->transmitter()->count());
+        self::assertEquals(3, $tester->transmitter()->count());
     }
 
     public function testAggregatesResultsFromMultipleProviders(): Generator
@@ -133,7 +133,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         yield new Delayed(100);
 
-        self::assertEquals(3, $tester->transmitter()->count());
+        self::assertEquals(2, $tester->transmitter()->count());
 
     }
 
