@@ -107,7 +107,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        self::assertEquals(4, $tester->transmitter()->count());
+        self::assertEquals(6, $tester->transmitter()->count());
     }
 
     public function testAggregatesResultsFromMultipleProviders(): Generator

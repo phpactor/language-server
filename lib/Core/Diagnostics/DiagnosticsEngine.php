@@ -5,7 +5,6 @@ namespace Phpactor\LanguageServer\Core\Diagnostics;
 use Amp\CancelledException;
 use Amp\Success;
 use Phpactor\LanguageServerProtocol\Diagnostic;
-use Phpactor\LanguageServerProtocol\TextDocument;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
 use Amp\Promise;
 use Amp\CancellationToken;
@@ -45,14 +44,9 @@ class DiagnosticsEngine
     private array $versions = [];
 
     /**
-     * @var array<string,Deferred>
+     * @var array<string,Deferred<bool>>
      */
     private array $locks = [];
-
-    /**
-     * @var array<string,int>
-     */
-    private array $concurrencies = [];
 
     /**
      * @param DiagnosticsProvider[] $providers
@@ -174,11 +168,14 @@ class DiagnosticsEngine
         $this->deferred->resolve($textDocument);
     }
 
-    private function isDocumentCurrent(?TextDocumentItem $textDocument): bool
+    private function isDocumentCurrent(TextDocumentItem $textDocument): bool
     {
         return $textDocument->version === ($this->versions[$textDocument->uri] ?? -1);
     }
-
+    /**
+     * @param string|int $providerId
+     * @return Promise<bool>
+     */
     private function await($providerId): Promise
     {
         if (!array_key_exists($providerId, $this->locks)) {
