@@ -3,6 +3,7 @@
 namespace Phpactor\LanguageServer\Core\Diagnostics;
 
 use Amp\CancelledException;
+use Amp\Success;
 use Phpactor\LanguageServerProtocol\Diagnostic;
 use Phpactor\LanguageServerProtocol\TextDocument;
 use Phpactor\LanguageServer\Core\Server\ClientApi;
@@ -42,6 +43,16 @@ class DiagnosticsEngine
      * @var array<int|string,int|string>
      */
     private array $versions = [];
+
+    /**
+     * @var array<string,Deferred>
+     */
+    private array $locks = [];
+
+    /**
+     * @var array<string,int>
+     */
+    private array $concurrencies = [];
 
     /**
      * @param DiagnosticsProvider[] $providers
@@ -99,12 +110,27 @@ class DiagnosticsEngine
                     $this->next = null;
                 }
 
-                foreach ($this->providers as $i => $provider) {
-                    asyncCall(function () use ($provider, $token, $textDocument) {
+                foreach ($this->providers as $providerId => $provider) {
+                    asyncCall(function () use ($providerId, $provider, $token, $textDocument) {
                         $start = microtime(true);
+
+                        yield $this->await($providerId);
+
+                        if (!$this->isDocumentCurrent($textDocument)) {
+                            return;
+                        }
+
+                        $this->locks[$providerId] = new Deferred();
 
                         /** @var Diagnostic[] $diagnostics */
                         $diagnostics = yield $provider->provideDiagnostics($textDocument, $token) ;
+
+                        if (isset($this->locks[$providerId])) {
+                            $lock = $this->locks[$providerId];
+                            unset($this->locks[$providerId]);
+                            $lock->resolve(true);
+                        }
+
                         $elapsed = (int)round((microtime(true) - $start) / 1000);
 
                         $this->diagnostics[$textDocument->uri] = array_merge(
@@ -118,7 +144,7 @@ class DiagnosticsEngine
                             yield delay($timeToSleep);
                         }
 
-                        if ($textDocument->version !== ($this->versions[$textDocument->uri] ?? -1)) {
+                        if (!$this->isDocumentCurrent($textDocument)) {
                             return;
                         }
 
@@ -146,5 +172,20 @@ class DiagnosticsEngine
         // resolving the promise will start PHPStan
         $this->running = true;
         $this->deferred->resolve($textDocument);
+    }
+
+    private function isDocumentCurrent(?TextDocumentItem $textDocument): bool
+    {
+        return $textDocument->version === ($this->versions[$textDocument->uri] ?? -1);
+    }
+
+    private function await($providerId): Promise
+    {
+        if (!array_key_exists($providerId, $this->locks)) {
+            return new Success(true);
+        }
+
+        return $this->locks[$providerId]->promise();
+
     }
 }
