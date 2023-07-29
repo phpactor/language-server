@@ -81,15 +81,14 @@ class DiagnosticsEngine
                     return;
                 }
 
-                /** @var TextDocumentItem $textDocument */
-                $textDocument = yield $this->deferred->promise();
+                $textDocument = yield $this->nextDocument();
                 $this->versions[$textDocument->uri] = $textDocument->version;
 
                 if (isset($this->diagnostics[$textDocument->uri])) {
                     $this->clientApi->diagnostics()->publishDiagnostics(
                         $textDocument->uri,
                         $textDocument->version,
-                        $this->diagnostics[$textDocument->uri],
+                        [],
                     );
                 }
                 $this->diagnostics[$textDocument->uri] = [];
@@ -100,10 +99,6 @@ class DiagnosticsEngine
                 // `false` and let another resolve happen
                 $this->running = false;
 
-                if ($this->next) {
-                    $textDocument = $this->next;
-                    $this->next = null;
-                }
 
                 foreach ($this->providers as $providerId => $provider) {
                     asyncCall(function () use ($providerId, $provider, $token, $textDocument) {
@@ -188,5 +183,19 @@ class DiagnosticsEngine
 
         return $this->locks[$providerId]->promise();
 
+    }
+
+    /**
+     * @return Promise<TextDocumentItem>
+     */
+    private function nextDocument(): Promise
+    {
+        if ($this->next) {
+            $textDocument = $this->next;
+            $this->next = null;
+            return new Success($textDocument);
+        }
+
+        return $this->deferred->promise();
     }
 }
