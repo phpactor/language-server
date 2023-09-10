@@ -10,6 +10,7 @@ use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Service\DiagnosticsService;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
+use Psr\Log\NullLogger;
 use function Amp\Promise\wait;
 use function Amp\call;
 
@@ -24,6 +25,7 @@ class DiagnosticsServiceTest extends TestCase
         $service = new DiagnosticsService(
             new DiagnosticsEngine(
                 $tester->clientApi(),
+                new NullLogger(),
                 [
                     new ClosureDiagnosticsProvider(function () {
                         return call(function () {

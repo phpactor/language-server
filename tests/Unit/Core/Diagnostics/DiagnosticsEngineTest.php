@@ -12,6 +12,7 @@ use Phpactor\LanguageServer\Core\Diagnostics\ClosureDiagnosticsProvider;
 use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
+use Psr\Log\NullLogger;
 use function Amp\asyncCall;
 use function Amp\call;
 use function Amp\delay;
@@ -37,7 +38,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        $notification = $tester->transmitter()->shiftNotification();
+        $notification = $tester->transmitter()->shiftnotification();
 
         self::assertNotNull($notification, 'Notification sent');
         self::assertEquals('textDocument/publishDiagnostics', $notification->method);
@@ -113,7 +114,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
     public function testAggregatesResultsFromMultipleProviders(): Generator
     {
         $tester = LanguageServerTesterBuilder::create();
-        $engine = new DiagnosticsEngine($tester->clientApi(), [
+        $engine = new DiagnosticsEngine($tester->clientApi(), new NullLogger(), [
             new ClosureDiagnosticsProvider(function (TextDocumentItem $item) {
                 return new Success([
                     ProtocolFactory::diagnostic(ProtocolFactory::range(0, 0, 0, 0), 'Foobar is broken')
@@ -134,6 +135,29 @@ class DiagnosticsEngineTest extends AsyncTestCase
         yield new Delayed(100);
 
         self::assertEquals(2, $tester->transmitter()->count());
+
+    }
+
+    public function testHandlesLinterExceptions(): Generator
+    {
+        $tester = LanguageServerTesterBuilder::create();
+        $engine = new DiagnosticsEngine($tester->clientApi(), new NullLogger(), [
+            new ClosureDiagnosticsProvider(function (TextDocumentItem $item) {
+                throw new \Exception('oh dear');
+            }),
+        ], 10);
+
+        $token = new CancellationTokenSource();
+        $promise = $engine->run($token->getToken());
+
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'bazboo'));
+
+        yield new Delayed(100);
+
+        self::assertEquals(1, $tester->transmitter()->count());
+        $notification = $tester->transmitter()->shiftnotification();
+        self::assertEquals('window/showMessage', $notification->method);
+        self::assertStringContainsString('oh dear', $notification->params['message']);
 
     }
 
@@ -178,7 +202,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
     private function createEngine(LanguageServerTesterBuilder $tester, int $delay = 0, int $sleepTime = 0, string &$lastDocument = null): DiagnosticsEngine
     {
-        return new DiagnosticsEngine($tester->clientApi(), [
+        return new DiagnosticsEngine($tester->clientApi(), new NullLogger(), [
             new ClosureDiagnosticsProvider(function (TextDocumentItem $item) use ($delay, &$lastDocument) {
                 return call(function () use ($delay, $item, &$lastDocument) {
                     if ($delay) {

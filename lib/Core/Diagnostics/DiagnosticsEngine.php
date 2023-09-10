@@ -10,6 +10,8 @@ use Amp\Promise;
 use Amp\CancellationToken;
 use Amp\Deferred;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
+use Psr\Log\LoggerInterface;
+use Throwable;
 use function Amp\asyncCall;
 use function Amp\delay;
 
@@ -23,15 +25,6 @@ class DiagnosticsEngine
     private bool $running = false;
 
     private ?TextDocumentItem $next = null;
-
-    /**
-     * @var DiagnosticsProvider[]
-     */
-    private array $providers;
-
-    private ClientApi $clientApi;
-
-    private int $sleepTime;
 
     /**
      * @var array<int|string,list<Diagnostic>>
@@ -51,7 +44,7 @@ class DiagnosticsEngine
     /**
      * @param DiagnosticsProvider[] $providers
      */
-    public function __construct(ClientApi $clientApi, array $providers, int $sleepTime = 1000)
+    public function __construct(private ClientApi $clientApi, private LoggerInterface $logger, private array $providers, private int $sleepTime = 1000)
     {
         $this->deferred = new Deferred();
         $this->providers = $providers;
@@ -99,9 +92,14 @@ class DiagnosticsEngine
                 // `false` and let another resolve happen
                 $this->running = false;
 
+                $crashedProviders = [];
 
                 foreach ($this->providers as $providerId => $provider) {
-                    asyncCall(function () use ($providerId, $provider, $token, $textDocument) {
+                    if (in_array($providerId, $crashedProviders)) {
+                        continue;
+                    }
+
+                    asyncCall(function () use ($providerId, $provider, $token, $textDocument, &$crashedProviders) {
                         $start = microtime(true);
 
                         yield $this->await($providerId);
@@ -112,8 +110,18 @@ class DiagnosticsEngine
 
                         $this->locks[$providerId] = new Deferred();
 
-                        /** @var Diagnostic[] $diagnostics */
-                        $diagnostics = yield $provider->provideDiagnostics($textDocument, $token) ;
+                        try {
+                            /** @var Diagnostic[] $diagnostics */
+                            $diagnostics = yield $provider->provideDiagnostics($textDocument, $token) ;
+                        } catch (Throwable $e) {
+                            $message = sprintf('Diagnostic provider "%s" errored with "%s", removing from pool', $providerId, $e->getMessage());
+                            $this->clientApi->window()->showMessage()->warning($message);
+                            $this->logger->error($message, [
+                                'stack' => (new \Exception())->getTraceAsString()
+                            ]);
+                            $crashedProviders[$providerId] = true;
+                            return;
+                        }
 
                         if (isset($this->locks[$providerId])) {
                             $lock = $this->locks[$providerId];

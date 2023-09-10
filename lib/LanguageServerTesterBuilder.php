@@ -326,6 +326,7 @@ final class LanguageServerTesterBuilder
                     $service = new DiagnosticsService(
                         new DiagnosticsEngine(
                             $this->clientApi,
+                            new NullLogger(),
                             [new AggregateDiagnosticsProvider($logger, ...$this->diagnosticsProvider)],
                             0
                         ),
