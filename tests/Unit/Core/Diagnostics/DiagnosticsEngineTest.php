@@ -16,6 +16,7 @@ use Psr\Log\NullLogger;
 use function Amp\asyncCall;
 use function Amp\call;
 use function Amp\delay;
+use Exception;
 
 class DiagnosticsEngineTest extends AsyncTestCase
 {
@@ -142,8 +143,8 @@ class DiagnosticsEngineTest extends AsyncTestCase
     {
         $tester = LanguageServerTesterBuilder::create();
         $engine = new DiagnosticsEngine($tester->clientApi(), new NullLogger(), [
-            new ClosureDiagnosticsProvider(function (TextDocumentItem $item) {
-                throw new \Exception('oh dear');
+            new ClosureDiagnosticsProvider(function (TextDocumentItem $item): void {
+                throw new Exception('oh dear');
             }),
         ], 10);
 

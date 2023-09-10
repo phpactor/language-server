@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 use function Amp\asyncCall;
 use function Amp\delay;
+use Exception;
 
 class DiagnosticsEngine
 {
@@ -117,7 +118,7 @@ class DiagnosticsEngine
                             $message = sprintf('Diagnostic provider "%s" errored with "%s", removing from pool', $providerId, $e->getMessage());
                             $this->clientApi->window()->showMessage()->warning($message);
                             $this->logger->error($message, [
-                                'stack' => (new \Exception())->getTraceAsString()
+                                'stack' => (new Exception())->getTraceAsString()
                             ]);
                             $crashedProviders[$providerId] = true;
                             return;
