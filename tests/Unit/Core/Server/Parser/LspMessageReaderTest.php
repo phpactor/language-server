@@ -39,6 +39,26 @@ class LspMessageReaderTest extends TestCase
         $this->assertInstanceOf(RawMessage::class, $result);
     }
 
+    public function testSkipsInvalidHeader(): void
+    {
+        $stream = new InMemoryStream(
+            <<<EOT
+                Content-Length:74\r\n
+                Content-Typefoo\r\n\r\n
+                {
+                   "jsonrpc": "2.0",
+                   "id": 1,
+                   "method": "test",
+                   "params": {}
+                }
+                EOT
+        );
+
+        $reader = new LspMessageReader($stream);
+        $result = \Amp\Promise\wait($reader->wait());
+        $this->assertInstanceOf(RawMessage::class, $result);
+    }
+
     public function testReadsMultipleRequests(): void
     {
         $stream = new InMemoryStream(

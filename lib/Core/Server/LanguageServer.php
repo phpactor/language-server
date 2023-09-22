@@ -183,7 +183,7 @@ final class LanguageServer
     {
         return \Amp\call(function () use ($connection) {
             $transmitter = new ConnectionMessageTransmitter($connection);
-            $reader = new LspMessageReader($connection->stream());
+            $reader = new LspMessageReader($connection->stream(), $this->logger);
             $dispatcher = null;
 
             // wait for the next request

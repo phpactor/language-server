@@ -106,7 +106,7 @@ $builder = LanguageServerBuilder::create(new ClosureDispatcherFactory(
         $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
         $diagnosticsService = new DiagnosticsService(
-            new DiagnosticsEngine($clientApi, [new AggregateDiagnosticsProvider(
+            new DiagnosticsEngine($clientApi, $logger, [new AggregateDiagnosticsProvider(
                 $logger,
                 new SayHelloDiagnosticsProvider()
             )])

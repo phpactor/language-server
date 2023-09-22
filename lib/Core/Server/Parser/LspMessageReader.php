@@ -5,6 +5,8 @@ namespace Phpactor\LanguageServer\Core\Server\Parser;
 use Amp\ByteStream\InputStream;
 use Amp\Promise;
 use Phpactor\LanguageServer\Core\Rpc\RawMessage;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use function json_encode;
 use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotDecodeBody;
 use Phpactor\LanguageServer\Core\Server\Parser\Exception\CouldNotParseHeader;
@@ -34,9 +36,12 @@ final class LspMessageReader implements RequestReader
      */
     private $stream;
 
-    public function __construct(InputStream $stream)
+    private LoggerInterface $logger;
+
+    public function __construct(InputStream $stream, ?LoggerInterface $logger = null)
     {
         $this->stream = $stream;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     public function wait(): Promise
@@ -111,10 +116,17 @@ final class LspMessageReader implements RequestReader
         $headers = [];
 
         foreach ($lines as $line) {
-            [ $name, $value ] = array_map(function ($value) {
+            $parts = array_map(function ($value) {
                 return trim($value);
             }, explode(':', $line));
-            $headers[$name] = $value;
+            if (count($parts) != 2) {
+                $this->logger->warning(sprintf(
+                    'Could not parse header: %s',
+                    $line
+                ));
+                continue;
+            }
+            $headers[$parts[0]] = $parts[1];
         }
 
         return $headers;
