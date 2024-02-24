@@ -16,9 +16,9 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 final class ProtocolFactory
 {
-    public static function textDocumentItem(string $uri, string $content): TextDocumentItem
+    public static function textDocumentItem(string $uri, string $content, int $version = 1): TextDocumentItem
     {
-        return new TextDocumentItem($uri, 'php', 1, $content);
+        return new TextDocumentItem($uri, 'php', $version, $content);
     }
 
     public static function versionedTextDocumentIdentifier(string $uri, int $version): VersionedTextDocumentIdentifier

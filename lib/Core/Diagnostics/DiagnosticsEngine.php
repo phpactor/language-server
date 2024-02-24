@@ -78,8 +78,10 @@ class DiagnosticsEngine
                 }
 
                 $textDocument = yield $this->nextDocument();
+                $lastKnownVersion = ($this->versions[$textDocument->uri] ?? -1);
 
-                if (isset($this->diagnostics[$textDocument->uri])) {
+                if ($lastKnownVersion <= $textDocument->version && isset($this->diagnostics[$textDocument->uri])) {
+                    // reset diagnostics for this document
                     $this->clientApi->diagnostics()->publishDiagnostics(
                         $textDocument->uri,
                         $textDocument->version,
@@ -93,10 +95,9 @@ class DiagnosticsEngine
                 // `false` and let another resolve happen
                 $this->running = false;
 
-
                 // if the last processed version of the document is more recent
                 // than the last then continue.
-                if (($this->vesions[$textDocument->uri] ?? -1) >= $textDocument->version) {
+                if ($lastKnownVersion >= $textDocument->version) {
                     continue;
                 }
 

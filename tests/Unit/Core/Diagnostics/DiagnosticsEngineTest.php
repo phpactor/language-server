@@ -93,6 +93,29 @@ class DiagnosticsEngineTest extends AsyncTestCase
     /**
      * @return Generator<mixed>
      */
+    public function testIgnoresTextDocumentsWithInferiorVersions(): Generator
+    {
+        $tester = LanguageServerTesterBuilder::create();
+        $engine = $this->createEngine($tester, 10, 0);
+
+        $token = new CancellationTokenSource();
+        $promise = $engine->run($token->getToken());
+
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar', version: 20));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar', version: 1));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar', version: 20));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar', version: 30));
+
+        yield new Delayed(1);
+
+        $token->cancel();
+
+        self::assertEquals(2, $tester->transmitter()->count());
+    }
+
+    /**
+     * @return Generator<mixed>
+     */
     public function testSleepPreventsSeige(): Generator
     {
         $tester = LanguageServerTesterBuilder::create();
@@ -184,15 +207,15 @@ class DiagnosticsEngineTest extends AsyncTestCase
         });
         yield new Delayed(1);
 
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '1'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '1', version: 1));
         yield new Delayed(1);
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '2'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '2', version: 2));
         yield new Delayed(10);
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '3'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '3', version: 3));
         yield new Delayed(1);
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '4'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '4', version: 4));
         yield new Delayed(1);
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '5'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', '5', version: 5));
 
         yield new Delayed(100);
 
