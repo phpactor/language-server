@@ -67,6 +67,8 @@ class DiagnosticsEngine
      */
     public function run(CancellationToken $token): Promise
     {
+
+
         return \Amp\call(function () use ($token) {
             while (true) {
                 try {
@@ -76,7 +78,6 @@ class DiagnosticsEngine
                 }
 
                 $textDocument = yield $this->nextDocument();
-                $this->versions[$textDocument->uri] = $textDocument->version;
 
                 if (isset($this->diagnostics[$textDocument->uri])) {
                     $this->clientApi->diagnostics()->publishDiagnostics(
@@ -85,13 +86,21 @@ class DiagnosticsEngine
                         [],
                     );
                 }
+
                 $this->diagnostics[$textDocument->uri] = [];
-
                 $this->deferred = new Deferred();
-
                 // after we have reset deferred, we can safely set linting to
                 // `false` and let another resolve happen
                 $this->running = false;
+
+
+                // if the last processed version of the document is more recent
+                // than the last then continue.
+                if (($this->vesions[$textDocument->uri] ?? -1) >= $textDocument->version) {
+                    continue;
+                }
+
+                $this->versions[$textDocument->uri] = $textDocument->version;
 
                 $crashedProviders = [];
 
@@ -171,7 +180,7 @@ class DiagnosticsEngine
             return;
         }
 
-        // resolving the promise will start PHPStan
+        // resolving the promise will start the diagnostc resolving
         $this->running = true;
         $this->deferred->resolve($textDocument);
     }
