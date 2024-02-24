@@ -10,9 +10,15 @@ use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentNotification;
 use Phpactor\LanguageServer\Test\LanguageServerTester;
+use RuntimeException;
 
 class TextDocumentTester
 {
+    /**
+     * @var array<string,int>
+     */
+    private static $versions = [];
+
     /**
      * @var LanguageServerTester
      */
@@ -25,6 +31,7 @@ class TextDocumentTester
 
     public function open(string $url, string $content): void
     {
+        self::$versions[$url] = 1;
         $this->tester->notifyAndWait(DidOpenTextDocumentNotification::METHOD, new DidOpenTextDocumentParams(
             ProtocolFactory::textDocumentItem($url, $content)
         ));
@@ -32,8 +39,15 @@ class TextDocumentTester
 
     public function update(string $uri, string $newText): void
     {
+        if (!isset(self::$versions[$uri])) {
+            throw new RuntimeException(sprintf(
+                'Cannot update document that has not been opened: %s',
+                $uri
+            ));
+        }
+        self::$versions[$uri]++;
         $this->tester->notifyAndWait(DidChangeTextDocumentNotification::METHOD, new DidChangeTextDocumentParams(
-            ProtocolFactory::versionedTextDocumentIdentifier($uri, 1),
+            ProtocolFactory::versionedTextDocumentIdentifier($uri, self::$versions[$uri]),
             [
                 [
                     'text' => $newText
