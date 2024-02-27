@@ -93,10 +93,13 @@ final class LanguageServer
      */
     public function run(): void
     {
-        Loop::onSignal(SIGINT, function (string $watcherId) {
-            Loop::cancel($watcherId);
-            yield $this->shutdown();
-        });
+        // Signals are not supported on Windows
+        if(defined('SIGINT')) {
+            Loop::onSignal(SIGINT, function (string $watcherId) {
+                Loop::cancel($watcherId);
+                yield $this->shutdown();
+            });
+        }
 
         Loop::setErrorHandler(function (Throwable $error): void {
             if ($error instanceof ShutdownServer) {
