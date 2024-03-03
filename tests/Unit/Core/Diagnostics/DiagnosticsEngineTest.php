@@ -67,7 +67,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///barfoo', 'foobar'));
         $engine->enqueue(ProtocolFactory::textDocumentItem('file:///bazbar', 'foobar'));
 
-        yield new Delayed(0);
+        yield new Delayed(1);
 
         $token->cancel();
 

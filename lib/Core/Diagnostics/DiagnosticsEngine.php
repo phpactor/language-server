@@ -31,11 +31,6 @@ class DiagnosticsEngine
     private array $diagnostics = [];
 
     /**
-     * @var array<int|string,int|string>
-     */
-    private array $versions = [];
-
-    /**
      * @var array<string,Deferred<bool>>
      */
     private array $locks = [];
@@ -78,8 +73,13 @@ class DiagnosticsEngine
 
                 yield $this->awaitNextDocument();
 
+                $beforeDocument = $this->waiting;
                 $gracePeriod = abs($this->sleepTime - ((microtime(true) - $this->lastUpdatedAt) * 1000));
                 yield delay(intval($gracePeriod));
+
+                if ($beforeDocument !== $this->waiting) {
+                    continue;
+                }
 
                 $textDocument = $this->waiting;
                 $this->waiting = null;
@@ -98,8 +98,6 @@ class DiagnosticsEngine
                     [],
                 );
                 $this->diagnostics[$textDocument->uri] = [];
-
-                $this->versions[$textDocument->uri] = $textDocument->version;
 
                 $crashedProviders = [];
 
@@ -144,15 +142,14 @@ class DiagnosticsEngine
 
                         $elapsed = (int)round((microtime(true) - $start) / 1000);
 
-                        $this->diagnostics[$textDocument->uri] = array_merge(
-                            $this->diagnostics[$textDocument->uri] ?? [],
-                            $diagnostics
-                        );
-
                         if (!$this->isDocumentCurrent($textDocument)) {
                             return;
                         }
 
+                        $this->diagnostics[$textDocument->uri] = array_merge(
+                            $this->diagnostics[$textDocument->uri] ?? [],
+                            $diagnostics
+                        );
 
                         $this->clientApi->diagnostics()->publishDiagnostics(
                             $textDocument->uri,
@@ -188,7 +185,7 @@ class DiagnosticsEngine
 
     private function isDocumentCurrent(TextDocumentItem $textDocument): bool
     {
-        return $textDocument->version === ($this->versions[$textDocument->uri] ?? -1);
+        return $this->waiting === null;
     }
 
     /**
