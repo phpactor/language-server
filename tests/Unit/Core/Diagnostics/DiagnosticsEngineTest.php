@@ -10,6 +10,7 @@ use Generator;
 use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Diagnostics\ClosureDiagnosticsProvider;
 use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
+use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\LanguageServerTesterBuilder;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Psr\Log\NullLogger;
@@ -39,16 +40,22 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        $notification = $tester->transmitter()->shiftnotification();
-
+        $notification = $tester->transmitter()->shiftNotification();
         self::assertNotNull($notification, 'Notification sent');
         self::assertEquals('textDocument/publishDiagnostics', $notification->method);
+        self::assertEquals([], $notification->params['diagnostics'] ?? null);
+
+        $notification = $tester->transmitter()->shiftNotification();
+        self::assertNotNull($notification, 'Notification sent');
+        self::assertEquals('textDocument/publishDiagnostics', $notification->method);
+        /** @phpstan-ignore-next-line */
+        self::assertEquals('Foobar is broken', $notification->params['diagnostics'][0]->message ?? null);
     }
 
     /**
      * @return Generator<mixed>
      */
-    public function testPublishesForManyFiles(): Generator
+    public function testOnlyPublishesForMostRecentFile(): Generator
     {
         $tester = LanguageServerTesterBuilder::create();
         $engine = $this->createEngine($tester, 0, 0);
@@ -64,52 +71,30 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        self::assertEquals(3, $tester->transmitter()->count());
-    }
-
-    /**
-     * @return Generator<mixed>
-     */
-    public function testDeduplicatesSuccessiveChangesToSameFile(): Generator
-    {
-        $tester = LanguageServerTesterBuilder::create();
-        $engine = $this->createEngine($tester, 10, 0);
-
-        $token = new CancellationTokenSource();
-        $promise = $engine->run($token->getToken());
-
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
-
-        yield new Delayed(1);
-
-        $token->cancel();
-
-        // clear three times
+        // includes reset diagnostic
         self::assertEquals(2, $tester->transmitter()->count());
     }
 
     /**
      * @return Generator<mixed>
      */
-    public function testIgnoresTextDocumentsWithInferiorVersions(): Generator
+    public function testDoesNotProcessMoreThanOneDocument(): Generator
     {
         $tester = LanguageServerTesterBuilder::create();
-        $engine = $this->createEngine($tester, 10, 0);
+        $engine = $this->createEngine($tester, 1, 0);
 
         $token = new CancellationTokenSource();
         $promise = $engine->run($token->getToken());
 
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar', version: 20));
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar', version: 1));
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar', version: 20));
-        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar', version: 30));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
+        $engine->enqueue(ProtocolFactory::textDocumentItem('file:///foobar', 'foobar'));
 
-        yield new Delayed(1);
+        yield new Delayed(10);
 
         $token->cancel();
 
+        // clear + publish
         self::assertEquals(2, $tester->transmitter()->count());
     }
 
@@ -132,7 +117,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         $token->cancel();
 
-        self::assertEquals(3, $tester->transmitter()->count());
+        self::assertEquals(2, $tester->transmitter()->count());
     }
 
     public function testAggregatesResultsFromMultipleProviders(): Generator
@@ -158,7 +143,7 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         yield new Delayed(100);
 
-        self::assertEquals(2, $tester->transmitter()->count());
+        self::assertEquals(3, $tester->transmitter()->count());
 
     }
 
@@ -178,10 +163,12 @@ class DiagnosticsEngineTest extends AsyncTestCase
 
         yield new Delayed(100);
 
-        self::assertEquals(1, $tester->transmitter()->count());
-        $notification = $tester->transmitter()->shiftnotification();
+        self::assertEquals(2, $tester->transmitter()->count());
+        $notification = $tester->transmitter()->shiftNotification();
+        $notification = $tester->transmitter()->shiftNotification();
+        assert($notification instanceof NotificationMessage);
         self::assertEquals('window/showMessage', $notification->method);
-        self::assertStringContainsString('oh dear', $notification->params['message']);
+        self::assertStringContainsString('oh dear', ((string)($notification->params['message'] ?? '')));
 
     }
 

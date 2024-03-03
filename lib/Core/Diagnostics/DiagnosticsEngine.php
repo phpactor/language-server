@@ -19,13 +19,11 @@ use Exception;
 class DiagnosticsEngine
 {
     /**
-     * @var Deferred<TextDocumentItem>
+     * @var Deferred<null>
      */
     private Deferred $deferred;
 
-    private bool $running = false;
-
-    private ?TextDocumentItem $next = null;
+    private ?TextDocumentItem $waiting = null;
 
     /**
      * @var array<int|string,list<Diagnostic>>
@@ -42,6 +40,8 @@ class DiagnosticsEngine
      */
     private array $locks = [];
 
+    private float $lastUpdatedAt;
+
     /**
      * @param DiagnosticsProvider[] $providers
      */
@@ -51,6 +51,7 @@ class DiagnosticsEngine
         $this->providers = $providers;
         $this->clientApi = $clientApi;
         $this->sleepTime = $sleepTime;
+        $this->lastUpdatedAt = 0.0;
     }
 
     public function clear(TextDocumentItem $textDocument): void
@@ -67,8 +68,6 @@ class DiagnosticsEngine
      */
     public function run(CancellationToken $token): Promise
     {
-
-
         return \Amp\call(function () use ($token) {
             while (true) {
                 try {
@@ -77,29 +76,28 @@ class DiagnosticsEngine
                     return;
                 }
 
-                $textDocument = yield $this->nextDocument();
-                $lastKnownVersion = ($this->versions[$textDocument->uri] ?? -1);
+                yield $this->awaitNextDocument();
 
-                if ($lastKnownVersion <= $textDocument->version && isset($this->diagnostics[$textDocument->uri])) {
-                    // reset diagnostics for this document
-                    $this->clientApi->diagnostics()->publishDiagnostics(
-                        $textDocument->uri,
-                        $textDocument->version,
-                        [],
-                    );
-                }
+                $gracePeriod = abs($this->sleepTime - ((microtime(true) - $this->lastUpdatedAt) * 1000));
+                yield delay(intval($gracePeriod));
 
-                $this->diagnostics[$textDocument->uri] = [];
+                $textDocument = $this->waiting;
+                $this->waiting = null;
+                // allow the next document update to resolve
                 $this->deferred = new Deferred();
-                // after we have reset deferred, we can safely set linting to
-                // `false` and let another resolve happen
-                $this->running = false;
 
-                // if the last processed version of the document is more recent
-                // than the last then continue.
-                if ($lastKnownVersion >= $textDocument->version) {
+                // should never happen
+                if ($textDocument === null) {
                     continue;
                 }
+
+                // reset diagnostics for this document
+                $this->clientApi->diagnostics()->publishDiagnostics(
+                    $textDocument->uri,
+                    $textDocument->version,
+                    [],
+                );
+                $this->diagnostics[$textDocument->uri] = [];
 
                 $this->versions[$textDocument->uri] = $textDocument->version;
 
@@ -113,7 +111,7 @@ class DiagnosticsEngine
                     asyncCall(function () use ($providerId, $provider, $token, $textDocument, &$crashedProviders) {
                         $start = microtime(true);
 
-                        yield $this->await($providerId);
+                        yield $this->awaitProviderLock($providerId);
 
                         if (!$this->isDocumentCurrent($textDocument)) {
                             return;
@@ -151,15 +149,10 @@ class DiagnosticsEngine
                             $diagnostics
                         );
 
-                        $timeToSleep = $this->sleepTime - $elapsed;
-
-                        if ($timeToSleep > 0) {
-                            yield delay($timeToSleep);
-                        }
-
                         if (!$this->isDocumentCurrent($textDocument)) {
                             return;
                         }
+
 
                         $this->clientApi->diagnostics()->publishDiagnostics(
                             $textDocument->uri,
@@ -174,27 +167,35 @@ class DiagnosticsEngine
 
     public function enqueue(TextDocumentItem $textDocument): void
     {
-        // if we are already linting then store whatever comes afterwards in
-        // next, overwriting the redundant update
-        if ($this->running === true) {
-            $this->next = $textDocument;
+        // set the last updated at timestamp - this will be used as the basis of
+        // the grace period before linting
+        $this->lastUpdatedAt = microtime(true);
+
+        $waiting = $this->waiting;
+
+        // set the next document
+        $this->waiting = $textDocument;
+
+        // if we already had a waiting document then do nothing
+        // it will get resolved next time
+        if ($waiting !== null) {
             return;
         }
 
-        // resolving the promise will start the diagnostc resolving
-        $this->running = true;
-        $this->deferred->resolve($textDocument);
+        // otherwise trigger the lint process
+        $this->deferred->resolve();
     }
 
     private function isDocumentCurrent(TextDocumentItem $textDocument): bool
     {
         return $textDocument->version === ($this->versions[$textDocument->uri] ?? -1);
     }
+
     /**
      * @param string|int $providerId
      * @return Promise<bool>
      */
-    private function await($providerId): Promise
+    private function awaitProviderLock($providerId): Promise
     {
         if (!array_key_exists($providerId, $this->locks)) {
             return new Success(true);
@@ -205,14 +206,12 @@ class DiagnosticsEngine
     }
 
     /**
-     * @return Promise<TextDocumentItem>
+     * @return Promise<null>
      */
-    private function nextDocument(): Promise
+    private function awaitNextDocument(): Promise
     {
-        if ($this->next) {
-            $textDocument = $this->next;
-            $this->next = null;
-            return new Success($textDocument);
+        if ($this->waiting) {
+            return new Success();
         }
 
         return $this->deferred->promise();
