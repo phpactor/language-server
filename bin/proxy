@@ -7,7 +7,8 @@ use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
-use Phpactor\LanguageServer\Core\Server\Transmitter\MessageFormatter;
+use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageFormatter;
+use Phpactor\LanguageServer\Core\Server\Transmitter\LspMessageSerializer;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -45,15 +46,15 @@ try {
     exit(1);
 }
 
-$formatter = new MessageFormatter();
+$formatter = new LspMessageFormatter(new LspMessageSerializer());
 
-fwrite(STDOUT, $formatter->write(new RequestMessage(
+fwrite(STDOUT, $formatter->format(new RequestMessage(
     1,
     'initialize',
     json_decode(json_encode(new InitializeParams(new ClientCapabilities())), true)
 )));
 
-fwrite(STDOUT, $formatter->write($message));
+fwrite(STDOUT, $formatter->format($message));
 
 function error(string $message): void
 {
