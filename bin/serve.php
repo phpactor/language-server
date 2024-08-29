@@ -82,7 +82,7 @@ $logger = new class extends AbstractLogger {
         $this->log = fopen('phpactor-lsp.log', 'w');
     }
 
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $message = json_encode(
             [

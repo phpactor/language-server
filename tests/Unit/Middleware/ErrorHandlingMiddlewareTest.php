@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Middleware;
 
 use Amp\PHPUnit\AsyncTestCase;
 use Amp\Success;
+use ColinODell\PsrTestLogger\TestLogger;
 use Generator;
 use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 use Phpactor\LanguageServer\Core\Middleware\RequestHandler;
@@ -15,7 +16,6 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 use Phpactor\LanguageServer\Core\Server\Exception\ExitSession;
 use Phpactor\LanguageServer\Middleware\ClosureMiddleware;
 use Phpactor\LanguageServer\Middleware\ErrorHandlingMiddleware;
-use Psr\Log\Test\TestLogger;
 use RuntimeException;
 
 class ErrorHandlingMiddlewareTest extends AsyncTestCase
