@@ -8,6 +8,7 @@ use Amp\Delayed;
 use Amp\PHPUnit\AsyncTestCase;
 use Amp\Promise;
 use Amp\Success;
+use ColinODell\PsrTestLogger\TestLogger;
 use Exception;
 use Generator;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
@@ -15,7 +16,6 @@ use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Log\Test\TestLogger;
 use RuntimeException;
 
 class ServiceManagerTest extends AsyncTestCase

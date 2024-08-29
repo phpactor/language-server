@@ -6,6 +6,11 @@ parameters:
         - lib
         - example
         - bin
+    ignoreErrors:
+        -
+            message: '#has parameter \$(context|message) with no (value )?type specified#'
+            path: 'bin/serve.php'
+            reportUnmatched: false
 
 includes:
     - phpstan-baseline.neon
