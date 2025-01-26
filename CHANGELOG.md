@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+7.0
+---
+
+- Dropped dependency on `Safe`
+- Bumped minimum version of PHP to 8.1
+
 6.0
 ---
 
