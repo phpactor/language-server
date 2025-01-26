@@ -87,7 +87,7 @@ final class LanguageServerTester
     /**
      * @param array|object $params
      */
-    public function mustRequestAndWait(string $method, mixed $params, int|string $id = null): ResponseMessage
+    public function mustRequestAndWait(string $method, mixed $params, int|string|null $id = null): ResponseMessage
     {
         $response = $this->requestAndWait($method, $params);
 

@@ -16,7 +16,7 @@ final class DTLArgumentResolver implements ArgumentResolver
      */
     private $dtlArgumnetResolver;
 
-    public function __construct(UpstreamArgumentResolver $dtlArgumnetResolver = null)
+    public function __construct(?UpstreamArgumentResolver $dtlArgumnetResolver = null)
     {
         $this->dtlArgumnetResolver = $dtlArgumnetResolver ?: new UpstreamArgumentResolver([
             new RecursiveInstantiator()

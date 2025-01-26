@@ -52,7 +52,7 @@ final class LanguageServerBuilder
      */
     public static function create(
         DispatcherFactory $dispatcherFactory,
-        LoggerInterface $logger = null
+        ?LoggerInterface $logger = null
     ): self {
         return new self(
             $dispatcherFactory,
