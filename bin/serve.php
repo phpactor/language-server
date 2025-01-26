@@ -77,7 +77,9 @@ $logger = new class extends AbstractLogger {
     private $log;
     public function __construct()
     {
+        /** @phpstan-ignore assign.propertyType */
         $this->err = fopen('php://stderr', 'w');
+        /** @phpstan-ignore assign.propertyType */
         $this->log = fopen('phpactor-lsp.log', 'w');
     }
 

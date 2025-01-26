@@ -94,7 +94,7 @@ final class LanguageServer
     public function run(): void
     {
         // Signals are not supported on Windows
-        if(defined('SIGINT')) {
+        if (defined('SIGINT')) {
             Loop::onSignal(SIGINT, function (string $watcherId) {
                 Loop::cancel($watcherId);
                 yield $this->shutdown();
