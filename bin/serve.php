@@ -43,7 +43,6 @@ use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use Phpactor\LanguageServer\Middleware\ResponseHandlingMiddleware;
 use Phpactor\LanguageServer\Service\DiagnosticsService;
 use Psr\Log\AbstractLogger;
-use function Safe\fopen;
 
 require __DIR__ . '/../vendor/autoload.php';
 
