@@ -31,11 +31,11 @@ class InitializeMiddleware implements Middleware
     /**
      * @param array{name?:string,version?:string} $serverInfo
      */
-    public function __construct(private Handlers $handlers, private EventDispatcherInterface $dispatcher, private array $serverInfo = [])
-    {
-        $this->handlers = $handlers;
-        $this->dispatcher = $dispatcher;
-        $this->serverInfo = $serverInfo;
+    public function __construct(
+        private Handlers $handlers,
+        private EventDispatcherInterface $dispatcher,
+        private array $serverInfo = [],
+    ) {
     }
 
     /**

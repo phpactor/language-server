@@ -9,20 +9,8 @@ use Amp\Promise;
 
 final class ResourceDuplexStream implements DuplexStream
 {
-    /**
-     * @var InputStream
-     */
-    private $input;
-
-    /**
-     * @var OutputStream
-     */
-    private $output;
-
-    public function __construct(InputStream $input, OutputStream $output)
+    public function __construct(private InputStream $input, private OutputStream $output)
     {
-        $this->input = $input;
-        $this->output = $output;
     }
 
     /**

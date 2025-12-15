@@ -9,17 +9,8 @@ use Phpactor\LanguageServerProtocol\TextDocumentItem;
 
 class ClosureDiagnosticsProvider implements DiagnosticsProvider
 {
-    /**
-     * @var Closure
-     */
-    private $closure;
-
-    private string $name;
-
-    public function __construct(Closure $closure, string $name = 'closure')
+    public function __construct(private Closure $closure, private string $name = 'closure')
     {
-        $this->closure = $closure;
-        $this->name = $name;
     }
 
     public function provideDiagnostics(TextDocumentItem $textDocument, CancellationToken $cancel): Promise

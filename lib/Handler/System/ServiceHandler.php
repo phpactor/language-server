@@ -10,20 +10,8 @@ use Phpactor\LanguageServer\Core\Service\ServiceManager;
 
 class ServiceHandler implements Handler
 {
-    /**
-     * @var ServiceManager
-     */
-    private $manager;
-
-    /**
-     * @var ClientApi
-     */
-    private $client;
-
-    public function __construct(ServiceManager $manager, ClientApi $client)
+    public function __construct(private ServiceManager $manager, private ClientApi $client)
     {
-        $this->manager = $manager;
-        $this->client = $client;
     }
 
     /**

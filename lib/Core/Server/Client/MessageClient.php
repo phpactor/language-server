@@ -7,20 +7,8 @@ use Phpactor\LanguageServer\Core\Server\RpcClient;
 
 final class MessageClient
 {
-    /**
-     * @var RpcClient
-     */
-    private $client;
-
-    /**
-     * @var string
-     */
-    private $method;
-
-    public function __construct(RpcClient $client, string $method)
+    public function __construct(private RpcClient $client, private string $method)
     {
-        $this->client = $client;
-        $this->method = $method;
     }
 
     public function error(string $message): void

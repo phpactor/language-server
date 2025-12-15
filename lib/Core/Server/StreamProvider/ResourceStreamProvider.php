@@ -10,24 +10,12 @@ use Psr\Log\LoggerInterface;
 final class ResourceStreamProvider implements StreamProvider
 {
     /**
-     * @var ResourceDuplexStream
-     */
-    private $duplexStream;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var bool
      */
     private $provided = false;
 
-    public function __construct(ResourceDuplexStream $duplexStream, LoggerInterface $logger)
+    public function __construct(private ResourceDuplexStream $duplexStream, private LoggerInterface $logger)
     {
-        $this->duplexStream = $duplexStream;
-        $this->logger = $logger;
     }
 
     /**

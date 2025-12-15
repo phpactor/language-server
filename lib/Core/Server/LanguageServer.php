@@ -31,29 +31,9 @@ use function Amp\call;
 final class LanguageServer
 {
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var StreamProvider
-     */
-    private $streamProvider;
-
-    /**
      * @var Connection[]
      */
     private $connections = [];
-
-    /**
-     * @var DispatcherFactory
-     */
-    private $dispatcherFactory;
-
-    /**
-     * @var Initializer
-     */
-    private $initializer;
 
     /**
      * @var ServerStats
@@ -61,16 +41,12 @@ final class LanguageServer
     private $stats;
 
     public function __construct(
-        DispatcherFactory $dispatcherFactory,
-        LoggerInterface $logger,
-        StreamProvider $streamProvider,
-        Initializer $initializer,
+        private DispatcherFactory $dispatcherFactory,
+        private LoggerInterface $logger,
+        private StreamProvider $streamProvider,
+        private Initializer $initializer,
         ?ServerStats $stats = null
     ) {
-        $this->logger = $logger;
-        $this->streamProvider = $streamProvider;
-        $this->dispatcherFactory = $dispatcherFactory;
-        $this->initializer = $initializer;
         $this->stats = $stats ?: new ServerStats();
     }
 

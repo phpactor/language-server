@@ -12,14 +12,8 @@ use Phpactor\LanguageServer\Core\Server\ResponseWatcher;
 
 class ResponseHandlingMiddleware implements Middleware
 {
-    /**
-     * @var ResponseWatcher
-     */
-    private $watcher;
-
-    public function __construct(ResponseWatcher $watcher)
+    public function __construct(private ResponseWatcher $watcher)
     {
-        $this->watcher = $watcher;
     }
 
     /**

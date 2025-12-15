@@ -15,13 +15,10 @@ class ExitHandler implements Handler
 {
     private EventDispatcherInterface $eventDispatcher;
 
-    private int $gracePeriod;
 
-
-    public function __construct(?EventDispatcherInterface $eventDispatcher = null, int $gracePeriod = 500)
+    public function __construct(?EventDispatcherInterface $eventDispatcher = null, private int $gracePeriod = 500)
     {
         $this->eventDispatcher = $eventDispatcher ?: new NullEventDispatcher();
-        $this->gracePeriod = $gracePeriod;
     }
 
     public function methods(): array

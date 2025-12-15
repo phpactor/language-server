@@ -11,14 +11,8 @@ use RuntimeException;
 
 final class ClosureDispatcherFactory implements DispatcherFactory
 {
-    /**
-     * @var Closure
-     */
-    private $factory;
-
-    public function __construct(Closure $factory)
+    public function __construct(private Closure $factory)
     {
-        $this->factory = $factory;
     }
 
     public function create(MessageTransmitter $transmitter, InitializeParams $initializeParams): Dispatcher

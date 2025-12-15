@@ -9,14 +9,8 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 
 class ServiceListener implements ListenerProviderInterface
 {
-    /**
-     * @var ServiceManager
-     */
-    private $serviceManager;
-
-    public function __construct(ServiceManager $serviceManager)
+    public function __construct(private ServiceManager $serviceManager)
     {
-        $this->serviceManager = $serviceManager;
     }
 
     /**

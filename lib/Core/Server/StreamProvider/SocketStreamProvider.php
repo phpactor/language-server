@@ -12,20 +12,8 @@ use Throwable;
 
 final class SocketStreamProvider implements StreamProvider
 {
-    /**
-     * @var Server
-     */
-    private $server;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(Server $server, LoggerInterface $logger)
+    public function __construct(private Server $server, private LoggerInterface $logger)
     {
-        $this->server = $server;
-        $this->logger = $logger;
     }
 
     public function accept(): Promise

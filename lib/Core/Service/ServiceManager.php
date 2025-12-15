@@ -17,22 +17,8 @@ class ServiceManager
      */
     private $cancellations = [];
 
-    /**
-     * @var ServiceProviders
-     */
-    private $serviceProviders;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(
-        ServiceProviders $serviceProviders,
-        LoggerInterface $logger
-    ) {
-        $this->logger = $logger;
-        $this->serviceProviders = $serviceProviders;
+    public function __construct(private ServiceProviders $serviceProviders, private LoggerInterface $logger)
+    {
     }
 
     /**

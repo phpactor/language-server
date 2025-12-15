@@ -9,14 +9,10 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
 final class RequestHandler
 {
-    /**
-     * @var array<Middleware>
-     */
-    private $queue;
-
-    public function __construct(array $queue = [])
-    {
-        $this->queue = $queue;
+    public function __construct(
+        /** @var array<Middleware> */
+        private array $queue = []
+    ) {
     }
 
     /**

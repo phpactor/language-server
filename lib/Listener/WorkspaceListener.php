@@ -10,14 +10,8 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 
 class WorkspaceListener implements ListenerProviderInterface
 {
-    /**
-     * @var Workspace
-     */
-    private $workspace;
-
-    public function __construct(Workspace $workspace)
+    public function __construct(private Workspace $workspace)
     {
-        $this->workspace = $workspace;
     }
 
     /**

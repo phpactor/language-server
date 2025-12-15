@@ -15,14 +15,8 @@ class CancellationMiddleware implements Middleware
 {
     const METHOD_CANCEL_REQUEST = '$/cancelRequest';
 
-    /**
-     * @var MethodRunner
-     */
-    private $runner;
-
-    public function __construct(MethodRunner $runner)
+    public function __construct(private MethodRunner $runner)
     {
-        $this->runner = $runner;
     }
 
     /**

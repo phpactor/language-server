@@ -12,20 +12,8 @@ class StatsHandler implements Handler
 {
     const METHOD_STATUS = 'phpactor/stats';
 
-    /**
-     * @var ServerStatsReader
-     */
-    private $statProvider;
-
-    /**
-     * @var ClientApi
-     */
-    private $client;
-
-    public function __construct(ClientApi $client, ServerStatsReader $statProvider)
+    public function __construct(private ClientApi $client, private ServerStatsReader $statProvider)
     {
-        $this->statProvider = $statProvider;
-        $this->client = $client;
     }
 
     public function methods(): array

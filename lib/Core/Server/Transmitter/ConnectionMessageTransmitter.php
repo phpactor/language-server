@@ -10,18 +10,12 @@ final class ConnectionMessageTransmitter implements MessageTransmitter
     private const WRITE_CHUNK_SIZE = 256;
 
     /**
-     * @var Connection
-     */
-    private $connection;
-
-    /**
      * @var MessageFormatter
      */
     private $formatter;
 
-    public function __construct(Connection $connection, MessageFormatter $formatter = null)
+    public function __construct(private Connection $connection, ?MessageFormatter $formatter = null)
     {
-        $this->connection = $connection;
         $this->formatter = $formatter ?: new LspMessageFormatter();
     }
 

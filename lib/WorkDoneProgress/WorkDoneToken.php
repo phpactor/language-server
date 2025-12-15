@@ -6,14 +6,8 @@ use Ramsey\Uuid\Uuid;
 
 final class WorkDoneToken
 {
-    /**
-     * @var string
-     */
-    private $token;
-
-    public function __construct(string $token)
+    public function __construct(private string $token)
     {
-        $this->token = $token;
     }
 
     public function __toString(): string

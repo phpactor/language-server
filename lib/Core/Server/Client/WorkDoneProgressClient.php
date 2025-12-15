@@ -10,14 +10,8 @@ use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 
 final class WorkDoneProgressClient
 {
-    /**
-     * @var RpcClient
-     */
-    private $client;
-
-    public function __construct(RpcClient $client)
+    public function __construct(private RpcClient $client)
     {
-        $this->client = $client;
     }
 
     /**

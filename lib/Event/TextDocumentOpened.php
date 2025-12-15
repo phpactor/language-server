@@ -6,14 +6,8 @@ use Phpactor\LanguageServerProtocol\TextDocumentItem;
 
 class TextDocumentOpened
 {
-    /**
-     * @var TextDocumentItem
-     */
-    private $textDocument;
-
-    public function __construct(TextDocumentItem $textDocument)
+    public function __construct(private TextDocumentItem $textDocument)
     {
-        $this->textDocument = $textDocument;
     }
 
     public function textDocument(): TextDocumentItem

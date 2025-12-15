@@ -10,14 +10,8 @@ use Phpactor\LanguageServer\Core\Server\Client\WorkspaceClient;
 
 final class ClientApi
 {
-    /**
-     * @var RpcClient
-     */
-    private $client;
-
-    public function __construct(RpcClient $client)
+    public function __construct(private RpcClient $client)
     {
-        $this->client = $client;
     }
 
     public function client(): ClientClient

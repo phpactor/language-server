@@ -13,14 +13,8 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 
 class HandlerMiddleware implements Middleware
 {
-    /**
-     * @var MethodRunner
-     */
-    private $runner;
-
-    public function __construct(MethodRunner $runner)
+    public function __construct(private MethodRunner $runner)
     {
-        $this->runner = $runner;
     }
 
     /**

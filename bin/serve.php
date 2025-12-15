@@ -46,7 +46,7 @@ use Psr\Log\AbstractLogger;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-if ($argc === 1) {
+if (($argc ?? 0) === 1) {
     echo <<<DOC
 Usage: serve.php --address=127.0.0.1:9000 --type=tcp
 

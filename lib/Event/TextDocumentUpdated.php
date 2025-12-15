@@ -6,19 +6,8 @@ use Phpactor\LanguageServerProtocol\VersionedTextDocumentIdentifier;
 
 class TextDocumentUpdated
 {
-    /**
-     * @var VersionedTextDocumentIdentifier
-     */
-    private $identifier;
-    /**
-     * @var string
-     */
-    private $updatedText;
-
-    public function __construct(VersionedTextDocumentIdentifier $identifier, string $updatedText)
+    public function __construct(private VersionedTextDocumentIdentifier $identifier, private string $updatedText)
     {
-        $this->identifier = $identifier;
-        $this->updatedText = $updatedText;
     }
 
     public function identifier(): VersionedTextDocumentIdentifier

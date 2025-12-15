@@ -10,14 +10,8 @@ use Phpactor\LanguageServer\Core\Rpc\Message;
 
 class ClosureMiddleware implements Middleware
 {
-    /**
-     * @var Closure
-     */
-    private $closure;
-
-    public function __construct(Closure $closure)
+    public function __construct(private Closure $closure)
     {
-        $this->closure = $closure;
     }
 
     /**

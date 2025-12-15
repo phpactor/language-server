@@ -11,16 +11,10 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 final class ClosureDispatcher implements Dispatcher
 {
     /**
-     * @var Closure
-     */
-    private $closure;
-
-    /**
      * @param Closure(Message): Promise<ResponseMessage|null> $closure
      */
-    public function __construct(Closure $closure)
+    public function __construct(private Closure $closure)
     {
-        $this->closure = $closure;
     }
 
     /**

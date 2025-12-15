@@ -6,14 +6,8 @@ use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 
 class TextDocumentClosed
 {
-    /**
-     * @var TextDocumentIdentifier
-     */
-    private $identifier;
-
-    public function __construct(TextDocumentIdentifier $identifier)
+    public function __construct(private TextDocumentIdentifier $identifier)
     {
-        $this->identifier = $identifier;
     }
 
     public function identifier(): TextDocumentIdentifier
