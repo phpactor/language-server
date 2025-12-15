@@ -16,15 +16,9 @@ class AggregateDiagnosticsProvider implements DiagnosticsProvider
      */
     private $providers;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(LoggerInterface $logger, DiagnosticsProvider ...$providers)
+    public function __construct(private LoggerInterface $logger, DiagnosticsProvider ...$providers)
     {
         $this->providers = $providers;
-        $this->logger = $logger;
     }
 
     /**

@@ -16,43 +16,19 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
 {
     /**
-     * @var DiagnosticsEngine
-     */
-    private $engine;
-
-    /**
      * @var Workspace
      */
     private $workspace;
 
-    /**
-     * @var bool
-     */
-    private $lintOnUpdate;
-
-    /**
-     * @var bool
-     */
-    private $lintOnSave;
-
-    private bool $clearOnUpdate;
-
-    private bool $lintOnOpen;
-
     public function __construct(
-        DiagnosticsEngine $engine,
-        bool $lintOnUpdate = true,
-        bool $lintOnSave = true,
+        private DiagnosticsEngine $engine,
+        private bool $lintOnUpdate = true,
+        private bool $lintOnSave = true,
         ?Workspace $workspace = null,
-        bool $clearOnUpdate = true,
-        bool $lintOnOpen = true
+        private bool $clearOnUpdate = true,
+        private bool $lintOnOpen = true
     ) {
-        $this->engine = $engine;
         $this->workspace = $workspace ?: new Workspace();
-        $this->lintOnUpdate = $lintOnUpdate;
-        $this->lintOnSave = $lintOnSave;
-        $this->clearOnUpdate = $clearOnUpdate;
-        $this->lintOnOpen = $lintOnOpen;
     }
 
     /**

@@ -9,14 +9,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 class DidChangeWatchedFilesHandler implements Handler
 {
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $dispatcher;
-
-    public function __construct(EventDispatcherInterface $dispatcher)
+    public function __construct(private EventDispatcherInterface $dispatcher)
     {
-        $this->dispatcher = $dispatcher;
     }
 
     /**

@@ -31,16 +31,10 @@ final class LspMessageReader implements RequestReader
      */
     private $headers = null;
 
-    /**
-     * @var InputStream
-     */
-    private $stream;
-
     private LoggerInterface $logger;
 
-    public function __construct(InputStream $stream, ?LoggerInterface $logger = null)
+    public function __construct(private InputStream $stream, ?LoggerInterface $logger = null)
     {
-        $this->stream = $stream;
         $this->logger = $logger ?: new NullLogger();
     }
 

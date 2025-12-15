@@ -12,14 +12,8 @@ use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 
 class CommandHandler implements Handler, CanRegisterCapabilities
 {
-    /**
-     * @var CommandDispatcher
-     */
-    private $dispatcher;
-
-    public function __construct(CommandDispatcher $dispatcher)
+    public function __construct(private CommandDispatcher $dispatcher)
     {
-        $this->dispatcher = $dispatcher;
     }
 
     /**

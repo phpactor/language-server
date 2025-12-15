@@ -20,31 +20,17 @@ use Psr\Log\NullLogger;
 final class LanguageServerBuilder
 {
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var string|null
      */
     private $tcpAddress = null;
-
-    /**
-     * @var DispatcherFactory
-     */
-    private $dispatcherFactory;
 
     /**
      * @var ServerStats|null
      */
     private $stats = null;
 
-    private function __construct(
-        DispatcherFactory $dispatcherFactory,
-        LoggerInterface $logger
-    ) {
-        $this->logger = $logger;
-        $this->dispatcherFactory = $dispatcherFactory;
+    private function __construct(private DispatcherFactory $dispatcherFactory, private LoggerInterface $logger)
+    {
     }
 
     /**

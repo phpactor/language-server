@@ -51,16 +51,6 @@ parameters:
 			path: lib/Core/Handler/Handlers.php
 
 		-
-			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Middleware\\\\RequestHandler\\:\\:__construct\\(\\) has parameter \\$queue with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Middleware/RequestHandler.php
-
-		-
-			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\NotificationMessage\\:\\:__construct\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Rpc/NotificationMessage.php
-
-		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:__construct\\(\\) has parameter \\$body with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Core/Rpc/RawMessage.php
@@ -79,21 +69,6 @@ parameters:
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:headers\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Core/Rpc/RawMessage.php
-
-		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:\\$body type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Rpc/RawMessage.php
-
-		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:\\$headers type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Rpc/RawMessage.php
-
-		-
-			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RequestMessage\\:\\:__construct\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Rpc/RequestMessage.php
 
 		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\ResponseMessage\\:\\:jsonSerialize\\(\\) return type has no value type specified in iterable type array\\.$#"
@@ -211,11 +186,6 @@ parameters:
 			path: lib/Listener/DidChangeWatchedFilesListener.php
 
 		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Listener\\\\DidChangeWatchedFilesListener\\:\\:\\$globPatterns type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Listener/DidChangeWatchedFilesListener.php
-
-		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Listener\\\\ServiceListener\\:\\:getListenersForEvent\\(\\) return type has no value type specified in iterable type iterable\\.$#"
 			count: 1
 			path: lib/Listener/ServiceListener.php
@@ -227,11 +197,6 @@ parameters:
 
 		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Middleware\\\\MethodAliasMiddleware\\:\\:__construct\\(\\) has parameter \\$aliasMap with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Middleware/MethodAliasMiddleware.php
-
-		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Middleware\\\\MethodAliasMiddleware\\:\\:\\$aliasMap type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Middleware/MethodAliasMiddleware.php
 

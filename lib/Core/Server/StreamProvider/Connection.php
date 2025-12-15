@@ -6,20 +6,8 @@ use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
 
 final class Connection
 {
-    /**
-     * @var string
-     */
-    private $id;
-
-    /**
-     * @var DuplexStream
-     */
-    private $stream;
-
-    public function __construct(string $id, DuplexStream $stream)
+    public function __construct(private string $id, private DuplexStream $stream)
     {
-        $this->id = $id;
-        $this->stream = $stream;
     }
 
     public function stream(): DuplexStream

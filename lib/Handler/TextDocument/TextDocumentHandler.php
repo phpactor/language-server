@@ -19,14 +19,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 {
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $dispatcher;
-
-    public function __construct(EventDispatcherInterface $dispatcher)
+    public function __construct(private EventDispatcherInterface $dispatcher)
     {
-        $this->dispatcher = $dispatcher;
     }
 
     public function methods(): array

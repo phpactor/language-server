@@ -14,14 +14,8 @@ use Phpactor\LanguageServer\Core\Service\ServiceProvider;
  */
 class PingProvider implements ServiceProvider
 {
-    /**
-     * @var ClientApi
-     */
-    private $client;
-
-    public function __construct(ClientApi $client)
+    public function __construct(private ClientApi $client)
     {
-        $this->client = $client;
     }
 
     /**

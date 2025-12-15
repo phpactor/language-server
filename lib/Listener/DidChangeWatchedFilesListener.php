@@ -14,26 +14,8 @@ use function Amp\asyncCall;
 
 class DidChangeWatchedFilesListener implements ListenerProviderInterface
 {
-    /**
-     * @var ClientApi
-     */
-    private $client;
-
-    /**
-     * @var array
-     */
-    private $globPatterns;
-
-    /**
-     * @var ClientCapabilities
-     */
-    private $clientCapabilities;
-
-    public function __construct(ClientApi $client, array $globPatterns, ClientCapabilities $clientCapabilities)
+    public function __construct(private ClientApi $client, private array $globPatterns, private ClientCapabilities $clientCapabilities)
     {
-        $this->client = $client;
-        $this->globPatterns = $globPatterns;
-        $this->clientCapabilities = $clientCapabilities;
     }
 
     /**

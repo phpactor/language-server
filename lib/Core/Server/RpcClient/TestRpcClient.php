@@ -14,21 +14,9 @@ final class TestRpcClient implements RpcClient
      */
     private $client;
 
-    /**
-     * @var TestMessageTransmitter
-     */
-    private $transmitter;
-
-    /**
-     * @var TestResponseWatcher
-     */
-    private $responseWatcher;
-
-    public function __construct(TestMessageTransmitter $transmitter, TestResponseWatcher $responseWatcher)
+    public function __construct(private TestMessageTransmitter $transmitter, private TestResponseWatcher $responseWatcher)
     {
-        $this->transmitter = $transmitter;
-        $this->responseWatcher = $responseWatcher;
-        $this->client = new JsonRpcClient($transmitter, $responseWatcher);
+        $this->client = new JsonRpcClient($this->transmitter, $this->responseWatcher);
     }
 
     public static function create(): TestRpcClient

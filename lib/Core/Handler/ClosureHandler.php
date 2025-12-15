@@ -6,20 +6,8 @@ use Closure;
 
 final class ClosureHandler implements Handler
 {
-    /**
-     * @var string
-     */
-    private $methodName;
-
-    /**
-     * @var Closure
-     */
-    private $closure;
-
-    public function __construct(string $methodName, Closure $closure)
+    public function __construct(private string $methodName, private Closure $closure)
     {
-        $this->methodName = $methodName;
-        $this->closure = $closure;
     }
 
     /**

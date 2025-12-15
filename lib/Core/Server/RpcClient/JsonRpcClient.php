@@ -13,20 +13,8 @@ use Ramsey\Uuid\Uuid;
 
 final class JsonRpcClient implements RpcClient
 {
-    /**
-     * @var MessageTransmitter
-     */
-    private $transmitter;
-
-    /**
-     * @var ResponseWatcher
-     */
-    private $responseWatcher;
-
-    public function __construct(MessageTransmitter $transmitter, ResponseWatcher $responseWatcher)
+    public function __construct(private MessageTransmitter $transmitter, private ResponseWatcher $responseWatcher)
     {
-        $this->transmitter = $transmitter;
-        $this->responseWatcher = $responseWatcher;
     }
 
     public function notification(string $method, array $params): void

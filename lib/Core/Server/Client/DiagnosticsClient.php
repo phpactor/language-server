@@ -6,14 +6,8 @@ use Phpactor\LanguageServer\Core\Server\RpcClient;
 
 final class DiagnosticsClient
 {
-    /**
-     * @var RpcClient
-     */
-    private $client;
-
-    public function __construct(RpcClient $client)
+    public function __construct(private RpcClient $client)
     {
-        $this->client = $client;
     }
 
     public function publishDiagnostics(string $uri, ?int $version, array $diagnostics): void

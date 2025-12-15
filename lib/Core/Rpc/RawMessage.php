@@ -4,20 +4,8 @@ namespace Phpactor\LanguageServer\Core\Rpc;
 
 final class RawMessage
 {
-    /**
-     * @var array
-     */
-    private $headers;
-
-    /**
-     * @var array
-     */
-    private $body;
-
-    public function __construct(array $headers, array $body)
+    public function __construct(private array $headers, private array $body)
     {
-        $this->headers = $headers;
-        $this->body = $body;
     }
 
     public function body(): array

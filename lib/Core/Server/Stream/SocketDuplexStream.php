@@ -7,14 +7,8 @@ use Amp\Socket\Socket;
 
 final class SocketDuplexStream implements DuplexStream
 {
-    /**
-     * @var Socket
-     */
-    private $socket;
-
-    public function __construct(Socket $socket)
+    public function __construct(private Socket $socket)
     {
-        $this->socket = $socket;
     }
 
     /**

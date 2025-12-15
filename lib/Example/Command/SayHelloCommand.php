@@ -7,14 +7,8 @@ use Phpactor\LanguageServer\Core\Server\ClientApi;
 
 class SayHelloCommand implements Command
 {
-    /**
-     * @var ClientApi
-     */
-    private $api;
-
-    public function __construct(ClientApi $api)
+    public function __construct(private ClientApi $api)
     {
-        $this->api = $api;
     }
 
     public function __invoke(string $name): void

@@ -8,14 +8,8 @@ use Phpactor\LanguageServer\Test\LanguageServerTester;
 
 class WorkspaceTester
 {
-    /**
-     * @var LanguageServerTester
-     */
-    private $tester;
-
-    public function __construct(LanguageServerTester $tester)
+    public function __construct(private LanguageServerTester $tester)
     {
-        $this->tester = $tester;
     }
 
     /**
