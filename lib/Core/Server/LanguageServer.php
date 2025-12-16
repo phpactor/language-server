@@ -35,19 +35,13 @@ final class LanguageServer
      */
     private $connections = [];
 
-    /**
-     * @var ServerStats
-     */
-    private $stats;
-
     public function __construct(
         private DispatcherFactory $dispatcherFactory,
         private LoggerInterface $logger,
         private StreamProvider $streamProvider,
         private Initializer $initializer,
-        ?ServerStats $stats = null
+        private ServerStats $stats = new ServerStats()
     ) {
-        $this->stats = $stats ?: new ServerStats();
     }
 
     /**

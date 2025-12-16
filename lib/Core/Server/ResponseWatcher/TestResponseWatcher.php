@@ -10,18 +10,12 @@ use RuntimeException;
 final class TestResponseWatcher implements ResponseWatcher
 {
     /**
-     * @var ResponseWatcher
-     */
-    private $innerWatcher;
-
-    /**
      * @var array
      */
     private $requestIds = [];
 
-    public function __construct(?ResponseWatcher $innerWatcher = null)
+    public function __construct(private ResponseWatcher $innerWatcher = new DeferredResponseWatcher())
     {
-        $this->innerWatcher = $innerWatcher ?: new DeferredResponseWatcher();
     }
 
     public function handle(ResponseMessage $response): void

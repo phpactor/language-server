@@ -13,14 +13,8 @@ use Phpactor\LanguageServer\Core\Server\Initializer;
  */
 final class PredefinedInitializer implements Initializer
 {
-    /**
-     * @var InitializeParams
-     */
-    private $params;
-
-    public function __construct(?InitializeParams $params = null)
+    public function __construct(private InitializeParams $params = new InitializeParams(new ClientCapabilities()))
     {
-        $this->params = $params ?: new InitializeParams(new ClientCapabilities());
     }
 
     /**

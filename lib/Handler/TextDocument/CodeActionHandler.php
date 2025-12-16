@@ -20,11 +20,11 @@ use function Amp\call;
 
 class CodeActionHandler implements Handler, CanRegisterCapabilities
 {
-    private ProgressNotifier $notifier;
-
-    public function __construct(private CodeActionProvider $provider, private Workspace $workspace, ?ProgressNotifier $notifier = null)
-    {
-        $this->notifier = $notifier ?: new SilentWorkDoneProgressNotifier();
+    public function __construct(
+        private CodeActionProvider $provider,
+        private Workspace $workspace,
+        private ProgressNotifier $notifier = new SilentWorkDoneProgressNotifier(),
+    ) {
     }
 
     /**

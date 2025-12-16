@@ -13,12 +13,10 @@ use function Amp\call;
 
 class ExitHandler implements Handler
 {
-    private EventDispatcherInterface $eventDispatcher;
-
-
-    public function __construct(?EventDispatcherInterface $eventDispatcher = null, private int $gracePeriod = 500)
-    {
-        $this->eventDispatcher = $eventDispatcher ?: new NullEventDispatcher();
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher = new NullEventDispatcher(),
+        private int $gracePeriod = 500,
+    ) {
     }
 
     public function methods(): array

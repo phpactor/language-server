@@ -79,9 +79,11 @@ class LanguageServerTest extends AsyncTestCase
      * @return Promise<string>
      * @param Closure(Message): Promise<ResponseMessage|null> $handler
      */
-    private function dispatchRequest(RequestMessage $request, Closure $handler, ?MessageSerializer $serializer = null): Promise
-    {
-        $serializer = $serializer ?: new LspMessageSerializer();
+    private function dispatchRequest(
+        RequestMessage $request,
+        Closure $handler,
+        ?MessageSerializer $serializer = new LspMessageSerializer(),
+    ): Promise {
         return call(function () use ($handler, $request, $serializer) {
             $this->setTimeout(100);
 
