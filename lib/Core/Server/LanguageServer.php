@@ -97,7 +97,7 @@ final class LanguageServer
         if (!$this->streamProvider instanceof SocketStreamProvider) {
             throw new RuntimeException(sprintf(
                 'Cannot get address on non-socket stream provider, using "%s"',
-                get_class($this->streamProvider)
+                $this->streamProvider::class
             ));
         }
 

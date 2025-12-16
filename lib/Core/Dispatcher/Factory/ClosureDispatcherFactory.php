@@ -22,7 +22,7 @@ final class ClosureDispatcherFactory implements DispatcherFactory
         if (!$dispatcher instanceof Dispatcher) {
             throw new RuntimeException(sprintf(
                 'Closure must return a "Dispatcher" instance got "%s"',
-                is_object($dispatcher) ? get_class($dispatcher) : gettype($dispatcher)
+                get_debug_type($dispatcher)
             ));
         }
 

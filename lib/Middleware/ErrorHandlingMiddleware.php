@@ -45,10 +45,10 @@ class ErrorHandlingMiddleware implements Middleware
                     )
                 ));
             } catch (Throwable $error) {
-                $message = sprintf('Exception [%s] %s', get_class($error), $error->getMessage());
+                $message = sprintf('Exception [%s] %s', $error::class, $error->getMessage());
                 $this->logger->error(sprintf(
                     'Error when handling "%s" (%s): %s',
-                    get_class($request),
+                    $request::class,
                     json_encode($request),
                     $message
                 ));

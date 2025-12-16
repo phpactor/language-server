@@ -27,7 +27,7 @@ final class LanguageSeverProtocolParamsResolver implements ArgumentResolver
         if (!$reflection->hasMethod($method)) {
             throw new CouldNotResolveArguments(sprintf(
                 'Class "%s" has no method "%s"',
-                get_class($object),
+                $object::class,
                 $method
             ));
         }
@@ -60,7 +60,7 @@ final class LanguageSeverProtocolParamsResolver implements ArgumentResolver
 
             throw new CouldNotResolveArguments(sprintf(
                 'First argument of LSP class "%s" method "%s" must be the LSP param object, it is "%s"',
-                get_class($object),
+                $object::class,
                 $method,
                 $classFqn
             ));
@@ -68,7 +68,7 @@ final class LanguageSeverProtocolParamsResolver implements ArgumentResolver
 
         throw new CouldNotResolveArguments(sprintf(
             'Class "%s" method "%s" is not a language server protocol-accepting method',
-            get_class($object),
+            $object::class,
             $method
         ));
     }

@@ -41,7 +41,7 @@ final class HandlerMethodRunner implements MethodRunner
         ) {
             throw new RuntimeException(sprintf(
                 'Message must either be a Notification or a Request, got "%s"',
-                get_class($request)
+                $request::class
             ));
         }
 
@@ -64,9 +64,9 @@ final class HandlerMethodRunner implements MethodRunner
             if (!$promise instanceof Promise) {
                 throw new RuntimeException(sprintf(
                     'Handler "%s:%s" must return instance of Amp\\Promise, got "%s"',
-                    get_class($handler),
+                    $handler::class,
                     $method,
-                    is_object($promise) ? get_class($promise) : gettype($promise)
+                    get_debug_type($promise)
                 ));
             }
 

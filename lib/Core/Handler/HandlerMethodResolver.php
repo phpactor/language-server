@@ -13,7 +13,7 @@ final class HandlerMethodResolver
         if (!array_key_exists($languageServerMethod, $handlerMap)) {
             throw new RuntimeException(sprintf(
                 'Resolved handler "%s" has not declared support for LSP method "%s", it declared support for "%s"',
-                get_class($handler),
+                $handler::class,
                 $languageServerMethod,
                 implode('", "', $handlerMap)
             ));
@@ -24,7 +24,7 @@ final class HandlerMethodResolver
         if (!method_exists($handler, $method)) {
             throw new RuntimeException(sprintf(
                 'Handler "%s" for method "%s" does not have the "%s" method defined, it has "%s"',
-                get_class($handler),
+                $handler::class,
                 $languageServerMethod,
                 $method,
                 implode('", "', get_class_methods($handler))

@@ -15,7 +15,7 @@ final class RequestInitializer implements Initializer
         if (!$request instanceof RequestMessage) {
             throw new RuntimeException(sprintf(
                 'First request must be a RequestMessage (to initialize), got "%s"',
-                get_class($request)
+                $request::class
             ));
         }
 
