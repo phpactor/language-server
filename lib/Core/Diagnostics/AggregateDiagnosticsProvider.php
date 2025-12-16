@@ -42,12 +42,12 @@ class AggregateDiagnosticsProvider implements DiagnosticsProvider
                     $this->logger->debug(sprintf(
                         'Diagnostic finsihed in "%s" (%s)',
                         number_format(microtime(true) - $start, 2),
-                        get_class($provider)
+                        $provider::class
                     ));
                 } catch (Throwable $throwable) {
                     $this->logger->error(sprintf(
                         'Diagnostic error from provider "%s": %s',
-                        get_class($provider),
+                        $provider::class,
                         $throwable->getMessage()
                     ), [
                         'trace' => $throwable->getTraceAsString()

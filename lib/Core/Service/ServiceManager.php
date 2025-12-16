@@ -47,12 +47,12 @@ class ServiceManager
             ));
         }
 
-        $this->logger->info(sprintf('Starting service: %s (%s)', $serviceName, get_class($provider)));
+        $this->logger->info(sprintf('Starting service: %s (%s)', $serviceName, $provider::class));
         
         if (!method_exists($provider, $serviceName)) {
             throw new RuntimeException(sprintf(
                 'Service provider "%s" has no service method "%s"',
-                get_class($provider),
+                $provider::class,
                 $serviceName
             ));
         }
@@ -67,8 +67,8 @@ class ServiceManager
             if (!$promise instanceof Promise) {
                 throw new RuntimeException(sprintf(
                     'Service method "%s" must return a Promise, got "%s"',
-                    get_class($provider) . '::' . $serviceName,
-                    is_object($promise) ? get_class($promise) : gettype($promise)
+                    $provider::class . '::' . $serviceName,
+                    get_debug_type($promise)
                 ));
             }
         
@@ -78,7 +78,7 @@ class ServiceManager
                 $this->logger->error(sprintf(
                     'Error in service "%s" "%s:%s": %s',
                     $serviceName,
-                    get_class($provider),
+                    $provider::class,
                     __FUNCTION__,
                     $error->getMessage()
                 ));

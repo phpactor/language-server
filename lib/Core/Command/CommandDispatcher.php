@@ -56,7 +56,7 @@ class CommandDispatcher
         if (!is_callable($invokable)) {
             throw new RuntimeException(sprintf(
                 'Object "%s" is not invokable',
-                get_class($invokable)
+                $invokable::class
             ));
         }
 

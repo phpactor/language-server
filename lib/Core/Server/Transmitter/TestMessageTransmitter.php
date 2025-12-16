@@ -55,7 +55,7 @@ final class TestMessageTransmitter implements MessageTransmitter, TestMessageTra
         if (!$message instanceof NotificationMessage) {
             throw new RuntimeException(sprintf(
                 'Expected NotificationMessage, got "%s"',
-                get_class($message)
+                $message::class
             ));
         }
 
@@ -73,7 +73,7 @@ final class TestMessageTransmitter implements MessageTransmitter, TestMessageTra
         if (!$message instanceof RequestMessage) {
             throw new RuntimeException(sprintf(
                 'Expected RequestMessage, got "%s"',
-                get_class($message)
+                $message::class
             ));
         }
 

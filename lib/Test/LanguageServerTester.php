@@ -148,7 +148,7 @@ final class LanguageServerTester
         if (!$result instanceof InitializeResult) {
             throw new RuntimeException(sprintf(
                 'Initialize did not return an InitializeResult, got "%s"',
-                is_object($result) ? get_class($result) : gettype($result)
+                get_debug_type($result)
             ));
         }
 

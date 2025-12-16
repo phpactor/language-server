@@ -39,7 +39,7 @@ class RecordingListenerProvider implements ListenerProviderInterface
             throw new RuntimeException(sprintf(
                 'Expected event of type "%s" but got "%s"',
                 $type,
-                get_class($next)
+                $next::class
             ));
         }
 
