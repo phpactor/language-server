@@ -18,11 +18,11 @@ use function Amp\call;
 
 class FormattingHandler implements Handler, CanRegisterCapabilities
 {
-    private ProgressNotifier $notifier;
-
-    public function __construct(private Workspace $workspace, private Formatter $formatter, ?ProgressNotifier $notifier = null)
-    {
-        $this->notifier = $notifier ?: new SilentWorkDoneProgressNotifier();
+    public function __construct(
+        private Workspace $workspace,
+        private Formatter $formatter,
+        private ProgressNotifier $notifier = new SilentWorkDoneProgressNotifier(),
+    ) {
     }
 
     public function methods(): array

@@ -18,34 +18,16 @@ use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
 final class HandlerMethodRunner implements MethodRunner
 {
     /**
-     * @var HandlerMethodResolver
-     */
-    private $resolver;
-
-    /**
      * @var array<string|int, CancellationTokenSource>
      */
     private $cancellations = [];
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var ArgumentResolver
-     */
-    private $argumentResolver;
-
     public function __construct(
         private Handlers $handlers,
-        ?ArgumentResolver $argumentResolver = null,
-        ?LoggerInterface $logger = null,
-        ?HandlerMethodResolver $resolver = null
+        private ArgumentResolver $argumentResolver = new PassThroughArgumentResolver(),
+        private LoggerInterface $logger = new NullLogger(),
+        private HandlerMethodResolver $resolver = new HandlerMethodResolver(),
     ) {
-        $this->resolver = $resolver ?: new HandlerMethodResolver();
-        $this->logger = $logger ?: new NullLogger();
-        $this->argumentResolver = $argumentResolver ?: new PassThroughArgumentResolver();
     }
 
     /**

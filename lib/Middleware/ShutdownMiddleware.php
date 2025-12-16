@@ -25,12 +25,12 @@ final class ShutdownMiddleware implements Middleware
     const METHOD_SHUTDOWN = 'shutdown';
     const METHOD_EXIT = 'exit';
 
-    private EventDispatcherInterface $eventDispatcher;
     private bool $shuttingDown = false;
 
-    public function __construct(?EventDispatcherInterface $eventDispatcher = null, private int $gracePeriod = 500)
-    {
-        $this->eventDispatcher = $eventDispatcher ?: new NullEventDispatcher();
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher = new NullEventDispatcher(),
+        private int $gracePeriod = 500,
+    ) {
     }
 
     public function process(Message $request, RequestHandler $handler): Promise

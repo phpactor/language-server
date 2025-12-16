@@ -15,20 +15,14 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 
 class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
 {
-    /**
-     * @var Workspace
-     */
-    private $workspace;
-
     public function __construct(
         private DiagnosticsEngine $engine,
         private bool $lintOnUpdate = true,
         private bool $lintOnSave = true,
-        ?Workspace $workspace = null,
+        private Workspace $workspace = new Workspace(),
         private bool $clearOnUpdate = true,
         private bool $lintOnOpen = true
     ) {
-        $this->workspace = $workspace ?: new Workspace();
     }
 
     /**

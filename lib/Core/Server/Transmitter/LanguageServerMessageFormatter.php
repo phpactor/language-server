@@ -6,14 +6,8 @@ use Phpactor\LanguageServer\Core\Rpc\Message;
 
 final class LanguageServerMessageFormatter implements MessageFormatter
 {
-    /**
-     * @var MessageSerializer
-     */
-    private $serializer;
-
-    public function __construct(?MessageSerializer $serializer = null)
+    public function __construct(private MessageSerializer $serializer = new LspMessageSerializer())
     {
-        $this->serializer = $serializer ?: new LspMessageSerializer();
     }
 
     public function format(Message $message): string

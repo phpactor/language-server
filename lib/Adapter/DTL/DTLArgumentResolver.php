@@ -11,16 +11,11 @@ use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 
 final class DTLArgumentResolver implements ArgumentResolver
 {
-    /**
-     * @var UpstreamArgumentResolver
-     */
-    private $dtlArgumnetResolver;
-
-    public function __construct(?UpstreamArgumentResolver $dtlArgumnetResolver = null)
+    public function __construct(private UpstreamArgumentResolver $dtlArgumnetResolver = new UpstreamArgumentResolver(
+        [new RecursiveInstantiator()],
+        UpstreamArgumentResolver::ALLOW_UNKNOWN_ARGUMENTS | UpstreamArgumentResolver::MATCH_TYPE
+    ))
     {
-        $this->dtlArgumnetResolver = $dtlArgumnetResolver ?: new UpstreamArgumentResolver([
-            new RecursiveInstantiator()
-        ], UpstreamArgumentResolver::ALLOW_UNKNOWN_ARGUMENTS | UpstreamArgumentResolver::MATCH_TYPE);
     }
 
     public function resolveArguments(object $object, string $method, Message $message): array

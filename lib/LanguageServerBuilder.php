@@ -29,8 +29,10 @@ final class LanguageServerBuilder
      */
     private $stats = null;
 
-    private function __construct(private DispatcherFactory $dispatcherFactory, private LoggerInterface $logger)
-    {
+    private function __construct(
+        private DispatcherFactory $dispatcherFactory,
+        private LoggerInterface $logger = new NullLogger(),
+    ) {
     }
 
     /**
@@ -38,11 +40,11 @@ final class LanguageServerBuilder
      */
     public static function create(
         DispatcherFactory $dispatcherFactory,
-        ?LoggerInterface $logger = null
+        LoggerInterface $logger = new NullLogger()
     ): self {
         return new self(
             $dispatcherFactory,
-            $logger ?: new NullLogger()
+            $logger
         );
     }
 
@@ -69,9 +71,9 @@ final class LanguageServerBuilder
      *
      * This is useful for integration testing scenarios.
      */
-    public function tester(?InitializeParams $params = null): LanguageServerTester
-    {
-        $params = $params ?: new InitializeParams(new ClientCapabilities());
+    public function tester(
+        InitializeParams $params = new InitializeParams(new ClientCapabilities()),
+    ): LanguageServerTester {
         return new LanguageServerTester($this->dispatcherFactory, $params);
     }
 

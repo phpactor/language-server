@@ -23,31 +23,17 @@ use function Amp\Promise\wait;
 final class LanguageServerTester
 {
     /**
-     * @var TestMessageTransmitter
-     */
-    private $transmitter;
-
-    /**
      * @var Dispatcher
      */
     private $dispatcher;
 
-    /**
-     * @var MessageSerializer
-     */
-    private $messageSerializer;
-
-    /**
-     * @var InitializeParams
-     */
-    private $initializeParams;
-
-    public function __construct(DispatcherFactory $factory, InitializeParams $params, ?TestMessageTransmitter $transmitter = null)
-    {
-        $this->initializeParams = $params;
-        $this->transmitter = $transmitter ?: new TestMessageTransmitter();
-        $this->dispatcher = $factory->create($this->transmitter, $params);
-        $this->messageSerializer = new LspMessageSerializer();
+    public function __construct(
+        DispatcherFactory $factory,
+        private InitializeParams $initializeParams,
+        private TestMessageTransmitter $transmitter = new TestMessageTransmitter(),
+        private MessageSerializer $messageSerializer = new LspMessageSerializer(),
+    ) {
+        $this->dispatcher = $factory->create($this->transmitter, $initializeParams);
     }
 
     /**

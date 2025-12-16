@@ -116,7 +116,7 @@ class LanguageServerTesterTest extends TestCase
 
     private function createTester(?InitializeParams $params = null): LanguageServerTester
     {
-        $params = $params ?: ProtocolFactory::initializeParams();
+        $params ??= ProtocolFactory::initializeParams();
         $builder = LanguageServerTesterBuilder::create();
         $builder->setInitializeParams($params);
         $builder->enableTextDocuments();

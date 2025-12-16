@@ -27,11 +27,8 @@ class Workspace implements Countable, IteratorAggregate
      */
     private $documentVersions = [];
 
-    private LoggerInterface $logger;
-
-    public function __construct(?LoggerInterface $logger = null)
+    public function __construct(private LoggerInterface $logger = new NullLogger())
     {
-        $this->logger = $logger ?: new NullLogger();
     }
 
     public function has(string $uri): bool
