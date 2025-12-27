@@ -10,7 +10,7 @@ class RecordingListenerProvider implements ListenerProviderInterface
     /**
      * @var object[]
      */
-    private $recieved = [];
+    private array $recieved = [];
 
     /**
      * {@inheritDoc}

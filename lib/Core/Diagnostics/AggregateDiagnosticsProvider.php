@@ -14,7 +14,7 @@ class AggregateDiagnosticsProvider implements DiagnosticsProvider
     /**
      * @var array<DiagnosticsProvider>
      */
-    private $providers;
+    private array $providers;
 
     public function __construct(private LoggerInterface $logger, DiagnosticsProvider ...$providers)
     {
@@ -65,7 +65,7 @@ class AggregateDiagnosticsProvider implements DiagnosticsProvider
     public function names(): array
     {
         return array_map(
-            fn (DiagnosticsProvider $provider) => $provider->name(),
+            fn (DiagnosticsProvider $provider): string => $provider->name(),
             $this->providers
         );
     }

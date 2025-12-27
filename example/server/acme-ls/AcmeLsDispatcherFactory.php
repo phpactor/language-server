@@ -15,7 +15,6 @@ use Phpactor\LanguageServerProtocol\InitializeParams;
 use Phpactor\LanguageServer\Core\Dispatcher\Dispatcher;
 use Phpactor\LanguageServer\Core\Handler\HandlerMethodRunner;
 use Phpactor\LanguageServer\Core\Dispatcher\DispatcherFactory;
-use Phpactor\LanguageServer\Handler\System\ExitHandler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
 use Phpactor\LanguageServer\Middleware\ResponseHandlingMiddleware;
 use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
@@ -37,14 +36,8 @@ use Psr\Log\LoggerInterface;
 
 class AcmeLsDispatcherFactory implements DispatcherFactory
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function create(MessageTransmitter $transmitter, InitializeParams $initializeParams): Dispatcher

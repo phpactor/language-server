@@ -12,10 +12,7 @@ use Phpactor\LanguageServer\Core\Workspace\Workspace;
 
 class WorkspaceTest extends TestCase
 {
-    /**
-     * @var Workspace
-     */
-    private $workspace;
+    private Workspace $workspace;
 
     protected function setUp(): void
     {

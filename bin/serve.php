@@ -48,14 +48,14 @@ require __DIR__ . '/../vendor/autoload.php';
 
 if (($argc ?? 0) === 1) {
     echo <<<DOC
-Usage: serve.php --address=127.0.0.1:9000 --type=tcp
+        Usage: serve.php --address=127.0.0.1:9000 --type=tcp
 
-Parameters:
--a --address
-    Address of the server. (needs to be set for a tcp server)
--t --type
-    Type of server (optional, default is tcp)
-DOC;
+        Parameters:
+        -a --address
+            Address of the server. (needs to be set for a tcp server)
+        -t --type
+            Type of server (optional, default is tcp)
+        DOC;
     exit(1);
 }
 
@@ -83,7 +83,7 @@ $logger = new class extends AbstractLogger {
         $this->log = fopen('phpactor-lsp.log', 'w');
     }
 
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $message = json_encode(
             [

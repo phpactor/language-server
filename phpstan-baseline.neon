@@ -6,7 +6,7 @@ parameters:
 			path: lib/Adapter/DTL/DTLArgumentResolver.php
 
 		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Command\\\\CommandDispatcher\\:\\:\\$commandMap type has no value type specified in iterable type array\\.$#"
+			message: "#^Call to an undefined method Phpactor\\\\LanguageServer\\\\Core\\\\Command\\\\Command\\:\\:__invoke\\(\\)\\.$#"
 			count: 1
 			path: lib/Core/Command/CommandDispatcher.php
 
@@ -39,16 +39,6 @@ parameters:
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\ArgumentResolver\\\\PassThroughArgumentResolver\\:\\:resolveArguments\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Core/Dispatcher/ArgumentResolver/PassThroughArgumentResolver.php
-
-		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Dispatcher\\\\Dispatcher\\\\MiddlewareDispatcher\\:\\:\\$middleware type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Dispatcher/Dispatcher/MiddlewareDispatcher.php
-
-		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Handler\\\\Handlers\\:\\:\\$methods type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Handler/Handlers.php
 
 		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Core\\\\Rpc\\\\RawMessage\\:\\:__construct\\(\\) has parameter \\$body with no value type specified in iterable type array\\.$#"
@@ -146,34 +136,9 @@ parameters:
 			path: lib/Core/Server/Transmitter/LspMessageSerializer.php
 
 		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Core\\\\Service\\\\ServiceManager\\:\\:\\$cancellations type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Core/Service/ServiceManager.php
-
-		-
-			message: "#^Method Phpactor\\\\LanguageServer\\\\Event\\\\FilesChanged\\:\\:events\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Event/FilesChanged.php
-
-		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\Event\\\\FilesChanged\\:\\:\\$events type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Event/FilesChanged.php
-
-		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Handler\\\\System\\\\ServiceHandler\\:\\:runningServices\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Handler/System/ServiceHandler.php
-
-		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\LanguageServerTesterBuilder\\:\\:\\$commands type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/LanguageServerTesterBuilder.php
-
-		-
-			message: "#^Property Phpactor\\\\LanguageServer\\\\LanguageServerTesterBuilder\\:\\:\\$serviceProviders type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/LanguageServerTesterBuilder.php
 
 		-
 			message: "#^Method Phpactor\\\\LanguageServer\\\\Listener\\\\DidChangeWatchedFilesListener\\:\\:__construct\\(\\) has parameter \\$globPatterns with no value type specified in iterable type array\\.$#"

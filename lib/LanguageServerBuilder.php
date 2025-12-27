@@ -22,12 +22,9 @@ final class LanguageServerBuilder
     /**
      * @var string|null
      */
-    private $tcpAddress = null;
+    private ?string $tcpAddress = null;
 
-    /**
-     * @var ServerStats|null
-     */
-    private $stats = null;
+    private ?ServerStats $stats = null;
 
     private function __construct(
         private DispatcherFactory $dispatcherFactory,

@@ -8,10 +8,7 @@ use Phpactor\LanguageServer\Core\Server\Client\WorkDoneProgressClient;
 
 final class WorkDoneProgressNotifier implements ProgressNotifier
 {
-    /**
-     * @var WorkDoneProgressClient
-     */
-    private $api;
+    private WorkDoneProgressClient $api;
 
     public function __construct(ClientApi $api)
     {

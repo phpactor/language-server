@@ -22,10 +22,7 @@ use function Amp\Promise\wait;
 
 final class LanguageServerTester
 {
-    /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
+    private Dispatcher $dispatcher;
 
     public function __construct(
         DispatcherFactory $factory,

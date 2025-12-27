@@ -20,12 +20,12 @@ class Workspace implements Countable, IteratorAggregate
     /**
      * @var TextDocumentItem[]
      */
-    private $documents = [];
+    private array $documents = [];
 
     /**
      * @var array<string,int>
      */
-    private $documentVersions = [];
+    private array $documentVersions = [];
 
     public function __construct(private LoggerInterface $logger = new NullLogger())
     {

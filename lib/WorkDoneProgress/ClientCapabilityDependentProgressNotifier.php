@@ -8,10 +8,7 @@ use Phpactor\LanguageServer\Core\Server\ClientApi;
 
 final class ClientCapabilityDependentProgressNotifier implements ProgressNotifier
 {
-    /**
-     * @var ProgressNotifier
-     */
-    private $notifier;
+    private ProgressNotifier $notifier;
 
     public function __construct(ClientApi $api, ClientCapabilities $capabilities)
     {

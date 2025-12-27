@@ -20,7 +20,7 @@ final class HandlerMethodRunner implements MethodRunner
     /**
      * @var array<string|int, CancellationTokenSource>
      */
-    private $cancellations = [];
+    private array $cancellations = [];
 
     public function __construct(
         private Handlers $handlers,

@@ -52,87 +52,54 @@ final class LanguageServerTesterBuilder
     /**
      * @var array<Handler>
      */
-    private $handlers = [];
+    private array $handlers = [];
 
     /**
-     * @var array
+     * @var ServiceProvider[]
      */
-    private $serviceProviders = [];
+    private array $serviceProviders = [];
 
     /**
-     * @var array
+     * @var Command[]
      */
-    private $commands = [];
+    private array $commands = [];
 
-    /**
-     * @var InitializeParams
-     */
-    private $initializeParams;
+    private InitializeParams $initializeParams;
 
-    /**
-     * @var TestMessageTransmitter
-     */
-    private $transmitter;
+    private TestMessageTransmitter $transmitter;
 
-    /**
-     * @var TestResponseWatcher
-     */
-    private $responseWatcher;
+    private TestResponseWatcher $responseWatcher;
 
-    /**
-     * @var bool
-     */
-    private $enableTextDocuments = false;
+    private bool $enableTextDocuments = false;
 
-    /**
-     * @var RpcClient
-     */
-    private $rpcClient;
+    private JsonRpcClient $rpcClient;
 
-    /**
-     * @var ClientApi
-     */
-    private $clientApi;
+    private ClientApi $clientApi;
 
-    /**
-     * @var Workspace
-     */
-    private $workspace;
+    private Workspace $workspace;
 
-    /**
-     * @var bool
-     */
-    private $enableServices = false;
+    private bool $enableServices = false;
 
-    /**
-     * @var bool
-     */
-    private $enableFileEvents = false;
+    private bool $enableFileEvents = false;
 
-    /**
-     * @var bool
-     */
-    private $enableDiagnostics = false;
+    private bool $enableDiagnostics = false;
 
-    /**
-     * @var bool
-     */
-    private $enableCommands = false;
+    private bool $enableCommands = false;
 
     /**
      * @var array<ListenerProviderInterface>
      */
-    private $listeners = [];
+    private array $listeners = [];
 
     /**
      * @var array<DiagnosticsProvider>
      */
-    private $diagnosticsProvider = [];
+    private array $diagnosticsProvider = [];
 
     /**
      * @var string[]
      */
-    private $fileEventGlobs = ['**/*.php'];
+    private array $fileEventGlobs = ['**/*.php'];
 
     private function __construct()
     {
@@ -238,7 +205,7 @@ final class LanguageServerTesterBuilder
     {
         $this->enableFileEvents = true;
 
-        if (null !==$globs) {
+        if (null !== $globs) {
             $this->fileEventGlobs = $globs;
         }
 
@@ -260,7 +227,7 @@ final class LanguageServerTesterBuilder
         $this->enableDiagnostics = true;
         return $this;
     }
-    
+
     public function enableCommands(): self
     {
         $this->enableCommands = true;
@@ -317,9 +284,9 @@ final class LanguageServerTesterBuilder
     private function buildDisapatcherFactory(): DispatcherFactory
     {
         return new ClosureDispatcherFactory(
-            function (MessageTransmitter $transmitter, InitializeParams $params) {
+            function (MessageTransmitter $transmitter, InitializeParams $params): MiddlewareDispatcher {
                 $logger =  new NullLogger();
-                
+
                 $serviceProviders = $this->serviceProviders;
 
                 if ($this->enableDiagnostics) {
@@ -386,11 +353,11 @@ final class LanguageServerTesterBuilder
         if ($this->enableServices) {
             $listeners[] = new ServiceListener($serviceManager);
         }
-        
+
         if ($this->enableTextDocuments) {
             $listeners[] = new WorkspaceListener($this->workspace);
         }
-        
+
         return new AggregateEventDispatcher(...$listeners);
     }
 }

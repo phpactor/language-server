@@ -15,10 +15,7 @@ use Phpactor\LanguageServer\Middleware\ResponseHandlingMiddleware;
 
 class ResponseHandlingMiddlewareTest extends AsyncTestCase
 {
-    /**
-     * @var ResponseWatcher
-     */
-    private $watcher;
+    private ResponseWatcher $watcher;
 
     protected function setUp(): void
     {

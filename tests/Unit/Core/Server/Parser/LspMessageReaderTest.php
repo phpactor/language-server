@@ -10,11 +10,6 @@ use Phpactor\LanguageServer\Core\Rpc\RawMessage;
 
 class LspMessageReaderTest extends TestCase
 {
-    /**
-     * @var LanguageServerProtocolParser
-     */
-    private $parser;
-
     protected function setUp(): void
     {
     }

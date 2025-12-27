@@ -41,7 +41,7 @@ class DidChangeWatchedFilesListener implements ListenerProviderInterface
                 new Registration(
                     Uuid::uuid4()->__toString(),
                     'workspace/didChangeWatchedFiles',
-                    new DidChangeWatchedFilesRegistrationOptions(array_map(function (string $glob) {
+                    new DidChangeWatchedFilesRegistrationOptions(array_map(function (string $glob): FileSystemWatcher {
                         return new FileSystemWatcher($glob);
                     }, $this->globPatterns))
                 )

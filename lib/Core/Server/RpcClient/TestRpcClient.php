@@ -9,10 +9,7 @@ use Phpactor\LanguageServer\Core\Server\Transmitter\TestMessageTransmitter;
 
 final class TestRpcClient implements RpcClient
 {
-    /**
-     * @var JsonRpcClient
-     */
-    private $client;
+    private JsonRpcClient $client;
 
     public function __construct(private TestMessageTransmitter $transmitter, private TestResponseWatcher $responseWatcher)
     {

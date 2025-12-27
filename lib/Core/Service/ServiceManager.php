@@ -13,9 +13,9 @@ use function Amp\asyncCall;
 class ServiceManager
 {
     /**
-     * @var array
+     * @var CancellationTokenSource[]
      */
-    private $cancellations = [];
+    private array $cancellations = [];
 
     public function __construct(private ServiceProviders $serviceProviders, private LoggerInterface $logger)
     {

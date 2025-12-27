@@ -17,7 +17,7 @@ final class ServiceProviders implements Countable, IteratorAggregate
     /**
      * @var array<string,ServiceProvider>
      */
-    private $services = [];
+    private array $services = [];
 
     public function __construct(ServiceProvider ...$serviceProviders)
     {

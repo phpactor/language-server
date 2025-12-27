@@ -12,7 +12,7 @@ final class TestResponseWatcher implements ResponseWatcher
     /**
      * @var array
      */
-    private $requestIds = [];
+    private array $requestIds = [];
 
     public function __construct(private ResponseWatcher $innerWatcher = new DeferredResponseWatcher())
     {
@@ -40,7 +40,7 @@ final class TestResponseWatcher implements ResponseWatcher
     /**
      * {@inheritDoc}
      */
-    public function waitForResponse($requestId): Promise
+    public function waitForResponse(int|string $requestId): Promise
     {
         $this->requestIds[] = $requestId;
         return $this->innerWatcher->waitForResponse($requestId);

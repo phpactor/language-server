@@ -11,7 +11,6 @@ use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\LanguageServer\Event\TextDocumentSaved;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
-use Phpactor\LanguageServer\Core\Workspace\Workspace;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -23,14 +22,9 @@ class TextDocumentHandlerTest extends HandlerTestCase
     use ProphecyTrait;
 
     /**
-     * @var Workspace
+     * @var ObjectProphecy<EventDispatcherInterface>
      */
-    private $workspace;
-
-    /**
-     * @var ObjectProphecy
-     */
-    private $dispatcher;
+    private ObjectProphecy $dispatcher;
 
     protected function setUp(): void
     {
@@ -48,7 +42,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
     {
         $textDocument = ProtocolFactory::textDocumentItem('foobar', 'foo');
         $this->dispatch('textDocument/didOpen', [
-            'textDocument' => $textDocument
+            'textDocument' => $textDocument,
         ]);
 
         $this->dispatcher->dispatch(new TextDocumentOpened($textDocument))->shouldHaveBeenCalled();
@@ -64,7 +58,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
             'contentChanges' => [
                 [
                     'text' => 'asd',
-                ]
+                ],
             ],
         ]);
 
@@ -75,7 +69,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
     {
         $response = $this->dispatch('textDocument/willSave', [
             'textDocument' => ProtocolFactory::textDocumentIdentifier('foobar'),
-            'reason' => 1
+            'reason' => 1,
         ]);
         self::assertInstanceOf(ResponseMessage::class, $response);
         self::assertNull($response->result);
@@ -91,7 +85,7 @@ class TextDocumentHandlerTest extends HandlerTestCase
             'contentChanges' => [
                 [
                     'text' => 'asd',
-                ]
+                ],
             ],
         ]);
 

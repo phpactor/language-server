@@ -10,7 +10,6 @@ use Amp\Promise;
 use Amp\Success;
 use Exception;
 use Generator;
-use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver;
 use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
@@ -22,15 +21,7 @@ class ServiceManagerTest extends AsyncTestCase
 {
     use ProphecyTrait;
 
-    /**
-     * @var ArgumentResolver
-     */
-    private $argumentResolver;
-
-    /**
-     * @var TestLogger
-     */
-    private $logger;
+    private TestLogger $logger;
 
     protected function setUp(): void
     {
@@ -153,8 +144,7 @@ class ServiceManagerTest extends AsyncTestCase
 
 class PingService implements ServiceProvider
 {
-    /** @var bool */
-    public $called = false;
+    public bool $called = false;
     public CancellationToken $cancellationToken;
 
     /**

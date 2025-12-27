@@ -9,10 +9,7 @@ use RuntimeException;
 
 class HandlerMethodResolverTest extends TestCase
 {
-    /**
-     * @var HandlerMethodResolver
-     */
-    private $resolver;
+    private HandlerMethodResolver $resolver;
 
     protected function setUp(): void
     {

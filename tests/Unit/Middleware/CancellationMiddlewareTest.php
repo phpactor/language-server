@@ -22,7 +22,7 @@ class CancellationMiddlewareTest extends AsyncTestCase
     /**
      * @var ObjectProphecy<MethodRunner>
      */
-    private $runner;
+    private ObjectProphecy $runner;
 
     protected function setUp(): void
     {
