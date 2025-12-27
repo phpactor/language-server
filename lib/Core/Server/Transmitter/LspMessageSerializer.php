@@ -45,7 +45,7 @@ final class LspMessageSerializer implements MessageSerializer
             return $message;
         }
 
-        return array_filter(array_map([$this, 'normalize'], $message), function ($value) {
+        return array_filter(array_map([$this, 'normalize'], $message), function ($value): bool {
             return $value !== null;
         });
     }

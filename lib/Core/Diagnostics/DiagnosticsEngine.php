@@ -189,10 +189,9 @@ class DiagnosticsEngine
     }
 
     /**
-     * @param string|int $providerId
      * @return Promise<bool>
      */
-    private function awaitProviderLock($providerId): Promise
+    private function awaitProviderLock(int|string $providerId): Promise
     {
         if (!array_key_exists($providerId, $this->locks)) {
             return new Success(true);

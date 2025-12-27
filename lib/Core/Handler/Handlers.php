@@ -12,9 +12,9 @@ use IteratorAggregate;
 final class Handlers implements Countable, IteratorAggregate
 {
     /**
-     * @var array
+     * @var array<string, Handler>
      */
-    private $methods = [];
+    private array $methods = [];
 
     public function __construct(Handler ...$handlers)
     {

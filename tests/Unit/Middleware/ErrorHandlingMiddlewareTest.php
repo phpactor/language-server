@@ -20,10 +20,7 @@ use RuntimeException;
 
 class ErrorHandlingMiddlewareTest extends AsyncTestCase
 {
-    /**
-     * @var TestLogger
-     */
-    private $logger;
+    private TestLogger $logger;
 
     protected function setUp(): void
     {

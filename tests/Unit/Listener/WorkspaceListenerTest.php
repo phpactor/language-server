@@ -15,14 +15,11 @@ use Prophecy\Prophecy\ObjectProphecy;
 class WorkspaceListenerTest extends TestCase
 {
     /**
-     * @var Workspace|ObjectProphecy
+     * @var Workspace|ObjectProphecy<Workspace>
      */
-    private $workspace;
+    private Workspace|ObjectProphecy $workspace;
 
-    /**
-     * @var WorkspaceListener
-     */
-    private $listener;
+    private WorkspaceListener $listener;
 
     protected function setUp(): void
     {

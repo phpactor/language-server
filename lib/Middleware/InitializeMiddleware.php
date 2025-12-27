@@ -23,10 +23,7 @@ class InitializeMiddleware implements Middleware
     private const METHOD_INITIALIZED = 'initialized';
     private const METHOD_INITIALIZE = 'initialize';
 
-    /**
-     * @var bool
-     */
-    private $initialized = false;
+    private bool $initialized = false;
 
     /**
      * @param array{name?:string,version?:string} $serverInfo

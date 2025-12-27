@@ -48,7 +48,7 @@ class AggregateCodeActionProvider implements CodeActionProvider
         return array_values(
             array_reduce(
                 $this->providers,
-                function (array $kinds, CodeActionProvider $provider) {
+                function (array $kinds, CodeActionProvider $provider): array {
                     return array_merge(
                         $kinds,
                         (array)array_combine($provider->kinds(), $provider->kinds())

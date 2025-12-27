@@ -20,7 +20,7 @@ class SayHelloDiagnosticsProvider implements DiagnosticsProvider
     public function provideDiagnostics(TextDocumentItem $textDocument, CancellationToken $cancel): Promise
     {
         /** @phpstan-ignore-next-line */
-        return call(function () {
+        return call(function (): array {
             return [
                 new Diagnostic(
                     new Range(

@@ -13,20 +13,11 @@ use Phpactor\LanguageServer\Tests\Unit\Handler\HandlerTestCase;
 
 class StatsHandlerTest extends HandlerTestCase
 {
-    /**
-     * @var ServerStats
-     */
-    private $stats;
+    private ServerStats $stats;
 
-    /**
-     * @var ClientApi
-     */
-    private $clientApi;
+    private ClientApi $clientApi;
 
-    /**
-     * @var TestRpcClient
-     */
-    private $client;
+    private TestRpcClient $client;
 
     protected function setUp(): void
     {

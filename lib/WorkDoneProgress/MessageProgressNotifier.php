@@ -10,10 +10,7 @@ use Phpactor\LanguageServer\Core\Server\Client\MessageClient;
 
 final class MessageProgressNotifier implements ProgressNotifier
 {
-    /**
-     * @var MessageClient
-     */
-    private $api;
+    private MessageClient $api;
 
     public function __construct(ClientApi $api)
     {

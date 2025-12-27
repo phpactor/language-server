@@ -16,7 +16,7 @@ class CodeActionDiagnosticsProvider implements DiagnosticsProvider
     /**
      * @var array<CodeActionProvider>
      */
-    private $providers;
+    private array $providers;
 
     public function __construct(CodeActionProvider ...$providers)
     {

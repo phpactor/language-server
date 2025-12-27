@@ -6,18 +6,13 @@ use Phpactor\TestUtils\PHPUnit\TestCase;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Core\Handler\HandlerNotFound;
 use Phpactor\LanguageServer\Core\Handler\Handlers;
+use Prophecy\Prophecy\ObjectProphecy;
 
 class HandlersTest extends TestCase
 {
-    /**
-     * @var ObjectProphecy
-     */
-    private $handler1;
+    private ObjectProphecy $handler1;
 
-    /**
-     * @var ObjectProphecy
-     */
-    private $handler2;
+    private ObjectProphecy $handler2;
 
     protected function setUp(): void
     {

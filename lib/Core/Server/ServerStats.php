@@ -10,26 +10,11 @@ use DateTimeImmutable;
  */
 final class ServerStats implements ServerStatsReader
 {
-    /**
-     * @var DateTimeImmutable
-     */
-    private $created;
-
-    /**
-     * @var int
-     */
-    private $connectionCount;
-
-    /**
-     * @var int
-     */
-    private $requestCount;
-
-    public function __construct()
-    {
-        $this->created = new DateTimeImmutable();
-        $this->connectionCount = 0;
-        $this->requestCount = 0;
+    public function __construct(
+        private DateTimeImmutable $created = new DateTimeImmutable(),
+        private int $connectionCount = 0,
+        private int $requestCount = 0,
+    ) {
     }
 
     public function incConnectionCount(): void

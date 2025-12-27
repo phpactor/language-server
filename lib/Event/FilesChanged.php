@@ -8,15 +8,18 @@ use RuntimeException;
 final class FilesChanged
 {
     /**
-     * @var array
+     * @var FileEvent[]
      */
-    private $events;
+    private array $events = [];
 
     public function __construct(FileEvent ...$events)
     {
         $this->events = $events;
     }
 
+    /**
+     * @return FileEvent[]
+     */
     public function events(): array
     {
         return $this->events;
@@ -24,7 +27,7 @@ final class FilesChanged
 
     public function byType(int $type): self
     {
-        return new self(...array_filter($this->events, function (FileEvent $event) use ($type) {
+        return new self(...array_filter($this->events, function (FileEvent $event) use ($type): bool {
             return $event->type === $type;
         }));
     }

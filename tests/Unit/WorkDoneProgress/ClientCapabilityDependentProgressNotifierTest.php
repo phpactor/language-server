@@ -13,15 +13,9 @@ use Phpactor\LanguageServer\WorkDoneProgress\WorkDoneToken;
 
 final class ClientCapabilityDependentProgressNotifierTest extends AsyncTestCase
 {
-    /**
-     * @var TestRpcClient
-     */
-    private $client;
+    private TestRpcClient $client;
 
-    /**
-     * @var TestMessageTransmitter
-     */
-    private $transmitter;
+    private TestMessageTransmitter $transmitter;
 
     protected function setUp(): void
     {

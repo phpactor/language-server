@@ -10,7 +10,7 @@ class AggregateEventDispatcher implements EventDispatcherInterface
     /**
      * @var array<ListenerProviderInterface>
      */
-    private $listnerProviders;
+    private array $listnerProviders;
 
     public function __construct(ListenerProviderInterface ...$listnerProviders)
     {

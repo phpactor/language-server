@@ -17,7 +17,7 @@ class TextDocumentTester
     /**
      * @var array<string,int>
      */
-    private static $versions = [];
+    private static array $versions = [];
 
     public function __construct(private LanguageServerTester $tester)
     {

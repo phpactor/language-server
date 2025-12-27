@@ -33,7 +33,7 @@ final class LanguageServer
     /**
      * @var Connection[]
      */
-    private $connections = [];
+    private array $connections = [];
 
     public function __construct(
         private DispatcherFactory $dispatcherFactory,

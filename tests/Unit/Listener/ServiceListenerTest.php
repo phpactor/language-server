@@ -15,15 +15,12 @@ class ServiceListenerTest extends TestCase
 {
     use ProphecyTrait;
 
-    /**
-     * @var ServiceListener
-     */
-    private $listener;
+    private ServiceListener $listener;
 
     /**
      * @var ObjectProphecy<ServiceManager>
      */
-    private $serviceManager;
+    private ObjectProphecy $serviceManager;
 
     protected function setUp(): void
     {

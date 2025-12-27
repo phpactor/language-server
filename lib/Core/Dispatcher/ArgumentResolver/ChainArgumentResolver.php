@@ -11,7 +11,7 @@ final class ChainArgumentResolver implements ArgumentResolver
     /**
      * @var array<ArgumentResolver>
      */
-    private $resolvers;
+    private array $resolvers;
 
     public function __construct(ArgumentResolver ...$resolvers)
     {

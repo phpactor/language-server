@@ -9,10 +9,7 @@ use Psr\Log\LoggerInterface;
 
 final class ResourceStreamProvider implements StreamProvider
 {
-    /**
-     * @var bool
-     */
-    private $provided = false;
+    private bool $provided = false;
 
     public function __construct(private ResourceDuplexStream $duplexStream, private LoggerInterface $logger)
     {

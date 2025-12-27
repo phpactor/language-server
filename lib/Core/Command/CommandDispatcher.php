@@ -11,14 +11,9 @@ use RuntimeException;
 class CommandDispatcher
 {
     /**
-     * @var array
-     */
-    private $commandMap = [];
-
-    /**
      * @param array<string,Command> $commandMap Map of command names to invokable objects
      */
-    public function __construct(array $commandMap)
+    public function __construct(private array $commandMap = [])
     {
         foreach ($commandMap as $id => $command) {
             $this->addCommand($id, $command);

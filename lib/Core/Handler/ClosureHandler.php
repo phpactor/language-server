@@ -20,10 +20,7 @@ final class ClosureHandler implements Handler
         ];
     }
 
-    /**
-     * @return mixed
-     */
-    public function handle()
+    public function handle(): mixed
     {
         $args = func_get_args();
         return $this->closure->__invoke(...$args);

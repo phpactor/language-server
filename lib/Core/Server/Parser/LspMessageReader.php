@@ -16,23 +16,19 @@ final class LspMessageReader implements RequestReader
     const EVENT_REQUEST_READY = 'request.ready';
     const HEADER_CONTENT_LENGTH = 'Content-Length';
 
-    /**
-     * @var string
-     */
-    private $buffer = '';
+    private string $buffer = '';
 
-    /**
-     * @var string
-     */
-    private $overflow = '';
+    private string $overflow = '';
 
     /**
      * @var null|array<string>
      */
-    private $headers = null;
+    private ?array $headers = null;
 
-    public function __construct(private InputStream $stream, private LoggerInterface $logger = new NullLogger())
-    {
+    public function __construct(
+        private InputStream $stream,
+        private LoggerInterface $logger = new NullLogger(),
+    ) {
     }
 
     public function wait(): Promise

@@ -29,7 +29,7 @@ class InitializeMiddlewareTest extends AsyncTestCase
     /**
      * @var ObjectProphecy<EventDispatcherInterface>
      */
-    private $dispatcher;
+    private ObjectProphecy $dispatcher;
 
     protected function setUp(): void
     {

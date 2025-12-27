@@ -16,22 +16,11 @@ class ServiceHandlerTest extends HandlerTestCase
     /**
      * @var ObjectProphecy<ServiceManager>
      */
-    private $serviceManager;
+    private ObjectProphecy $serviceManager;
 
-    /**
-     * @var ClientApi
-     */
-    private $api;
+    private ClientApi $api;
 
-    /**
-     * @var ServiceHandler
-     */
-    private $serviceHandler;
-
-    /**
-     * @var TestRpcClient
-     */
-    private $client;
+    private TestRpcClient $client;
 
     protected function setUp(): void
     {

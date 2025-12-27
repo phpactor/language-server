@@ -11,9 +11,9 @@ use Phpactor\LanguageServer\Core\Rpc\Message;
 final class MiddlewareDispatcher implements Dispatcher
 {
     /**
-     * @var array
+     * @var Middleware[]
      */
-    private $middleware;
+    private array $middleware;
 
     public function __construct(Middleware ...$middleware)
     {

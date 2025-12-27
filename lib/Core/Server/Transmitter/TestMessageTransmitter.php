@@ -13,7 +13,7 @@ final class TestMessageTransmitter implements MessageTransmitter, TestMessageTra
     /**
      * @var Message[]
      */
-    private $buffer = [];
+    private array $buffer = [];
 
     public function __construct(Message ...$buffer)
     {
@@ -27,7 +27,7 @@ final class TestMessageTransmitter implements MessageTransmitter, TestMessageTra
 
     public function filterByMethod(string $method): self
     {
-        return new self(...array_filter($this->buffer, function (Message $message) use ($method) {
+        return new self(...array_filter($this->buffer, function (Message $message) use ($method): bool {
             if (
                 !$message instanceof RequestMessage &&
                 !$message instanceof NotificationMessage

@@ -17,15 +17,9 @@ use Phpactor\TestUtils\PHPUnit\TestCase;
 
 class DidChangeWatchedFilesListenerTest extends TestCase
 {
-    /**
-     * @var DidChangeWatchedFilesListener
-     */
-    private $listener;
+    private DidChangeWatchedFilesListener $listener;
 
-    /**
-     * @var TestMessageTransmitter
-     */
-    private $transmitter;
+    private TestMessageTransmitter $transmitter;
 
     public function testDynamicallyRegisterIfSupported(): void
     {

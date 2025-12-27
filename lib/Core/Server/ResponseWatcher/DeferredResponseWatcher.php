@@ -13,7 +13,7 @@ final class DeferredResponseWatcher implements ResponseWatcher
     /**
      * @var array<string|int, Deferred<ResponseMessage>>
      */
-    private $watchers = [];
+    private array $watchers = [];
 
     public function handle(ResponseMessage $response): void
     {
@@ -29,11 +29,9 @@ final class DeferredResponseWatcher implements ResponseWatcher
     }
 
     /**
-     * @param string|int $requestId
-     *
      * @return Promise<ResponseMessage>
      */
-    public function waitForResponse($requestId): Promise
+    public function waitForResponse(int|string $requestId): Promise
     {
         $deferred = new Deferred();
         $this->watchers[$requestId] = $deferred;
