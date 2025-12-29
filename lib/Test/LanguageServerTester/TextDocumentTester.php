@@ -6,6 +6,7 @@ use Phpactor\LanguageServerProtocol\DidChangeTextDocumentNotification;
 use Phpactor\LanguageServerProtocol\DidChangeTextDocumentParams;
 use Phpactor\LanguageServerProtocol\DidSaveTextDocumentNotification;
 use Phpactor\LanguageServerProtocol\DidSaveTextDocumentParams;
+use Phpactor\LanguageServerProtocol\TextDocumentContentChangeFullEvent;
 use Phpactor\LanguageServer\Test\ProtocolFactory;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentNotification;
@@ -43,9 +44,7 @@ class TextDocumentTester
         $this->tester->notifyAndWait(DidChangeTextDocumentNotification::METHOD, new DidChangeTextDocumentParams(
             ProtocolFactory::versionedTextDocumentIdentifier($uri, self::$versions[$uri]),
             [
-                [
-                    'text' => $newText
-                ]
+                new TextDocumentContentChangeFullEvent($newText),
             ]
         ));
     }

@@ -7,20 +7,28 @@ use Phpactor\LanguageServerProtocol\DidCloseTextDocumentParams;
 use Phpactor\LanguageServerProtocol\DidOpenTextDocumentParams;
 use Phpactor\LanguageServerProtocol\DidSaveTextDocumentParams;
 use Phpactor\LanguageServerProtocol\ServerCapabilities;
+use Phpactor\LanguageServerProtocol\TextDocumentContentChangeFullEvent;
+use Phpactor\LanguageServerProtocol\TextDocumentContentChangeIncrementalEvent;
 use Phpactor\LanguageServerProtocol\TextDocumentSyncKind;
 use Phpactor\LanguageServerProtocol\WillSaveTextDocumentParams;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServer\Event\TextDocumentClosed;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
+use Phpactor\LanguageServer\Event\TextDocumentIncrementallyUpdated;
 use Phpactor\LanguageServer\Event\TextDocumentSaved;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 {
-    public function __construct(private EventDispatcherInterface $dispatcher)
-    {
+    /**
+     * @param TextDocumentSyncKind::* $syncKind
+     */
+    public function __construct(
+        private EventDispatcherInterface $dispatcher,
+        private int $syncKind = TextDocumentSyncKind::FULL,
+    ) {
     }
 
     public function methods(): array
@@ -42,9 +50,27 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 
     public function didChange(DidChangeTextDocumentParams $params): void
     {
+        $increments = [];
         foreach ($params->contentChanges as $contentChange) {
-            $this->dispatcher->dispatch(new TextDocumentUpdated($params->textDocument, $contentChange['text']));
+            if ($contentChange instanceof TextDocumentContentChangeIncrementalEvent) {
+                $increments[] = $contentChange;
+                continue;
+
+            }
+            if ($contentChange instanceof TextDocumentContentChangeFullEvent) {
+                $this->dispatcher->dispatch(new TextDocumentUpdated($params->textDocument, $contentChange->text));
+                continue;
+            }
         }
+
+        if ($increments === []) {
+            return;
+        }
+
+        $this->dispatcher->dispatch(new TextDocumentIncrementallyUpdated(
+            $params->textDocument,
+            $increments,
+        ));
     }
 
     public function didClose(DidCloseTextDocumentParams $params): void
@@ -67,6 +93,6 @@ final class TextDocumentHandler implements Handler, CanRegisterCapabilities
 
     public function registerCapabiltiies(ServerCapabilities $capabilities): void
     {
-        $capabilities->textDocumentSync = TextDocumentSyncKind::FULL;
+        $capabilities->textDocumentSync = $this->syncKind;
     }
 }
