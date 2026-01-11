@@ -52,7 +52,7 @@
     "scripts": {
         "integrate": [
             "./vendor/bin/phpunit",
-            "./vendor/bin/phpstan analyze",
+            "./vendor/bin/phpstan --memory-limit=-1 analyze",
             "./vendor/bin/php-cs-fixer fix"
         ]
     },

@@ -8,6 +8,7 @@ use Phpactor\LanguageServerProtocol\TextDocumentItem;
 use Phpactor\LanguageServer\Core\Diagnostics\DiagnosticsEngine;
 use Phpactor\LanguageServer\Core\Service\ServiceProvider;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
+use Phpactor\LanguageServer\Event\TextDocumentIncrementallyUpdated;
 use Phpactor\LanguageServer\Event\TextDocumentOpened;
 use Phpactor\LanguageServer\Event\TextDocumentSaved;
 use Phpactor\LanguageServer\Event\TextDocumentUpdated;
@@ -56,6 +57,10 @@ class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
             yield [$this, 'enqueueUpdate'];
         }
 
+        if ($this->lintOnUpdate && $event instanceof TextDocumentIncrementallyUpdated) {
+            yield [$this, 'enqueueUpdate'];
+        }
+
         if ($this->lintOnSave && $event instanceof TextDocumentSaved) {
             yield [$this, 'enqueueSave'];
         }
@@ -66,14 +71,20 @@ class DiagnosticsService implements ServiceProvider, ListenerProviderInterface
         $this->engine->enqueue($opened->textDocument());
     }
 
-    public function enqueueUpdate(TextDocumentUpdated $update): void
+    public function enqueueUpdate(TextDocumentUpdated|TextDocumentIncrementallyUpdated $update): void
     {
-        $item = new TextDocumentItem(
-            $update->identifier()->uri,
-            'php',
-            $update->identifier()->version,
-            $update->updatedText()
-        );
+        $item = (function (TextDocumentUpdated|TextDocumentIncrementallyUpdated $event) {
+            if ($event instanceof TextDocumentUpdated) {
+                return new TextDocumentItem(
+                    $event->identifier()->uri,
+                    'php',
+                    $event->identifier()->version,
+                    $event->updatedText()
+                );
+            }
+
+            return $this->workspace->get($event->identifier()->uri);
+        })($update);
 
         if ($this->clearOnUpdate) {
             $this->engine->clear($item);
