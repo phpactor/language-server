@@ -3,9 +3,9 @@
 namespace Phpactor\LanguageServer\Handler\TextDocument;
 
 use Amp\Promise;
+use Phpactor\LanguageServerProtocol\DocumentFormattingParams;
 use Phpactor\LanguageServerProtocol\FormattingOptions;
 use Phpactor\LanguageServerProtocol\ServerCapabilities;
-use Phpactor\LanguageServerProtocol\TextDocumentIdentifier;
 use Phpactor\LanguageServerProtocol\TextEdit;
 use Phpactor\LanguageServer\Core\Formatting\Formatter;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
@@ -33,12 +33,12 @@ class FormattingHandler implements Handler, CanRegisterCapabilities
     /**
      * @return Promise<array<int,TextEdit[]>|null>
      */
-    public function formatting(TextDocumentIdentifier $textDocument, FormattingOptions $options): Promise
+    public function formatting(DocumentFormattingParams $params, FormattingOptions $options): Promise
     {
-        return call(function () use ($textDocument) {
+        return call(function () use ($params) {
             $token = WorkDoneToken::generate();
             yield $this->notifier->create($token);
-            $document = $this->workspace->get($textDocument->uri);
+            $document = $this->workspace->get($params->textDocument->uri);
             $this->notifier->begin($token, 'Formatting document');
             try {
                 $formatted = yield $this->formatter->format($document);
