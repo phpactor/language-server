@@ -2,9 +2,9 @@
 
 namespace Phpactor\LanguageServer\Handler\TextDocument;
 
+use Amp\CancellationToken;
 use Amp\Promise;
 use Phpactor\LanguageServerProtocol\DocumentFormattingParams;
-use Phpactor\LanguageServerProtocol\FormattingOptions;
 use Phpactor\LanguageServerProtocol\ServerCapabilities;
 use Phpactor\LanguageServerProtocol\TextEdit;
 use Phpactor\LanguageServer\Core\Formatting\Formatter;
@@ -33,7 +33,7 @@ class FormattingHandler implements Handler, CanRegisterCapabilities
     /**
      * @return Promise<array<int,TextEdit[]>|null>
      */
-    public function formatting(DocumentFormattingParams $params, FormattingOptions $options): Promise
+    public function formatting(DocumentFormattingParams $params, CancellationToken $canellation): Promise
     {
         return call(function () use ($params) {
             $token = WorkDoneToken::generate();
