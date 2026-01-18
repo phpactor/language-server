@@ -12,6 +12,9 @@ use Phpactor\LanguageServer\Core\Server\Stream\DuplexStream;
 
 final class ChannelStream implements DuplexStream
 {
+    /**
+     * @var Emitter<string>
+     */
     private Emitter $emitter;
 
     private IteratorStream $stream;
@@ -25,7 +28,7 @@ final class ChannelStream implements DuplexStream
     /**
      * Reads data from the stream.
      *
-     * @return Promise Resolves with a string when new data is available or `null` if the stream has closed.
+     * @return Promise<string|null> Resolves with a string when new data is available or `null` if the stream has closed.
      *
      * @psalm-return Promise<string|null>
      *
@@ -41,7 +44,7 @@ final class ChannelStream implements DuplexStream
      *
      * @param string $data Bytes to write.
      *
-     * @return Promise Succeeds once the data has been successfully written to the stream.
+     * @return Promise<null> Succeeds once the data has been successfully written to the stream.
      *
      * @throws ClosedException If the stream has already been closed.
      * @throws StreamException If writing to the stream fails.
@@ -58,7 +61,7 @@ final class ChannelStream implements DuplexStream
      *
      * @param string $finalData Bytes to write.
      *
-     * @return Promise Succeeds once the data has been successfully written to the stream.
+     * @return Promise<null> Succeeds once the data has been successfully written to the stream.
      *
      * @throws ClosedException If the stream has already been closed.
      * @throws StreamException If writing to the stream fails.
