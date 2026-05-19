@@ -4,6 +4,7 @@ namespace Phpactor\LanguageServer\Tests\Unit\Core\Handler;
 
 use Amp\CancellationToken;
 use Amp\CancelledException;
+use Amp\Failure;
 use Amp\PHPUnit\AsyncTestCase;
 use Amp\Success;
 use Phpactor\LanguageServer\Core\Handler\ClosureHandler;
@@ -12,6 +13,7 @@ use Phpactor\LanguageServer\Core\Handler\Handlers;
 use Phpactor\LanguageServer\Core\Rpc\NotificationMessage;
 use Phpactor\LanguageServer\Core\Rpc\RequestMessage;
 use Phpactor\LanguageServer\Core\Rpc\ResponseMessage;
+use ReflectionObject;
 use RuntimeException;
 use function Amp\call;
 use function Amp\delay;
@@ -121,10 +123,78 @@ class HandlerMethodRunnerTest extends AsyncTestCase
         yield $promise;
     }
 
+    public function testCancellationsIsEmptyAfterSuccessfulDispatch()
+    {
+        $runner = $this->createRunner([
+            new ClosureHandler('foobar', function (): Success {
+                return new Success('done');
+            }),
+        ]);
+
+        yield $runner->dispatch(
+            new RequestMessage(1, 'foobar', [])
+        );
+
+        self::assertSame([], $this->cancellationsOf($runner));
+    }
+
+    public function testCancellationsIsEmptyAfterHandlerThrows()
+    {
+        $runner = $this->createRunner([
+            new ClosureHandler('foobar', function () {
+                return new Failure(new RuntimeException('foobar'));
+            }),
+        ]);
+
+        try {
+            yield $runner->dispatch(new RequestMessage(42, 'foobar', []));
+            self::fail('expected handler exception to propagate');
+        } catch (RuntimeException $e) {
+            // expected
+        }
+
+        self::assertSame([], $this->cancellationsOf($runner));
+    }
+
+    public function testCancellationsIsEmptyAfterCancel()
+    {
+        $runner = $this->createRunner([
+            new ClosureHandler('foobar', function (CancellationToken $token) {
+                return call(function () use ($token) {
+                    yield delay(50);
+                    $token->throwIfRequested();
+                });
+            }),
+        ]);
+
+        $promise = $runner->dispatch(new RequestMessage(7, 'foobar', []));
+        $runner->cancelRequest(7);
+
+        try {
+            yield $promise;
+            self::fail('expected CancelledException');
+        } catch (CancelledException $e) {
+            // expected
+        }
+
+        self::assertSame([], $this->cancellationsOf($runner));
+    }
+
     private function createRunner(array $handlers): HandlerMethodRunner
     {
         return new HandlerMethodRunner(
             new Handlers(...$handlers)
         );
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    private function cancellationsOf(HandlerMethodRunner $runner): array
+    {
+        return (new ReflectionObject($runner))
+            ->getProperty('cancellations')
+            ->getValue($runner)
+        ;
     }
 }
