@@ -56,25 +56,31 @@ final class HandlerMethodRunner implements MethodRunner
                 $this->cancellations[$request->id] = $cancellationTokenSource;
             }
 
-            $args = array_values($this->argumentResolver->resolveArguments($handler, $method, $request));
-            $args[] = $cancellationTokenSource->getToken();
+            try {
+                $args = array_values($this->argumentResolver->resolveArguments($handler, $method, $request));
+                $args[] = $cancellationTokenSource->getToken();
 
-            $promise = $handler->$method(...$args) ?? new Success(null);
+                $promise = $handler->$method(...$args) ?? new Success(null);
 
-            if (!$promise instanceof Promise) {
-                throw new RuntimeException(sprintf(
-                    'Handler "%s:%s" must return instance of Amp\\Promise, got "%s"',
-                    $handler::class,
-                    $method,
-                    get_debug_type($promise)
-                ));
+                if (!$promise instanceof Promise) {
+                    throw new RuntimeException(sprintf(
+                        'Handler "%s:%s" must return instance of Amp\\Promise, got "%s"',
+                        $handler::class,
+                        $method,
+                        get_debug_type($promise)
+                    ));
+                }
+
+                if (!$request instanceof RequestMessage) {
+                    return null;
+                }
+
+                return new ResponseMessage($request->id, yield $promise);
+            } finally {
+                if ($request instanceof RequestMessage) {
+                    unset($this->cancellations[$request->id]);
+                }
             }
-
-            if (!$request instanceof RequestMessage) {
-                return null;
-            }
-
-            return new ResponseMessage($request->id, yield $promise);
         });
     }
 
