@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+8.0
+---
+
+- PHP 8.x updates
+- Add support for incrementally updating text documents
+- Breaking changes content changes are now DTOs instead of arrays.
+
 7.0
 ---
 
